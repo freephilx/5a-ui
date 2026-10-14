@@ -26,6 +26,12 @@
 - Dart 与 JS/TS 实现使用一致的接口约定、状态格式和共用服务器安装脚本，保持部署与状态查询行为一致；修改相关契约时同步更新受影响的实现和验证。
 - 安装任务在目标服务器上通过 systemd 后台执行；客户端或 Web 后端负责启动任务和查询状态，关闭应用、页面或结束 API 请求不应中断安装。
 
+## Flutter 版本管理
+
+- 本项目 Flutter SDK 版本必须与 [FlClash 的 dev 分支](https://github.com/chen08209/FlClash/tree/dev) 保持一致。首次配置或调整版本前，先按下方参考仓库更新规则获取最新代码，再读取其 Flutter 版本配置，采用相同的具体版本。
+- 统一通过 FVM 管理和切换 Flutter SDK，在本项目根目录执行 `fvm use <FlClash 使用的 Flutter 版本>`，并将生成的项目版本配置 `.fvmrc` 纳入版本控制。
+- Flutter 和 Dart 命令统一使用 `fvm flutter ...`、`fvm dart ...`，确保依赖安装、开发、分析、测试和构建使用项目指定的 SDK。
+
 ## 视觉参考
 
 - 本项目视觉参照 [FlClash 的 dev 分支](https://github.com/chen08209/FlClash/tree/dev)，本地参考仓库固定放在 `~/github/FlClash/`。
