@@ -4,6 +4,14 @@ plugins {
     id("dev.flutter.flutter-gradle-plugin")
 }
 
+val releaseSigning = listOf(
+    "ANDROID_KEYSTORE_PATH", "ANDROID_STORE_PASSWORD", "ANDROID_KEY_ALIAS", "ANDROID_KEY_PASSWORD"
+).associateWith { System.getenv(it).orEmpty() }
+val hasReleaseSigning = releaseSigning.values.all { it.isNotBlank() }
+if (releaseSigning.values.any { it.isNotBlank() } && !hasReleaseSigning) {
+    throw GradleException("All four ANDROID signing environment variables must be set together.")
+}
+
 android {
     namespace = "app.fivea.five_a_ui"
     compileSdk = flutter.compileSdkVersion
@@ -29,11 +37,21 @@ android {
         versionName = flutter.versionName
     }
 
+    signingConfigs {
+        if (hasReleaseSigning) {
+            create("release") {
+                storeFile = file(releaseSigning.getValue("ANDROID_KEYSTORE_PATH"))
+                storePassword = releaseSigning.getValue("ANDROID_STORE_PASSWORD")
+                keyAlias = releaseSigning.getValue("ANDROID_KEY_ALIAS")
+                keyPassword = releaseSigning.getValue("ANDROID_KEY_PASSWORD")
+            }
+        }
+    }
+
     buildTypes {
         release {
-            // TODO: Add your own signing config for the release build.
-            // Signing with the debug keys for now, so `flutter run --release` works.
-            signingConfig = signingConfigs.getByName("debug")
+            // CI names the fallback artifacts test-signed; use a fixed key for releases.
+            signingConfig = signingConfigs.getByName(if (hasReleaseSigning) "release" else "debug")
         }
     }
 }

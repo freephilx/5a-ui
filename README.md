@@ -79,6 +79,44 @@ fvm flutter build linux --release
 
 iOS 需在 Xcode 中配置自己的开发团队和签名；Android 商店发布需配置自己的发布签名。原生应用的 SSH 在应用内执行，不需要启动 `server/`。macOS 已配置出站网络和用户选中文件读写权限；Android 已配置网络权限。
 
+## GitHub Actions 打包
+
+参考 FlClash 的平台矩阵、Artifacts 和 tag 汇总流程，使用独立的 **Package** workflow（`.github/workflows/build.yaml`）。SDK 仍从 `.fvmrc` 读取，版本号和构建号来自 `pubspec.yaml`。
+
+- **tag 构建 → 正式版**：推送 `v*` tag 时构建全部平台。tag 必须与 `pubspec.yaml` 的版本一致，例如 `version: 0.2.0+2` 对应 `v0.2.0`。全部成功后汇总安装包与 `SHA256SUMS`，直接公开发布对应版本的正式 Release（非草稿、非预发布）；手动在版本 tag 上运行也按此规则发布。
+- **非 tag 构建 → pre-alpha**：在 Actions → Package → Run workflow 选择分支及 `all` 或某个平台。成功后覆盖固定的 [pre-alpha Release](https://github.com/freephilx/5a-ui/releases/tag/pre-alpha)，标记为 Pre-release，不占用正式版 Latest。参照 [Mihomo 的滚动预发布](https://github.com/MetaCubeX/mihomo/releases/tag/Prerelease-Alpha)，始终只保留最新一轮产物；`pre-alpha` tag 同步指向该次提交，包名固定使用 `5a-ui-pre-alpha-…`，发布说明记录提交与构建链接。
+- 覆盖 `pre-alpha` 时会删除此前的全部附件，再上传本次产物和校验文件；只选单个平台时，Release 也只保留该平台的本次产物。需要完整六平台下载时选择 `all`。所有非 tag 打包共用串行队列，避免不同分支或平台相互覆盖上传过程。
+- 每次构建同时保留 Actions Artifacts 14 天。首次使用手动入口前，workflow 需要合入默认分支。打包前复用 **Check and build** 的分析、测试和契约检查；普通分支 push / PR 仍执行检查，不自动触发打包。
+- 应用内部版本号和构建号仍使用 `pubspec.yaml`，以满足各平台安装器的版本格式；GitHub 发布渠道由是否为版本 tag 决定，tag 包名使用对应版本号。
+
+| 平台 | 打包产物 |
+| --- | --- |
+| Android | armeabi-v7a / arm64-v8a / x86_64 APK，以及 AAB |
+| iOS | arm64 `unsigned.ipa`，需自行重新签名后安装 |
+| macOS | Universal DMG，同时包含 Intel 和 Apple Silicon |
+| Windows | x64 安装 EXE、便携 ZIP，附带 VC++ 运行库 |
+| Linux | x64 / arm64 DEB、tar.gz；需要 GTK 3 和桌面文件选择 portal |
+| Web | 静态 ZIP，以及含 Dart 后端的 Linux x64 完整服务 tar.gz |
+
+Linux x64 和 Web 服务基于 Ubuntu 22.04 构建，Linux ARM64 基于 Ubuntu 24.04。Linux ARM64 按 FlClash 的方式使用 `flutter-action` 的 `master` 安装通道检出 `.fvmrc` 指定的精确 tag，仍然使用固定 SDK 版本。
+
+Web 完整服务包解压后运行 `./start.sh`，默认地址为 `http://127.0.0.1:5000`，无需安装 Flutter 或 Dart。静态 ZIP 必须配合本项目后端 API 使用，不能独立执行 SSH。
+
+### 签名配置
+
+在仓库 Settings → Secrets and variables → Actions 配置以下四项后，Android release 包使用固定密钥签名：
+
+| Secret | 内容 |
+| --- | --- |
+| `ANDROID_KEYSTORE_BASE64` | keystore 文件的单行 Base64 |
+| `ANDROID_KEY_ALIAS` | key alias |
+| `ANDROID_STORE_PASSWORD` | keystore 密码 |
+| `ANDROID_KEY_PASSWORD` | key 密码 |
+
+四项必须同时配置。未配置时仍能打包，但 APK / AAB 名称带 `test-signed`，使用 CI 临时调试签名，不能用于正式分发或保证跨构建覆盖升级。keystore 仅写入 runner 临时目录，完成后删除，不进入仓库或产物。本地正式签名使用同名的 alias/password 环境变量及 `ANDROID_KEYSTORE_PATH` 文件路径。
+
+macOS 当前使用 ad-hoc 签名，未公证；Windows 安装程序未配置 Authenticode；iOS 未签名。工作流不会自动申请证书或发布到应用商店。
+
 ## Docker
 
 ```sh
@@ -174,7 +212,7 @@ pnpm check:cloudflare
 
 `test:ssh` 使用临时本机 SSH 服务验证 Dart 的密码、私钥、指纹与错误处理。`test:worker` 在 workerd 中验证相同 SSH 能力。它们不访问用户服务器、不执行真实安装。跨语言测试逐字比较 Dart 与 TypeScript 生成的远端命令。
 
-GitHub Actions 检查共享契约、客户端和后端测试，并配置六个平台的构建。实际已完成的本机验证及未验证的平台见 [验证记录](docs/verification.md)。
+GitHub Actions 的 Check and build 检查共享契约、客户端和后端测试；Package 负责版本打包与上传。`pnpm test:remote` 同时运行打包脚本测试。实际已完成的验证及未验证的平台见 [验证记录](docs/verification.md)。
 
 ```text
 lib/                         Flutter 界面、轮询、平台入口

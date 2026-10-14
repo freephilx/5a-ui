@@ -1,8 +1,15 @@
 name: Check and build
 on:
   push:
+    branches: ['**']
   pull_request:
   workflow_dispatch:
+  workflow_call:
+    inputs:
+      skip-native:
+        type: boolean
+        default: false
+        description: Release packaging builds the native targets separately.
 permissions:
   contents: read
 jobs:
@@ -49,6 +56,7 @@ jobs:
       - run: dart compile exe bin/server.dart -o ../build/5a-ui-server
         working-directory: server
   native:
+    if: ${{ !inputs.skip-native }}
     strategy:
       fail-fast: false
       matrix:
@@ -84,5 +92,11 @@ jobs:
         with:
           distribution: temurin
           java-version: 17
+      - name: Install Android NDK
+        if: startsWith(matrix.target, 'apk')
+        uses: nttld/setup-ndk@v1
+        with:
+          ndk-version: r28c
+          link-to-sdk: true
       - run: flutter pub get
       - run: flutter build ${{ matrix.target }}

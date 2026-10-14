@@ -1,5 +1,15 @@
 # 验证记录
 
+## GitHub Actions 打包（2026-10-15）
+
+- 参考 FlClash dev `53838773` 的构建矩阵、Artifacts 和 tag 汇总方式。新增独立 Package workflow，支持手动选择平台和 `v*` tag，版本由 `.fvmrc` / `pubspec.yaml` 提供。
+- 包含 Android 分 ABI APK / AAB、iOS 未签名 IPA、macOS Universal DMG、Windows x64 安装器 / ZIP、Linux x64 / ARM64 DEB / tar.gz，以及 Web 静态包和 Linux x64 完整服务包。版本 tag 构建成功后直接公开发布正式 Release；非 tag 构建发布到固定 `pre-alpha`，标为 Pre-release，不占用正式版 Latest。
+- 核对 [Mihomo 的 Prerelease-Alpha](https://github.com/MetaCubeX/mihomo/releases/tag/Prerelease-Alpha) 及 Alpha 分支 workflow，采用其移动预发布 tag、清理旧附件后上传的方式。所有非 tag 打包串行执行；单平台构建也完整替换旧附件，发布说明记录当前提交、平台与构建链接。实际覆盖发布仍待远端运行验证。
+- `actionlint 1.7.7` 检查两份工作流通过；19 项打包/发布测试及原有 6 项 Python 测试通过。覆盖版本与 tag 对齐、手动 tag 仍为正式版、不同分支/版本共用 pre-alpha、首次发布、旧附件清理、正式版不移动 tag、不清理附件、API/推送失败停止操作，以及平台选择、签名、归档内容、权限、符号链接和 SHA-256。发布相关测试模拟 Git/GitHub 调用，不修改远端。
+- 本机实际完成 macOS release 构建及 DMG 打包，验证 app / Dart AOT / Flutter 引擎均包含 arm64 和 x86_64；DMG 完整性、应用签名与 SHA-256 校验通过。
+- 上一版提交 `f6c5eb1` 的 [GitHub Actions 检查](https://github.com/freephilx/5a-ui/actions/runs/38601664459) 中，verify、iOS、macOS、Windows、Linux 均通过；Android 在自动下载 NDK 28.2.13676358 时因 ZIP 损坏失败。当前检查和打包流程改为参照 FlClash 显式安装 NDK r28c，尚未推送复验。
+- 本轮未执行新 workflow、发布 tag 或创建远端 Release。Windows 安装器、Linux DEB 和 iOS IPA 的归档逻辑经过测试，实际跨平台安装包仍需 GitHub runner 构建和对应设备验收；Android 正式签名、Apple 公证和 iOS 重签、Windows Authenticode 尚未验证。
+
 ## Flutter 首版（本地，2026-10-15）
 
 本轮将客户端迁移为 Flutter，增加应用内 Dart SSH 和本地 / Docker Dart 后端。Flutter 由 FVM 固定为 3.47.6，与 FlClash dev 正式构建配置一致；参考仓库已更新至 `53838773`。下面记录的是新实现的本机验证，后面的历史线上验证不代表 Flutter 版本已发布。

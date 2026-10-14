@@ -1,0 +1,214 @@
+name: Package
+
+on:
+  push:
+    tags: ['v*']
+  workflow_dispatch:
+    inputs:
+      platform:
+        description: Platform to package
+        type: choice
+        default: all
+        options: [all, android, ios, macos, windows, linux, web]
+
+permissions:
+  contents: read
+
+concurrency:
+  # One publisher per release, even across branches/platform selections.
+  # Do not cancel an active run while it is replacing release assets.
+  group: package-${{ github.ref_type == 'tag' && github.ref_name || 'pre-alpha' }}
+  cancel-in-progress: false
+
+jobs:
+  prepare:
+    runs-on: ubuntu-latest
+    outputs:
+      flutter: ${{ steps.metadata.outputs.flutter }}
+      version: ${{ steps.metadata.outputs.version }}
+      build-number: ${{ steps.metadata.outputs.build-number }}
+      label: ${{ steps.metadata.outputs.label }}
+      release-tag: ${{ steps.metadata.outputs.release-tag }}
+      prerelease: ${{ steps.metadata.outputs.prerelease }}
+      matrix: ${{ steps.metadata.outputs.matrix }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Read SDK, version and build matrix
+        id: metadata
+        env:
+          BUILD_PLATFORM: ${{ inputs.platform || 'all' }}
+        run: python tool/package.py metadata
+
+  checks:
+    needs: prepare
+    uses: ./.github/workflows/check.yaml
+    with:
+      skip-native: true
+
+  build:
+    name: Package ${{ matrix.platform }} (${{ matrix.arch }})
+    needs: [prepare, checks]
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 60
+    strategy:
+      fail-fast: false
+      matrix: ${{ fromJSON(needs.prepare.outputs.matrix) }}
+    defaults:
+      run:
+        shell: bash
+    env:
+      APP_VERSION: ${{ needs.prepare.outputs.version }}
+      BUILD_NUMBER: ${{ needs.prepare.outputs.build-number }}
+      PACKAGE_LABEL: ${{ needs.prepare.outputs.label }}
+      PACKAGE_PLATFORM: ${{ matrix.platform }}
+      PACKAGE_ARCH: ${{ matrix.arch }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      # As in FlClash, Linux ARM64 uses a checkout of the exact SDK tag because
+      # Flutter does not publish a stable Linux ARM64 SDK archive.
+      - uses: subosito/flutter-action@v2
+        with:
+          channel: ${{ matrix.channel }}
+          flutter-version: ${{ needs.prepare.outputs.flutter }}
+          cache: true
+      - name: Install Linux dependencies
+        if: matrix.platform == 'linux'
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y clang cmake ninja-build pkg-config libgtk-3-dev liblzma-dev dpkg-dev
+      - name: Select Xcode
+        if: runner.os == 'macOS'
+        run: |
+          for version in 26.3 26.2; do
+            if [ -d "/Applications/Xcode_${version}.app" ]; then
+              sudo xcode-select -s "/Applications/Xcode_${version}.app"
+              break
+            fi
+          done
+          xcodebuild -version
+      - uses: actions/setup-java@v4
+        if: matrix.platform == 'android'
+        with:
+          distribution: temurin
+          java-version: '17'
+      - uses: gradle/actions/setup-gradle@v4
+        if: matrix.platform == 'android'
+      - name: Install Android NDK
+        if: matrix.platform == 'android'
+        uses: nttld/setup-ndk@v1
+        with:
+          ndk-version: r28c
+          link-to-sdk: true
+      - name: Prepare Android signing
+        if: matrix.platform == 'android'
+        id: signing
+        env:
+          ANDROID_KEYSTORE_BASE64: ${{ secrets.ANDROID_KEYSTORE_BASE64 }}
+          ANDROID_KEY_ALIAS: ${{ secrets.ANDROID_KEY_ALIAS }}
+          ANDROID_STORE_PASSWORD: ${{ secrets.ANDROID_STORE_PASSWORD }}
+          ANDROID_KEY_PASSWORD: ${{ secrets.ANDROID_KEY_PASSWORD }}
+        run: python tool/package.py android-signing
+      - name: Install Flutter dependencies
+        run: |
+          flutter --version
+          flutter pub get
+          dart run tool/generate.dart --check
+      - name: Build Android APKs and App Bundle
+        if: matrix.platform == 'android'
+        env:
+          ANDROID_KEY_ALIAS: ${{ secrets.ANDROID_KEY_ALIAS }}
+          ANDROID_STORE_PASSWORD: ${{ secrets.ANDROID_STORE_PASSWORD }}
+          ANDROID_KEY_PASSWORD: ${{ secrets.ANDROID_KEY_PASSWORD }}
+        run: |
+          flutter build apk --release --split-per-abi --build-name "$APP_VERSION" --build-number "$BUILD_NUMBER"
+          flutter build appbundle --release --build-name "$APP_VERSION" --build-number "$BUILD_NUMBER"
+      - name: Build unsigned iOS app
+        if: matrix.platform == 'ios'
+        run: flutter build ios --release --no-codesign --build-name "$APP_VERSION" --build-number "$BUILD_NUMBER"
+      - name: Build macOS app
+        if: matrix.platform == 'macos'
+        run: |
+          flutter config --no-enable-macos-arm64-only
+          flutter build macos --release --build-name "$APP_VERSION" --build-number "$BUILD_NUMBER"
+      - name: Build Linux app
+        if: matrix.platform == 'linux'
+        run: flutter build linux --release --target-platform "linux-$PACKAGE_ARCH" --build-name "$APP_VERSION" --build-number "$BUILD_NUMBER"
+      - name: Build Windows app
+        if: matrix.platform == 'windows'
+        run: flutter build windows --release --build-name "$APP_VERSION" --build-number "$BUILD_NUMBER"
+      - name: Prepare Windows runtime and installer compiler
+        if: matrix.platform == 'windows'
+        shell: pwsh
+        run: |
+          $vswhere = "${env:ProgramFiles(x86)}\Microsoft Visual Studio\Installer\vswhere.exe"
+          $vs = & $vswhere -latest -products '*' -requires Microsoft.VisualStudio.Component.VC.Tools.x86.x64 -property installationPath
+          $version = (Get-Content "$vs\VC\Auxiliary\Build\Microsoft.VCRedistVersion.default.txt").Trim()
+          $crt = Get-ChildItem "$vs\VC\Redist\MSVC\$version\x64" -Directory -Filter '*.CRT' | Select-Object -First 1
+          if (!$crt) { throw 'Visual C++ runtime directory not found' }
+          Copy-Item "$($crt.FullName)\*.dll" 'build\windows\x64\runner\Release\'
+          if (!(Test-Path "${env:ProgramFiles(x86)}\Inno Setup 6\ISCC.exe")) {
+            choco install innosetup --yes --no-progress
+            if ($LASTEXITCODE -ne 0) { throw 'Inno Setup installation failed' }
+          }
+      - name: Build Web and Linux Dart server
+        if: matrix.platform == 'web'
+        run: |
+          flutter build web --release --no-web-resources-cdn --build-name "$APP_VERSION" --build-number "$BUILD_NUMBER"
+          mkdir -p build/server
+          cd server
+          dart pub get
+          dart compile exe bin/server.dart -o ../build/server/5a-ui-server
+      - name: Package release files and checksums
+        env:
+          ANDROID_SIGNING: ${{ steps.signing.outputs.signing }}
+        run: python tool/package.py package --platform "$PACKAGE_PLATFORM" --arch "$PACKAGE_ARCH" --version "$APP_VERSION" --label "$PACKAGE_LABEL"
+      - name: Upload packages
+        uses: actions/upload-artifact@v4
+        with:
+          name: 5a-ui-${{ needs.prepare.outputs.label }}-${{ matrix.platform }}-${{ matrix.arch }}
+          path: dist/*
+          if-no-files-found: error
+          compression-level: 0
+          retention-days: 14
+      - name: Remove temporary Android keystore
+        if: always() && matrix.platform == 'android'
+        run: python tool/package.py clean-signing
+
+  release:
+    name: Publish ${{ needs.prepare.outputs.release-tag }}
+    needs: [prepare, build]
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/download-artifact@v4
+        with:
+          pattern: 5a-ui-*
+          path: dist
+          merge-multiple: true
+      - name: Generate combined checksums
+        run: python3 tool/package.py checksums
+      - name: Prepare release notes and replace previous pre-alpha assets
+        env:
+          GH_TOKEN: ${{ github.token }}
+          BUILD_PLATFORM: ${{ inputs.platform || 'all' }}
+        run: python3 tool/package.py prepare-release
+      - name: Publish release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ needs.prepare.outputs.release-tag }}
+          name: ${{ needs.prepare.outputs.release-tag }}
+          draft: false
+          prerelease: ${{ needs.prepare.outputs.prerelease == 'true' }}
+          make_latest: ${{ needs.prepare.outputs.prerelease == 'true' && 'false' || 'legacy' }}
+          generate_release_notes: ${{ needs.prepare.outputs.prerelease == 'false' }}
+          body_path: .tmp/release-notes.md
+          files: dist/*
+          fail_on_unmatched_files: true
