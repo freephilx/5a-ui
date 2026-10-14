@@ -1,15 +1,17 @@
 set -eu
 umask 077
-existing_xui() {
-  [ -e /usr/local/x-ui/x-ui ] || [ -e /etc/x-ui/x-ui.db ] || systemctl cat x-ui.service >/dev/null 2>&1 || {
-    command -v docker >/dev/null 2>&1 && docker ps -a --format '{{.Image}} {{.Names}}' 2>/dev/null | grep -Eiq '(^|[/[:space:]])(3x-ui|x-ui|mhsanaei)([:/[:space:]]|$)'
-  }
+existing_status() {
+  python3 -c "$(printf '%s' '@@INSPECTOR@@' | base64 -d)" '@@HOST@@' --if-existing
 }
 
-if [ ! -f '/var/lib/5a-ui/.managed' ] && existing_xui; then
-  printf '%s\n' '5A_UI_RESULT={"error":{"code":"EXISTING_INSTALLATION","message":"检测到已有 3x-ui 安装。为保留现有配置，请使用现有面板；首次自建需要一台尚未安装 3x-ui 的服务器。"}}'
-exit 0
-
+if ! command -v python3 >/dev/null 2>&1; then
+  printf '%s\n' '5A_UI_RESULT={"error":{"code":"PYTHON_REQUIRED","message":"接入和部署前需要服务器安装 Python 3，请先安装 python3 后重试。"}}'
+  exit 0
+fi
+existing=$(existing_status)
+if [ -n "$existing" ]; then
+  printf '%s\n' "$existing"
+  exit 0
 fi
 if [ ! -f /etc/os-release ]; then
   printf '%s\n' '5A_UI_RESULT={"error":{"code":"UNSUPPORTED_OS","message":"当前支持 Debian 11+ 或 Ubuntu 20.04+。"}}'
@@ -54,24 +56,12 @@ exit 0
 fi
   exit 0
 fi
-if [ -f '/var/lib/5a-ui/.managed' ] && [ -f '/var/lib/5a-ui/state.json' ] && grep -Eq '"phase"[[:space:]]*:[[:space:]]*"ready"' '/var/lib/5a-ui/state.json'; then
-  if command -v python3 >/dev/null 2>&1 && [ -f '/var/lib/5a-ui/manage.py' ]; then
-  python3 '/var/lib/5a-ui/manage.py' status
-elif [ -f '/var/lib/5a-ui/state.json' ]; then
-  printf '5A_UI_RESULT='; cat '/var/lib/5a-ui/state.json'; printf '\n'
-else
-  printf '%s\n' '5A_UI_RESULT={"phase":"not-installed","message":"这台服务器还没有部署节点，点击一键自建开始。"}'
-exit 0
-
-fi
+existing=$(existing_status)
+if [ -n "$existing" ]; then
+  printf '%s\n' "$existing"
   exit 0
 fi
 if [ ! -f '/var/lib/5a-ui/.managed' ]; then
-  if existing_xui; then
-    printf '%s\n' '5A_UI_RESULT={"error":{"code":"EXISTING_INSTALLATION","message":"检测到已有 3x-ui 安装。为保留现有配置，请使用现有面板；首次自建需要一台尚未安装 3x-ui 的服务器。"}}'
-exit 0
-
-  fi
   if [ -n "$(ss -H -ltn 'sport = :@@NODE_PORT@@')" ]; then
     printf '%s\n' '5A_UI_RESULT={"error":{"code":"NODE_PORT_BUSY","message":"节点端口 @@NODE_PORT@@ 已被占用，请在高级设置中选择其他端口。"}}'
 exit 0

@@ -3,14 +3,21 @@ import 'dart:convert';
 import 'models.dart';
 import 'remote_generated.dart' as embedded;
 
-String statusScript() => embedded.statusScript;
+String _inspect(String script, String host) => script
+    .replaceAll(
+      '@@INSPECTOR@@',
+      base64Encode(utf8.encode(embedded.inspectorScript)),
+    )
+    .replaceAll('@@HOST@@', base64Encode(utf8.encode(host)));
+
+String statusScript(String host) => _inspect(embedded.statusScript, host);
 String installScript(ConnectionInput input) {
   final config = jsonEncode({
     'host': input.host,
     'nodePort': input.nodePort,
     'realityServerName': input.realityServerName ?? '',
   });
-  return embedded.installTemplate
+  return _inspect(embedded.installTemplate, input.host)
       .replaceAll('@@CONFIG@@', base64Encode(utf8.encode(config)))
       .replaceAll('@@JOB@@', base64Encode(utf8.encode(embedded.jobScript)))
       .replaceAll(
@@ -65,7 +72,7 @@ ServerStatus parseStatus(Object? value) {
   ]) {
     if (value[key] is String) result[key] = value[key];
   }
-  for (final key in ['installed', 'running', 'portReachable']) {
+  for (final key in ['installed', 'running', 'portReachable', 'truncated']) {
     if (value[key] is bool) result[key] = value[key];
   }
   for (final key in ['cpu', 'uptime']) {
@@ -107,5 +114,144 @@ ServerStatus parseStatus(Object? value) {
       };
     }
   }
+  if (value['instances'] is List) {
+    result['instances'] = _instances(value['instances'] as List);
+  }
   return ServerStatus(result);
+}
+
+Map<String, dynamic> _fields(
+  Map value,
+  List<String> strings,
+  List<String> booleans,
+  List<String> numbers,
+) {
+  final result = <String, dynamic>{};
+  for (final key in strings) {
+    if (value[key] case final String text) {
+      result[key] = text.length > 500 ? text.substring(0, 500) : text;
+    }
+  }
+  for (final key in booleans) {
+    if (value[key] is bool) result[key] = value[key];
+  }
+  for (final key in numbers) {
+    if (value[key] is int && (key == 'expiryTime' || value[key] >= 0)) {
+      result[key] = value[key];
+    }
+  }
+  final traffic = value['traffic'];
+  if (traffic is Map &&
+      ['up', 'down'].every(
+        (key) =>
+            traffic[key] is num &&
+            (traffic[key] as num).isFinite &&
+            traffic[key] >= 0,
+      )) {
+    result['traffic'] = {'up': traffic['up'], 'down': traffic['down']};
+  }
+  return result;
+}
+
+bool _shareLink(Object? value) {
+  if (value is! String || value.length > 4096) return false;
+  try {
+    if (value.startsWith('vmess://')) {
+      if (!RegExp(r'^[A-Za-z0-9+/_-]+={0,2}$').hasMatch(value.substring(8))) {
+        return false;
+      }
+      final node = jsonDecode(
+        utf8.decode(base64Decode(base64.normalize(value.substring(8)))),
+      );
+      final port =
+          node is Map && RegExp(r'^[0-9]+$').hasMatch('${node['port']}')
+          ? int.tryParse('${node['port']}')
+          : null;
+      return node is Map &&
+          node['add'] is String &&
+          (node['add'] as String).isNotEmpty &&
+          node['id'] is String &&
+          (node['id'] as String).isNotEmpty &&
+          port != null &&
+          port > 0 &&
+          port <= 65535;
+    }
+    final uri = Uri.parse(value);
+    return {'vless', 'trojan', 'ss'}.contains(uri.scheme) &&
+        uri.host.isNotEmpty &&
+        uri.userInfo.isNotEmpty &&
+        uri.hasPort &&
+        uri.port > 0 &&
+        uri.port <= 65535;
+  } catch (_) {
+    return false;
+  }
+}
+
+List<Map<String, dynamic>> _instances(List values) {
+  final result = <Map<String, dynamic>>[];
+  for (final item in values) {
+    if (item is! Map ||
+        item['id'] is! String ||
+        item['name'] is! String ||
+        !{'native', 'docker'}.contains(item['kind']) ||
+        item['inbounds'] is! List) {
+      continue;
+    }
+    final instance = _fields(
+      item,
+      ['id', 'name', 'kind', 'message', 'panelVersion'],
+      ['running', 'readable', 'truncated'],
+      [],
+    );
+    final inbounds = <Map<String, dynamic>>[];
+    for (final row in item['inbounds'] as List) {
+      if (row is! Map ||
+          row['id'] is! String ||
+          row['name'] is! String ||
+          row['protocol'] is! String ||
+          row['port'] is! int ||
+          row['port'] < 0 ||
+          row['port'] > 65535 ||
+          row['clients'] is! List) {
+        continue;
+      }
+      final inbound = _fields(
+        row,
+        ['id', 'name', 'protocol', 'message'],
+        ['enabled'],
+        ['port'],
+      );
+      final clients = <Map<String, dynamic>>[];
+      for (final client in row['clients'] as List) {
+        if (client is! Map ||
+            client['id'] is! String ||
+            client['name'] is! String) {
+          continue;
+        }
+        final node = _fields(
+          client,
+          ['id', 'name', 'message', 'linkMessage'],
+          ['enabled', 'available'],
+          ['expiryTime', 'total'],
+        );
+        if (_shareLink(client['link']) &&
+            client['host'] is String &&
+            client['serverName'] is String &&
+            client['port'] is int &&
+            client['port'] > 0 &&
+            client['port'] <= 65535) {
+          for (final field in ['host', 'port', 'serverName', 'link']) {
+            node[field] = client[field];
+          }
+        }
+        clients.add(node);
+      }
+      inbound['clients'] = clients;
+      inbounds.add(inbound);
+    }
+    instance['inbounds'] = inbounds;
+    result.add(instance);
+  }
+  return result;
 }

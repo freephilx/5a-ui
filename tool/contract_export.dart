@@ -10,7 +10,7 @@ Future<void> main() async {
       for (final value in values)
         {
           'install': installScript(validateInput(value)),
-          'status': statusScript(),
+          'status': statusScript(validateInput(value).host),
         },
     ]),
   );

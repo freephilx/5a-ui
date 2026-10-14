@@ -1,3 +1,11 @@
+## 2026-10-15 | Phase: 已有 3x-ui 接入 | Status: 实现完成，本地验证通过
+
+- **目标**: 统一接入服务器已有的 3x-ui，不以是否由本项目部署作为管理条件。
+- **变更**: 实现原生/systemd 与 Docker 多实例发现、SQLite 新旧客户端结构和 PostgreSQL 读取、入站与客户端流量/状态及常见协议分享；同步 Dart/TypeScript 契约、Flutter 实例选择与节点详情。已有实例直接接入，保留账号、节点、订阅及服务配置，旧失败标记不再绕过外部实例检查；AGENTS 与 README 已同步。
+- **验证**: 152 项测试、Flutter analyze、TypeScript 检查、生成资源校验与 Web release 构建通过；真实临时 SQLite/WAL 和隔离模拟 API 浏览器验证通过，覆盖多实例、异常、只读保护、窄屏和二维码/复制。详见 `docs/verification.md`。
+- **问题**: Docker 与 PostgreSQL 目前通过模拟验证，尚未完成真实环境接入验收；非常规安装布局和特殊分享配置需要后续适配。
+- **下一步**: 在可用的隔离 Linux / Docker / PostgreSQL 环境补充真实接入验收；当前能力为读取与节点分享，后续再扩展配置编辑和服务启停。
+
 ## 2026-10-15 | Phase: GitHub Actions 打包 | Status: 完成
 
 - **目标**: 参考最新 FlClash dev 的矩阵、Artifacts 和 tag 发布流程，为六平台提供可下载包。

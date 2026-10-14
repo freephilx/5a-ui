@@ -1,5 +1,6 @@
 import { describe, expect, it, vi } from 'vitest';
 import { createApp } from '../src/server/app';
+import { readFileSync } from 'node:fs';
 
 const input = { host: '8.8.8.8', authMethod: 'password', password: 'secret' };
 function request(path: string, data: object = input, origin = 'https://selfhost.test') {
@@ -9,6 +10,17 @@ const okLimit = { limit: async () => ({ success: true }) };
 const env = { REQUEST_LIMITER: okLimit, INSTALL_LIMITER: okLimit };
 
 describe('API access and output', () => {
+  it('returns existing instances without probing configured client destinations', async () => {
+    const fixture = JSON.parse(readFileSync('contracts/status-cases.json', 'utf8'))[0];
+    const ssh = vi.fn().mockResolvedValue({ stdout: '5A_UI_RESULT=' + JSON.stringify(fixture.input), fingerprint: 'SHA256:recorded' });
+    const probe = vi.fn();
+    const response = await createApp(ssh, probe)(request('status'), env);
+    expect(response.status).toBe(200);
+    expect(await response.json()).toEqual({ ...fixture.expected, hostFingerprint: 'SHA256:recorded' });
+    expect(probe).not.toHaveBeenCalled();
+    expect(ssh.mock.calls[0][1]).toContain(Buffer.from(input.host).toString('base64'));
+    expect(ssh.mock.calls[0][1]).not.toContain('@@');
+  });
   it('rejects cross-origin operations before SSH', async () => {
     const ssh = vi.fn();
     const response = await createApp(ssh)(request('install', input, 'https://other.test'), env);

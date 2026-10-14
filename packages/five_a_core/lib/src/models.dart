@@ -98,6 +98,8 @@ class ServerStatus {
   String? get proofToken => data['proofToken'] as String?;
   Map<String, dynamic>? get node => data['node'] as Map<String, dynamic>?;
   String? get link => node?['link'] as String?;
+  List<Map<String, dynamic>> get instances =>
+      (data['instances'] as List?)?.cast<Map<String, dynamic>>() ?? const [];
   ServerStatus withFields(Map<String, dynamic> fields) =>
       ServerStatus({...data, ...fields});
   Map<String, dynamic> toJson() => data;

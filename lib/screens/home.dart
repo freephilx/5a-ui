@@ -640,10 +640,16 @@ class _HomeScreenState extends State<HomeScreen> {
           const SizedBox(height: 20),
           FilledButton.icon(
             onPressed: controller.canRequest
-                ? () => _perform(ServerAction.install)
+                ? () => _perform(
+                    controller.status?.data['installed'] == true
+                        ? ServerAction.status
+                        : ServerAction.install,
+                  )
                 : null,
             icon: const Icon(Icons.rocket_launch_outlined, size: 19),
-            label: const Text('一键部署'),
+            label: Text(
+              controller.status?.data['installed'] == true ? '读取已有服务' : '一键部署',
+            ),
           ),
           const SizedBox(height: 12),
           OutlinedButton.icon(
@@ -690,11 +696,11 @@ class _HomeScreenState extends State<HomeScreen> {
         ),
         const SizedBox(height: 16),
         const Text(
-          'Debian 11+ 或 Ubuntu 20.04+\nroot 或具有免密 sudo 权限的账号\n安全组放行 SSH 与节点 TCP 端口',
+          '接入已有服务：Linux + Python 3\n新部署：Debian 11+ 或 Ubuntu 20.04+\nroot 或具有免密 sudo 权限的账号\n安全组放行 SSH 与节点端口',
         ),
         const SizedBox(height: 12),
         Text(
-          '已有其他 3x-ui 安装时会保留原配置，不会覆盖。',
+          '已有 3x-ui 会直接接入，可查看实例、入站和客户端；保留原配置，无需重新部署。',
           style: Theme.of(context).textTheme.bodySmall!
               .copyWith(color: Theme.of(context).colorScheme.onSurfaceVariant),
         ),

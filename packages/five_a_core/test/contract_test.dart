@@ -5,6 +5,14 @@ import 'package:five_a_core/five_a_core.dart';
 import 'package:test/test.dart';
 
 void main() {
+  final statuses = jsonDecode(
+    File('../../contracts/status-cases.json').readAsStringSync(),
+  ) as List;
+  for (final entry in statuses) {
+    test('shared status contract: ${entry['name']}', () {
+      expect(parseStatus(entry['input']).toJson(), entry['expected']);
+    });
+  }
   final cases = jsonDecode(
     File('../../contracts/connection-cases.json').readAsStringSync(),
   ) as List;
@@ -46,7 +54,7 @@ void main() {
         'realityServerName': '',
       });
       if (!Platform.isWindows) {
-        for (final value in [script, statusScript()]) {
+        for (final value in [script, statusScript('8.8.8.8')]) {
           final process = await Process.start('/bin/bash', ['-n']);
           process.stdin.write(value);
           await process.stdin.close();

@@ -17,6 +17,45 @@ export interface ConnectionInput {
 
 export type Phase = 'not-installed' | 'existing' | 'queued' | 'preparing' | 'installing' | 'configuring' | 'checking' | 'ready' | 'failed';
 
+export interface ClientStatus {
+  id: string;
+  name: string;
+  enabled?: boolean;
+  available?: boolean;
+  message?: string;
+  linkMessage?: string;
+  expiryTime?: number;
+  total?: number;
+  traffic?: { up: number; down: number };
+  host?: string;
+  port?: number;
+  serverName?: string;
+  link?: string;
+}
+
+export interface InboundStatus {
+  id: string;
+  name: string;
+  protocol: string;
+  port: number;
+  enabled?: boolean;
+  message?: string;
+  traffic?: { up: number; down: number };
+  clients: ClientStatus[];
+}
+
+export interface InstanceStatus {
+  id: string;
+  name: string;
+  kind: 'native' | 'docker';
+  running?: boolean;
+  readable?: boolean;
+  truncated?: boolean;
+  message?: string;
+  panelVersion?: string;
+  inbounds: InboundStatus[];
+}
+
 export interface ServerStatus {
   phase: Phase;
   message: string;
@@ -34,6 +73,8 @@ export interface ServerStatus {
   portReachable?: boolean;
   firewall?: string;
   proofToken?: string;
+  instances?: InstanceStatus[];
+  truncated?: boolean;
 }
 
 export interface ApiErrorBody {

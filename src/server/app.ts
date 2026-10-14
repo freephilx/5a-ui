@@ -41,7 +41,7 @@ export function createApp(ssh: SSHRunner = runSSH, probe = probePort) {
       await limitRequest(ip, action, env);
       const input = await readInput(request);
       const proofToken = await authorize(input, ip, env, url.hostname);
-      const result = await ssh(input, action === 'install' ? installScript(input) : statusScript());
+      const result = await ssh(input, action === 'install' ? installScript(input) : statusScript(input.host));
       const status = parseRemoteResult(result.stdout);
       status.hostFingerprint = result.fingerprint;
       if (proofToken) status.proofToken = proofToken;

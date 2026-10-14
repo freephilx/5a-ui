@@ -27,7 +27,7 @@ describe('remote execution boundary', () => {
     expect(script).not.toContain(input.password);
     const payload = script.match(/printf '%s' '([^']+)' \| base64 -d >'\/var\/lib\/5a-ui\/request.json'/)![1];
     expect(JSON.parse(Buffer.from(payload, 'base64').toString())).toEqual({ host: '8.8.8.8', nodePort: 443, realityServerName: '' });
-    for (const value of [script, statusScript()]) expect(spawnSync('/bin/bash', ['-n'], { input: value }).status).toBe(0);
+    for (const value of [script, statusScript('8.8.8.8')]) expect(spawnSync('/bin/bash', ['-n'], { input: value }).status).toBe(0);
   });
   it('never forwards installer output or unknown credential fields', () => {
     const status = parseRemoteResult('Password: unsafe-secret\n5A_UI_RESULT={"phase":"ready","message":"ok","apiToken":"unsafe-token","privateKey":"unsafe-key"}\n');

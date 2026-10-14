@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:io';
 
 import 'package:five_a_server/app.dart';
 import 'package:five_a_core/ssh.dart';
@@ -26,6 +27,34 @@ void main() {
     context: {'clientIp': 'client'},
   );
 
+  test(
+    'existing instances are returned without probing their client addresses',
+    () async {
+      final fixture = (jsonDecode(
+        File('../contracts/status-cases.json').readAsStringSync(),
+      ) as List).first;
+      final app = ApiApp(
+        ssh: (connection, script) async {
+          expect(script, contains(base64Encode(utf8.encode(connection.host))));
+          expect(script, isNot(contains('@@')));
+          return SshResult(
+            '5A_UI_RESULT=${jsonEncode(fixture['input'])}',
+            'SHA256:observed',
+          );
+        },
+        probe: (_, _) async => throw StateError(
+          'Imported nodes must not trigger arbitrary probes',
+        ),
+      );
+      addTearDown(app.close);
+      final response = await app.handle(request());
+      expect(response.statusCode, 200);
+      expect(jsonDecode(await response.readAsString()), {
+        ...fixture['expected'] as Map,
+        'hostFingerprint': 'SHA256:observed',
+      });
+    },
+  );
   test('rejects cross-origin and private destinations before SSH', () async {
     var calls = 0;
     final app = ApiApp(

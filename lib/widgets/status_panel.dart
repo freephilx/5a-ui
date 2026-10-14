@@ -80,7 +80,7 @@ class StatusPanel extends StatelessWidget {
             children: [
               Icon(Icons.hub_outlined, color: colors.primary),
               const SizedBox(width: 10),
-              Expanded(child: Text('节点状态', style: text.titleMedium)),
+              Expanded(child: Text('服务与节点', style: text.titleMedium)),
               if (busy)
                 IconButton(
                   onPressed: controller.pause,
@@ -118,7 +118,7 @@ class StatusPanel extends StatelessWidget {
                     Text('从一台服务器开始', style: text.titleLarge),
                     const SizedBox(height: 10),
                     Text(
-                      '连接你的服务器，一键部署 3x-ui。\n已有节点也可以直接读取状态。',
+                      '连接你的服务器，接入已有 3x-ui。\n也可以在新服务器上一键部署。',
                       textAlign: TextAlign.center,
                       style: text.bodyMedium!.copyWith(
                         color: colors.onSurfaceVariant,
@@ -159,6 +159,8 @@ class StatusPanel extends StatelessWidget {
                   child: Text(
                     controller.paused
                         ? '已暂停刷新'
+                        : status?.instances.isNotEmpty == true
+                        ? '已连接 3x-ui'
                         : status?.isReady == true
                         ? status!.running
                               ? '节点运行中'
@@ -194,6 +196,16 @@ class StatusPanel extends StatelessWidget {
                   label: const Text('继续读取状态'),
                 ),
               ),
+            if (status != null && status.instances.isNotEmpty) ...[
+              const SizedBox(height: 20),
+              _Instances(
+                key: ValueKey(controller.connectedHost),
+                instances: status.instances,
+                truncated: status.data['truncated'] == true,
+                onCopy: (link) => _copy(context, link),
+                onSave: (link) => _save(context, link),
+              ),
+            ],
             if (status?.link case final link?) ...[
               const SizedBox(height: 28),
               Wrap(
@@ -289,6 +301,249 @@ class StatusPanel extends StatelessWidget {
           ],
         ],
       ),
+    );
+  }
+}
+
+class _Instances extends StatefulWidget {
+  const _Instances({
+    super.key,
+    required this.instances,
+    required this.truncated,
+    required this.onCopy,
+    required this.onSave,
+  });
+  final List<Map<String, dynamic>> instances;
+  final bool truncated;
+  final Future<void> Function(String) onCopy, onSave;
+  @override
+  State<_Instances> createState() => _InstancesState();
+}
+
+class _InstancesState extends State<_Instances> {
+  String? selected;
+
+  String _traffic(Map value) {
+    final traffic = value['traffic'] as Map?;
+    return '↑ ${formatBytes(traffic?['up'])}  ↓ ${formatBytes(traffic?['down'])}';
+  }
+
+  String _expiry(Object? value) {
+    if (value is! int || value == 0) return '不限时';
+    if (value < 0) return '首次使用后开始计时';
+    try {
+      return DateTime.fromMillisecondsSinceEpoch(value)
+          .toLocal()
+          .toString()
+          .split('.')
+          .first;
+    } catch (_) {
+      return '—';
+    }
+  }
+
+  Future<void> _showNode(Map<String, dynamic> node, String protocol) async {
+    final link = node['link'] as String;
+    await showModalBottomSheet<void>(
+      context: context,
+      isScrollControlled: true,
+      showDragHandle: true,
+      constraints: const BoxConstraints(maxWidth: 640),
+      builder: (context) => SafeArea(
+        child: SingleChildScrollView(
+          padding: const EdgeInsets.fromLTRB(24, 0, 24, 24),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                node['name'] as String,
+                style: Theme.of(context).textTheme.titleLarge,
+              ),
+              const SizedBox(height: 8),
+              Text('$protocol · ${node['message'] ?? ''}'),
+              const SizedBox(height: 16),
+              Center(
+                child: QrImageView(
+                  data: link,
+                  size: 190,
+                  backgroundColor: Colors.white,
+                ),
+              ),
+              const SizedBox(height: 16),
+              Wrap(
+                spacing: 12,
+                runSpacing: 8,
+                children: [
+                  FilledButton.icon(
+                    onPressed: () => widget.onCopy(link),
+                    icon: const Icon(Icons.copy_rounded),
+                    label: const Text('复制节点链接'),
+                  ),
+                  OutlinedButton.icon(
+                    onPressed: () => widget.onSave(link),
+                    icon: const Icon(Icons.download_rounded),
+                    label: const Text('导出节点'),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 16),
+              _Detail('服务器', '${node['host']}:${node['port']}'),
+              if ((node['serverName'] as String?)?.isNotEmpty == true)
+                _Detail('SNI', node['serverName'] as String),
+              _Detail('流量', _traffic(node)),
+              _Detail(
+                '流量限额',
+                node['total'] == 0 ? '不限量' : formatBytes(node['total']),
+              ),
+              _Detail('到期时间', _expiry(node['expiryTime'])),
+              const SizedBox(height: 12),
+              SelectableText(
+                link,
+                style: Theme.of(context).textTheme.bodySmall,
+              ),
+              const SizedBox(height: 12),
+              const Text('链接和二维码是节点访问凭据，请妥善保存。'),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final current =
+        widget.instances.where((item) => item['id'] == selected).firstOrNull ??
+        widget.instances.first;
+    final inbounds = (current['inbounds'] as List).cast<Map<String, dynamic>>();
+    final colors = Theme.of(context).colorScheme;
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        if (widget.instances.length > 1) ...[
+          DropdownButtonFormField<String>(
+            key: ValueKey(current['id']),
+            initialValue: current['id'] as String,
+            isExpanded: true,
+            decoration: const InputDecoration(labelText: '3x-ui 实例'),
+            items: [
+              for (final item in widget.instances)
+                DropdownMenuItem(
+                  value: item['id'] as String,
+                  child: Text(
+                    item['name'] as String,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                ),
+            ],
+            onChanged: (value) => setState(() => selected = value),
+          ),
+          const SizedBox(height: 16),
+        ],
+        Wrap(
+          spacing: 8,
+          runSpacing: 8,
+          children: [
+            Chip(
+              avatar: Icon(
+                current['kind'] == 'docker'
+                    ? Icons.inventory_2_outlined
+                    : Icons.dns_outlined,
+                size: 18,
+              ),
+              label: Text(current['name'] as String),
+            ),
+            Chip(
+              label: Text(
+                current['running'] == true
+                    ? '服务运行中'
+                    : current['running'] == false
+                    ? '服务已停止'
+                    : '运行状态未知',
+              ),
+            ),
+            if (current['panelVersion'] is String)
+              Chip(label: Text('3x-ui ${current['panelVersion']}')),
+          ],
+        ),
+        const SizedBox(height: 8),
+        Text(
+          current['message'] as String? ?? '',
+          style: TextStyle(color: colors.onSurfaceVariant),
+        ),
+        if (widget.truncated || current['truncated'] == true) ...[
+          const SizedBox(height: 8),
+          Text(
+            '数据较多，本次仅显示部分记录；完整列表请在原面板查看。',
+            style: TextStyle(color: colors.error),
+          ),
+        ],
+        for (final inbound in inbounds)
+          Padding(
+            padding: const EdgeInsets.only(top: 12),
+            child: DecoratedBox(
+              decoration: BoxDecoration(
+                color: colors.surfaceContainerLow,
+                borderRadius: BorderRadius.circular(16),
+              ),
+              child: ExpansionTile(
+                key: ValueKey('${current['id']}:${inbound['id']}'),
+                initiallyExpanded: inbounds.length == 1,
+                shape: const Border(),
+                collapsedShape: const Border(),
+                title: Text(
+                  inbound['name'] as String,
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
+                ),
+                subtitle: Text(
+                  '${(inbound['protocol'] as String).toUpperCase()} · ${inbound['port']} · ${inbound['enabled'] == true ? '已启用' : '已停用'}\n${_traffic(inbound)}',
+                ),
+                childrenPadding: const EdgeInsets.fromLTRB(16, 0, 16, 12),
+                children: [
+                  if (inbound['message'] is String)
+                    Text(inbound['message'] as String),
+                  if ((inbound['clients'] as List).isEmpty)
+                    const Padding(
+                      padding: EdgeInsets.all(12),
+                      child: Text('此入站暂无可列出的客户端。'),
+                    ),
+                  for (final node
+                      in (inbound['clients'] as List)
+                          .cast<Map<String, dynamic>>())
+                    ListTile(
+                      contentPadding: EdgeInsets.zero,
+                      title: Text(
+                        node['name'] as String,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                      subtitle: Text(
+                        '${node['message'] ?? ''} · ${_traffic(node)}${node['link'] == null ? '\n${node['linkMessage'] ?? '此配置暂无可导出的链接'}' : ''}',
+                      ),
+                      leading: Icon(
+                        node['available'] == true
+                            ? Icons.person_outline
+                            : Icons.person_off_outlined,
+                        color: node['available'] == true
+                            ? colors.primary
+                            : colors.onSurfaceVariant,
+                      ),
+                      trailing: node['link'] != null
+                          ? const Icon(Icons.qr_code_rounded)
+                          : null,
+                      onTap: node['link'] is String
+                          ? () => _showNode(
+                              node,
+                              (inbound['protocol'] as String).toUpperCase(),
+                            )
+                          : null,
+                    ),
+                ],
+              ),
+            ),
+          ),
+      ],
     );
   }
 }

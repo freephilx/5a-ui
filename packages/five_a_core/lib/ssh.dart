@@ -189,7 +189,9 @@ Future<ServerStatus> executeAction(
   final validated = validateInput(input.toJson());
   final result = await (ssh ?? SshRunner().run)(
     validated,
-    action == ServerAction.install ? installScript(validated) : statusScript(),
+    action == ServerAction.install
+        ? installScript(validated)
+        : statusScript(validated.host),
   );
   var status = parseRemoteResult(result.stdout)
       .withFields({'hostFingerprint': result.fingerprint});
