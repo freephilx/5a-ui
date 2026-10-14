@@ -4,7 +4,7 @@ import { AppError } from './errors';
 export interface CaptchaEnv { TURNSTILE_SITE_KEY?: string; TURNSTILE_SECRET_KEY?: string }
 
 async function signingKey(secret: string) {
-  return crypto.subtle.importKey('raw', new TextEncoder().encode(`huarunying-proof-v1:${secret}`), { name: 'HMAC', hash: 'SHA-256' }, false, ['sign', 'verify']);
+  return crypto.subtle.importKey('raw', new TextEncoder().encode(`5a-ui-proof-v1:${secret}`), { name: 'HMAC', hash: 'SHA-256' }, false, ['sign', 'verify']);
 }
 
 export async function authorize(input: ConnectionInput, ip: string, env: CaptchaEnv, hostname: string): Promise<string | undefined> {

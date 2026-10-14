@@ -6,7 +6,7 @@ export async function workerBundle(entry: string, extra: BuildOptions = {}) {
     external: ['node:*'],
     define: { __dirname: '"/"' },
     alias: { 'cpu-features': './src/server/cpu-features.cjs' },
-    banner: { js: "import { createRequire as __hryCreateRequire } from 'node:module'; const require = __hryCreateRequire('/worker.js');" },
+    banner: { js: "import { createRequire as __5aUiCreateRequire } from 'node:module'; const require = __5aUiCreateRequire('/worker.js');" },
     plugins: [{ name: 'node-builtins', setup(build) {
       build.onResolve({ filter: /^(crypto|net|dns|events|stream|util|fs|os|http|https|zlib|assert|path|child_process)$/ }, (args) => ({ path: `node:${args.path}`, external: true }));
     } }],

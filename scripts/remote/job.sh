@@ -1,7 +1,7 @@
 #!/bin/bash
 set -Eeuo pipefail
 umask 077
-cd /var/lib/huarunying
+cd /var/lib/5a-ui
 exec >install.log 2>&1
 
 progress() {
@@ -36,10 +36,10 @@ export XUI_USERNAME XUI_PASSWORD XUI_PANEL_PORT XUI_WEB_BASE_PATH XUI_SERVER_IP
 
 # Bind before the panel's very first start, including restarts performed by upstream install.sh.
 install -d -m 755 /etc/systemd/system/x-ui.service.d
-cat >/etc/systemd/system/x-ui.service.d/20-huarunying.conf <<'UNIT'
+cat >/etc/systemd/system/x-ui.service.d/20-5a-ui.conf <<'UNIT'
 [Service]
 ExecStartPre=/usr/local/x-ui/x-ui setting -listenIP 127.0.0.1
-ExecStartPre=/usr/bin/python3 /var/lib/huarunying/manage.py restrict-services
+ExecStartPre=/usr/bin/python3 /var/lib/5a-ui/manage.py restrict-services
 UNIT
 systemctl daemon-reload
 
@@ -66,7 +66,7 @@ stage=checking
 progress checking '正在检查服务和节点端口…'
 node_port=$(python3 -c 'import json; print(json.load(open("connection.json"))["nodePort"])')
 if command -v ufw >/dev/null 2>&1 && ufw status | head -n 1 | grep -q 'Status: active'; then
-  ufw allow "$node_port/tcp" comment 'huarunying VLESS'
+  ufw allow "$node_port/tcp" comment '5a-ui VLESS'
 fi
 python3 manage.py check
 progress ready '节点已创建，可以导入客户端使用。'

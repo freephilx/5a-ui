@@ -109,7 +109,7 @@ class ProvisioningTest(unittest.TestCase):
         self.assertEqual(self.inbounds[0]["id"], 99)
 
     def test_manually_changed_managed_node_is_not_overwritten(self):
-        self.inbounds.append({"id": 99, "port": 443, "tag": "huarunying-vless", "settings": '{"clients":[]}', "streamSettings": '{"realitySettings":{}}'})
+        self.inbounds.append({"id": 99, "port": 443, "tag": "5a-ui-vless", "settings": '{"clients":[]}', "streamSettings": '{"realitySettings":{}}'})
         with self.assertRaisesRegex(RuntimeError, "refusing to overwrite"):
             self.configure()
         self.assertEqual(self.created, 0)

@@ -61,7 +61,7 @@ function NodeResult({ status, onNotice }: { status: ServerStatus; onNotice: (mes
     const url = URL.createObjectURL(new Blob([status.node!.link + '\n'], { type: 'text/plain;charset=utf-8' }));
     const anchor = document.createElement('a');
     anchor.href = url;
-    anchor.download = 'huarunying-vless.txt';
+    anchor.download = '5a-ui-vless.txt';
     anchor.click();
     setTimeout(() => URL.revokeObjectURL(url), 1000);
   }
@@ -244,7 +244,7 @@ export default function App() {
     <a className="skip-link" href="#connection">跳到服务器连接</a>
     <header className="site-header">
       <div className="header-inner">
-        <a href="#" className="brand" aria-label="花润莹首页"><Leaf size={21} strokeWidth={1.8} /><span>花润莹</span></a>
+        <a href="#" className="brand" aria-label="5a-ui 首页"><Leaf size={21} strokeWidth={1.8} /><span>5a-ui</span></a>
         <a className="source-link" href={repository} target="_blank" rel="noreferrer">GitHub</a>
       </div>
     </header>

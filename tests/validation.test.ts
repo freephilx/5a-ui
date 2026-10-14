@@ -25,17 +25,17 @@ describe('remote execution boundary', () => {
     const input = validateInput({ host: '8.8.8.8', authMethod: 'password', password: 'secret-do-not-save-123' });
     const script = installScript(input);
     expect(script).not.toContain(input.password);
-    const payload = script.match(/printf '%s' '([^']+)' \| base64 -d >'\/var\/lib\/huarunying\/request.json'/)![1];
+    const payload = script.match(/printf '%s' '([^']+)' \| base64 -d >'\/var\/lib\/5a-ui\/request.json'/)![1];
     expect(JSON.parse(Buffer.from(payload, 'base64').toString())).toEqual({ host: '8.8.8.8', nodePort: 443, realityServerName: '' });
     for (const value of [script, statusScript()]) expect(spawnSync('/bin/bash', ['-n'], { input: value }).status).toBe(0);
   });
   it('never forwards installer output or unknown credential fields', () => {
-    const status = parseRemoteResult('Password: unsafe-secret\nHUARUNYING_RESULT={"phase":"ready","message":"ok","apiToken":"unsafe-token","privateKey":"unsafe-key"}\n');
+    const status = parseRemoteResult('Password: unsafe-secret\n5A_UI_RESULT={"phase":"ready","message":"ok","apiToken":"unsafe-token","privateKey":"unsafe-key"}\n');
     expect(status).toEqual({ phase: 'ready', message: 'ok' });
   });
   it('rejects corrupt responses and surfaces a controlled remote failure', () => {
     expect(() => parseRemoteResult('random output')).toThrow();
-    expect(() => parseRemoteResult('HUARUNYING_RESULT={"phase":"invented","message":"ok"}')).toThrow();
-    expect(() => parseRemoteResult('HUARUNYING_RESULT={"error":{"code":"NODE_PORT_BUSY","message":"端口已被占用"}}')).toThrow('端口已被占用');
+    expect(() => parseRemoteResult('5A_UI_RESULT={"phase":"invented","message":"ok"}')).toThrow();
+    expect(() => parseRemoteResult('5A_UI_RESULT={"error":{"code":"NODE_PORT_BUSY","message":"端口已被占用"}}')).toThrow('端口已被占用');
   });
 });

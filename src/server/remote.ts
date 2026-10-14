@@ -2,9 +2,9 @@ import type { ConnectionInput, ServerStatus } from '../shared/types';
 import { JOB_SCRIPT, MANAGER_SCRIPT } from './remote.generated';
 import { AppError } from './errors';
 
-const ROOT = '/var/lib/huarunying';
+const ROOT = '/var/lib/5a-ui';
 const b64 = (text: string) => Buffer.from(text).toString('base64');
-const result = (value: object) => `printf '%s\\n' 'HUARUNYING_RESULT=${JSON.stringify(value)}'\nexit 0\n`;
+const result = (value: object) => `printf '%s\\n' '5A_UI_RESULT=${JSON.stringify(value)}'\nexit 0\n`;
 const existingInstallation = `existing_xui() {
   [ -e /usr/local/x-ui/x-ui ] || [ -e /etc/x-ui/x-ui.db ] || systemctl cat x-ui.service >/dev/null 2>&1 || {
     command -v docker >/dev/null 2>&1 && docker ps -a --format '{{.Image}} {{.Names}}' 2>/dev/null | grep -Eiq '(^|[/[:space:]])(3x-ui|x-ui|mhsanaei)([:/[:space:]]|$)'
@@ -14,7 +14,7 @@ const existingInstallation = `existing_xui() {
 const emitState = `if command -v python3 >/dev/null 2>&1 && [ -f '${ROOT}/manage.py' ]; then
   python3 '${ROOT}/manage.py' status
 elif [ -f '${ROOT}/state.json' ]; then
-  printf 'HUARUNYING_RESULT='; cat '${ROOT}/state.json'; printf '\\n'
+  printf '5A_UI_RESULT='; cat '${ROOT}/state.json'; printf '\\n'
 else
   ${result({ phase: 'not-installed', message: '这台服务器还没有部署节点，点击一键自建开始。' })}
 fi`;
@@ -62,7 +62,7 @@ if [ -L '${ROOT}' ]; then exit 1; fi
 install -d -m 700 '${ROOT}'
 exec 9>'${ROOT}/dispatch.lock'
 flock -x -w 5 9
-if systemctl is-active --quiet huarunying-install.service; then
+if systemctl is-active --quiet 5a-ui-install.service; then
   ${emitState}
   exit 0
 fi
@@ -85,20 +85,20 @@ chmod 600 '${ROOT}/request.json' '${ROOT}/job.sh' '${ROOT}/manage.py'
 touch '${ROOT}/.managed'
 printf '%s\\n' '{"phase":"queued","message":"已连接服务器，安装任务正在启动…"}' >'${ROOT}/state.json.tmp'
 mv '${ROOT}/state.json.tmp' '${ROOT}/state.json'
-systemctl reset-failed huarunying-install.service 2>/dev/null || true
-if ! systemd-run --quiet --collect --unit=huarunying-install --property=RuntimeMaxSec=1800 /bin/bash '${ROOT}/job.sh'; then
+systemctl reset-failed 5a-ui-install.service 2>/dev/null || true
+if ! systemd-run --quiet --collect --unit=5a-ui-install --property=RuntimeMaxSec=1800 /bin/bash '${ROOT}/job.sh'; then
   printf '%s\\n' '{"phase":"failed","message":"无法启动安装任务，请检查 systemd 服务。"}' >'${ROOT}/state.json.tmp'
   mv '${ROOT}/state.json.tmp' '${ROOT}/state.json'
 fi
-printf 'HUARUNYING_RESULT='; cat '${ROOT}/state.json'; printf '\\n'
+printf '5A_UI_RESULT='; cat '${ROOT}/state.json'; printf '\\n'
 `;
 }
 
 export function parseRemoteResult(stdout: string): ServerStatus {
-  const line = stdout.split(/\r?\n/).filter((line) => line.startsWith('HUARUNYING_RESULT=')).at(-1);
+  const line = stdout.split(/\r?\n/).filter((line) => line.startsWith('5A_UI_RESULT=')).at(-1);
   if (!line) throw new AppError('REMOTE_RESULT', '无法读取服务器状态，请确认系统环境或稍后重试。', 502);
   let parsed: ServerStatus & { error?: { code?: string; message?: string } };
-  try { parsed = JSON.parse(line.slice('HUARUNYING_RESULT='.length)); } catch { throw new AppError('REMOTE_RESULT', '服务器状态格式不正确，请稍后重试。', 502); }
+  try { parsed = JSON.parse(line.slice('5A_UI_RESULT='.length)); } catch { throw new AppError('REMOTE_RESULT', '服务器状态格式不正确，请稍后重试。', 502); }
   if (parsed.error) throw new AppError(parsed.error.code || 'REMOTE_ERROR', parsed.error.message || '服务器操作失败。');
   if (!['not-installed', 'existing', 'queued', 'preparing', 'installing', 'configuring', 'checking', 'ready', 'failed'].includes(parsed.phase) || typeof parsed.message !== 'string') throw new AppError('REMOTE_RESULT', '服务器状态格式不正确。', 502);
   // Whitelist fields: never forward arbitrary remote stdout, installation logs, or panel credentials.

@@ -28,7 +28,7 @@ describe('API access and output', () => {
     expect(ssh).not.toHaveBeenCalled();
   });
   it('pins the observed fingerprint and prevents response caching', async () => {
-    const ssh = vi.fn().mockResolvedValue({ stdout: 'HUARUNYING_RESULT={"phase":"queued","message":"started"}', fingerprint: 'SHA256:recorded' });
+    const ssh = vi.fn().mockResolvedValue({ stdout: '5A_UI_RESULT={"phase":"queued","message":"started"}', fingerprint: 'SHA256:recorded' });
     const response = await createApp(ssh)(request('install'), env);
     expect(response.status).toBe(200);
     expect(await response.json()).toEqual({ phase: 'queued', message: 'started', hostFingerprint: 'SHA256:recorded' });
@@ -42,7 +42,7 @@ describe('API access and output', () => {
     expect(await response.text()).not.toContain('secret');
   });
   it('probes the current validated IP and updates an IPv6 node link', async () => {
-    const ssh = vi.fn().mockResolvedValue({ stdout: 'HUARUNYING_RESULT={"phase":"ready","message":"ok","running":true,"node":{"host":"8.8.8.8","port":443,"serverName":"www.microsoft.com","link":"vless://abc@8.8.8.8:443?security=reality#node"}}', fingerprint: 'SHA256:recorded' });
+    const ssh = vi.fn().mockResolvedValue({ stdout: '5A_UI_RESULT={"phase":"ready","message":"ok","running":true,"node":{"host":"8.8.8.8","port":443,"serverName":"www.microsoft.com","link":"vless://abc@8.8.8.8:443?security=reality#node"}}', fingerprint: 'SHA256:recorded' });
     const probe = vi.fn().mockResolvedValue(false);
     const response = await createApp(ssh, probe)(request('status', { ...input, host: '2606:4700:4700::1111' }), env);
     const result = await response.json();

@@ -1,6 +1,6 @@
 {
   "$schema": "node_modules/wrangler/config-schema.json",
-  "name": "huarunying",
+  "name": "5a-ui",
   "main": ".tmp/worker/index.mjs",
   "no_bundle": true,
   "keep_vars": true,

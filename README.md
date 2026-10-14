@@ -1,4 +1,4 @@
-# 花润莹
+# 5a-ui
 
 无需网站账号，使用自己的服务器密码或 SSH 私钥，一键部署 3x-ui 和 VLESS + REALITY。可部署到 Cloudflare Workers 或 Vercel，也可在本地运行。
 
@@ -48,7 +48,9 @@ pnpm exec wrangler login
 pnpm deploy:cloudflare
 ```
 
-默认 Worker 名称为 `huarunying`，可修改 `wrangler.jsonc` 的 `name`。静态页面和 API 都部署到同一个 Worker。配置已包含原生 IP 限流：每分钟最多 60 次请求、3 次安装请求；关闭应用日志记录。生产使用需确保 Workers 的 CPU 配额足以完成 SSH 握手与加密私钥解密，建议使用 Workers Paid。
+默认 Worker 名称为 `5a-ui`，可修改 `wrangler.jsonc` 的 `name`。静态页面和 API 都部署到同一个 Worker。配置已包含原生 IP 限流：每分钟最多 60 次请求、3 次安装请求；关闭应用日志记录。生产使用需确保 Workers 的 CPU 配额足以完成 SSH 握手与加密私钥解密，建议使用 Workers Paid。
+
+项目更名后，部署会创建或更新名为 `5a-ui` 的 Worker，已有的其他名称 Worker 不会自动更名。
 
 Cloudflare 的部分 CommonJS 加密接口与 Node.js 不同。项目使用测试过的 NIST P-256 密钥交换、AES-CTR 与 SHA-2 HMAC，并关闭 SSH 压缩和可选原生加速模块；标准 OpenSSH 服务支持此组合。Worker 使用自定义打包脚本，不需要另一台 SSH 中转服务器。
 
@@ -83,7 +85,9 @@ Cloudflare 将 site key 放入 Worker Variables，将 secret key 使用 `pnpm ex
 - 3x-ui 管理密码、API token、REALITY 私钥与安装进度保存在**用户自己的服务器**上，文件由 root 持有，权限 `0600`，目录权限 `0700`。
 - 返回网页的 VLESS 链接与二维码是节点访问凭据，请妥善保存。
 
-服务器上的管理文件位于 `/var/lib/huarunying/`；安装日志为 `install.log`（可能包含上游安装器生成的面板凭据，仅限 root 读取）。安装任务为 `huarunying-install.service`，服务为 `x-ui.service`。安装器固定使用上游 `v3.10.0`，先校验安装脚本 SHA-256，上游再校验发布压缩包的校验和。
+服务器上的管理文件位于 `/var/lib/5a-ui/`；安装日志为 `install.log`（可能包含上游安装器生成的面板凭据，仅限 root 读取）。安装任务为 `5a-ui-install.service`，服务为 `x-ui.service`。安装器固定使用上游 `v3.10.0`，先校验安装脚本 SHA-256，上游再校验发布压缩包的校验和。
+
+此前版本的管理目录、安装服务和节点标识不会自动迁移；这些节点会被识别为已有 3x-ui 安装，请使用原版本或现有面板继续管理。更名后已有的 Turnstile 短期证明需重新验证。
 
 ## 验证
 
