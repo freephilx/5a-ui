@@ -1,0 +1,88 @@
+name: Check and build
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    env:
+      DART_COMMAND: dart
+    steps:
+      - uses: actions/checkout@v4
+      - name: Read Flutter version
+        id: sdk
+        run: |
+          version=$(node -p "JSON.parse(require('fs').readFileSync('.fvmrc','utf8')).flutter")
+          echo "version=$version" >> "$GITHUB_OUTPUT"
+      - uses: subosito/flutter-action@v2
+        with:
+          flutter-version: ${{ steps.sdk.outputs.version }}
+          channel: stable
+          cache: true
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+      - uses: pnpm/action-setup@v4
+      - run: pnpm install --frozen-lockfile
+      - run: flutter pub get
+      - run: dart pub get
+        working-directory: packages/five_a_core
+      - run: dart pub get
+        working-directory: server
+      - run: dart run tool/generate.dart --check
+      - run: flutter analyze
+      - run: flutter test
+      - run: dart test
+        working-directory: packages/five_a_core
+      - run: dart test
+        working-directory: server
+      - run: pnpm exec tsc --noEmit && pnpm test && pnpm test:remote
+      - run: node tests/ssh-fixture.mjs
+        env:
+          DART_COMMAND: dart
+      - run: pnpm test:worker
+      - run: pnpm build
+      - run: pnpm exec wrangler deploy --dry-run --outdir .tmp/worker-check
+      - run: dart compile exe bin/server.dart -o ../build/5a-ui-server
+        working-directory: server
+  native:
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: ubuntu-latest
+            target: linux
+          - os: ubuntu-latest
+            target: apk --debug
+          - os: macos-latest
+            target: macos --debug
+          - os: macos-latest
+            target: ios --no-codesign
+          - os: windows-latest
+            target: windows
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v4
+      - name: Read Flutter version
+        id: sdk
+        shell: bash
+        run: |
+          version=$(node -p "JSON.parse(require('fs').readFileSync('.fvmrc','utf8')).flutter")
+          echo "version=$version" >> "$GITHUB_OUTPUT"
+      - uses: subosito/flutter-action@v2
+        with:
+          flutter-version: ${{ steps.sdk.outputs.version }}
+          channel: stable
+          cache: true
+      - if: matrix.target == 'linux'
+        run: sudo apt-get update && sudo apt-get install -y clang cmake ninja-build pkg-config libgtk-3-dev liblzma-dev
+      - if: startsWith(matrix.target, 'apk')
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 17
+      - run: flutter pub get
+      - run: flutter build ${{ matrix.target }}

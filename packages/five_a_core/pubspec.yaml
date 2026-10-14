@@ -1,0 +1,15 @@
+name: five_a_core
+description: Shared 5a-ui contracts, remote scripts and native SSH transport.
+publish_to: none
+version: 0.2.0
+environment:
+  sdk: '>=3.13.0 <4.0.0'
+dependencies:
+  dartssh2: ^4.1.0
+  crypto: ^3.0.6
+  asn1lib: ^1.6.5
+  pointycastle: ^4.0.0
+  ipaddr: ^2.0.0
+dev_dependencies:
+  test: ^1.26.3
+  lints: ^6.0.0

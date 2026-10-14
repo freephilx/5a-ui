@@ -1,0 +1,16 @@
+name: five_a_server
+description: Dart HTTP and static server for local and Docker deployments.
+publish_to: none
+version: 0.2.0
+environment:
+  sdk: '>=3.13.0 <4.0.0'
+dependencies:
+  five_a_core:
+    path: ../packages/five_a_core
+  crypto: ^3.0.6
+  http: ^1.5.0
+  shelf: ^1.4.2
+  shelf_static: ^1.1.3
+dev_dependencies:
+  test: ^1.26.3
+  lints: ^6.0.0

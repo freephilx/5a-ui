@@ -51,6 +51,7 @@ __pycache__/
 
 # Personal editor and operating-system files
 .idea/
+*.iml
 .vscode/*
 !.vscode/extensions.json
 *.swp
@@ -59,4 +60,20 @@ __pycache__/
 .DS_Store
 Thumbs.db
 
-# Keep pnpm-lock.yaml and src/server/remote.generated.ts in version control.
+# Flutter and Dart caches
+.fvm/
+.dart_tool/
+.pub-cache/
+.pub/
+.packages
+.flutter-plugins
+.flutter-plugins-dependencies
+build/
+**/doc/api/
+
+# Flutter obfuscation and symbol output
+app.*.symbols
+app.*.map.json
+
+# Keep .fvmrc, .metadata, pubspec.lock (including nested packages),
+# pnpm-lock.yaml, platform project files and generated remote scripts tracked.

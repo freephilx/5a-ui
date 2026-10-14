@@ -8,7 +8,7 @@
 
 ## 技术架构
 
-以下是后续开发和迁移的目标架构，不代表当前仓库已完成 Flutter 迁移。
+以下为本项目采用的架构，各平台的实际验证范围记录在 `docs/verification.md`。
 
 - 优先使用 Flutter + Dart。Flutter 负责界面与交互，Dart 负责可复用的业务逻辑、SSH 操作、部署和状态查询。
 - 能通过 Flutter + Dart 独立完成的平台应独立完成，非必要不同时引入 Flutter 和 JS/TS。
@@ -28,9 +28,18 @@
 
 ## Flutter 版本管理
 
-- 本项目 Flutter SDK 版本必须与 [FlClash 的 dev 分支](https://github.com/chen08209/FlClash/tree/dev) 保持一致。首次配置或调整版本前，先按下方参考仓库更新规则获取最新代码，再读取其 Flutter 版本配置，采用相同的具体版本。
+- 本项目 Flutter SDK 版本必须与 [FlClash 的 dev 分支](https://github.com/chen08209/FlClash/tree/dev) 的正式构建版本保持一致，以其 `.github/workflows/build.yaml` 中的 `FLUTTER_VERSION` 为准。首次配置或调整版本前，先按下方参考仓库更新规则获取最新代码。
 - 统一通过 FVM 管理和切换 Flutter SDK，在本项目根目录执行 `fvm use <FlClash 使用的 Flutter 版本>`，并将生成的项目版本配置 `.fvmrc` 纳入版本控制。
 - Flutter 和 Dart 命令统一使用 `fvm flutter ...`、`fvm dart ...`，确保依赖安装、开发、分析、测试和构建使用项目指定的 SDK。
+- 本项目 `.fvmrc` 是本地和 CI 的版本来源。GitHub Actions 使用 `flutter-action` 安装该版本；云平台与 Docker 构建也读取该配置。
+
+## 开发与验证
+
+- `lib/` 为 Flutter 客户端，`packages/five_a_core/` 为纯 Dart 核心与原生 SSH，`server/` 为本地和 Docker 使用的 Dart 后端。
+- `src/server/`、`api/` 和 `src/worker.ts` 仅承载 Vercel/Cloudflare 的必要 TypeScript 适配。
+- 远端脚本源文件位于 `scripts/remote/`；修改后运行 `fvm dart run tool/generate.dart`，同步生成 Dart 和 TypeScript 资源，不直接编辑生成文件。
+- 共用接口样例和公网地址规则位于 `contracts/`；改动契约时同步运行 Dart、TypeScript 及跨语言一致性测试。
+- 开发计划与当前进展记录在 `.agents/`。本地完整 Web 服务通过 `fvm dart run tool/dev.dart` 启动。
 
 ## 视觉参考
 

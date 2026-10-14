@@ -1,15 +1,22 @@
 import ipaddr from 'ipaddr.js';
 import type { ConnectionInput } from '../shared/types';
 import { AppError } from './errors';
+import networkRanges from '../../contracts/network-ranges.json';
 
 export const MAX_BODY_BYTES = 80 * 1024;
 
 export function publicIP(value: unknown): string {
   if (typeof value !== 'string' || !value.trim() || value.length > 64 || value.includes('%')) throw new AppError('INVALID_HOST', '请输入服务器的公网 IPv4 或 IPv6 地址。');
   let address: ipaddr.IPv4 | ipaddr.IPv6;
-  try { address = ipaddr.parse(value.trim()); } catch { throw new AppError('INVALID_HOST', '请输入有效的公网 IP 地址，不支持域名。'); }
+  try {
+    const host = value.trim();
+    const dotted = host.includes(':') ? host.slice(host.lastIndexOf(':') + 1) : host;
+    if ((!host.includes(':') || host.includes('.')) && !/^(0|[1-9]\d{0,2})(\.(0|[1-9]\d{0,2})){3}$/.test(dotted)) throw new Error();
+    address = ipaddr.parse(host);
+  } catch { throw new AppError('INVALID_HOST', '请输入有效的公网 IP 地址，不支持域名。'); }
   if (address.kind() === 'ipv6' && (address as ipaddr.IPv6).isIPv4MappedAddress()) address = (address as ipaddr.IPv6).toIPv4Address();
-  if (address.range() !== 'unicast') throw new AppError('PRIVATE_HOST', '请使用公网 IP，无法连接内网、保留或本机地址。');
+  const ranges = address.kind() === 'ipv4' ? networkRanges.ipv4 : networkRanges.ipv6;
+  if (ranges.some((cidr) => address.match(ipaddr.parseCIDR(cidr) as [typeof address, number]))) throw new AppError('PRIVATE_HOST', '请使用公网 IP，无法连接内网、保留或本机地址。');
   return address.toString();
 }
 

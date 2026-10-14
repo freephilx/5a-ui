@@ -1,46 +1,97 @@
 # 5a-ui
 
-无需网站账号，使用自己的服务器密码或 SSH 私钥，一键部署 3x-ui 和 VLESS + REALITY。可部署到 Cloudflare Workers 或 Vercel，也可在本地运行。
+使用自己的服务器密码或 SSH 私钥，一键部署 3x-ui 和 VLESS + REALITY，读取安装进度与节点状态。Flutter 客户端面向 Android、iOS、macOS、Windows、Linux 和 Web。
 
 ## 功能
 
-- 密码和 SSH 私钥登录，支持加密私钥口令、用户名和自定义 SSH 端口。
-- 自动安装固定版本的 3x-ui，生成 REALITY 密钥与客户端身份，返回 VLESS 链接和二维码。
-- 自动探测可用的 TLS 1.3 REALITY 目标，无需购买域名或申请节点证书。
-- 读取安装进度、服务状态、节点流量、CPU、内存及节点 TCP 端口可达性。
-- 安装任务在服务器上通过 systemd 独立运行，网页关闭后继续。重复操作复用任务或节点，失败后可重试。
-- 不覆盖已有的其他 3x-ui 安装。当前版本只管理本项目部署的节点。
-- 网站不持久化 SSH 密码、私钥或口令；连接凭据仅在页面内存及当前后端请求中使用。
+- 密码、OpenSSH / RSA / EC 私钥登录；支持加密私钥与 RSA / EC PKCS#8。
+- 一键部署、安装进度轮询、失败重试、已有节点复用，以及已有其他 3x-ui 安装保护。
+- 查看服务运行状态、CPU、内存、节点流量和节点 TCP 端口可达性。
+- 复制 VLESS 链接、显示二维码、导出节点文件。
+- 自适应桌面侧栏和移动端导航，支持系统、浅色和深色主题；视觉参考 FlClash dev。
+- 安装通过目标服务器的 systemd 后台执行。关闭应用、停止本地后端或暂停刷新都不会中断已启动的安装。
+- SSH 密码、私钥、口令与节点结果只保留在当前会话内存；不写入本地存储或数据库。当前版本一次管理一台服务器。
 
-## 使用条件
+## 技术结构
 
-目标服务器需要公网 IPv4/IPv6、Debian 11+ 或 Ubuntu 20.04+、x86_64/arm64 架构，以及正在运行的 systemd。使用 `root` 或具有**免密 sudo** 权限的用户。服务器需要能够访问软件源和 GitHub。
+| 平台 | 客户端与 SSH 执行方式 |
+| --- | --- |
+| Android / iOS / macOS / Windows / Linux | Flutter + 应用内 Dart SSH，无额外后端 |
+| 本地 Web | Flutter Web + Dart API，一条命令启动 |
+| Docker | Flutter Web 静态文件 + 编译后的 Dart 服务 |
+| Vercel | Flutter Web + Node.js API Functions |
+| Cloudflare | Flutter Web + Workers 平台适配，直接建立 SSH 连接 |
 
-云平台安全组必须允许 SSH 端口，以及节点 TCP 端口（默认 `443`）。SSH 凭据无法修改云平台安全组。安装程序会为已启用的 UFW 添加节点端口规则，不停用防火墙。
+Dart 和 TypeScript 使用同一份远端脚本模板、公网地址限制和接口样例。`contracts/` 及跨语言测试检查接口与生成命令是否一致。服务端 SSH 凭据仅在当前请求内使用，不提供任意命令执行接口。
 
-默认 SSH 用户名是 `root`；部分云平台使用 `ubuntu` 或 `debian`，可在服务器 IP 旁的「用户名」中修改。支持选择或粘贴 OpenSSH、RSA、EC 私钥，以及 RSA/EC 的 PKCS#8 PEM 私钥；加密私钥需填写口令。
+## Flutter 与 FVM
 
-## 本地运行
-
-需要 Node.js 22.12+、pnpm 11，以及运行测试时使用的 Python 3。
-
-```sh
-corepack enable
-pnpm install
-pnpm start
-```
-
-默认监听 `0.0.0.0:5000`。本机打开 `http://localhost:5000`，同一局域网中的设备打开终端输出的 Network 地址（`http://本机局域网IP:5000`）。前端和 API 随同一条命令启动，无需 Cloudflare、Vercel、额外服务或数据库。`pnpm dev` 使用相同的启动方式，并支持热更新。
-
-5000 端口被占用时会报错，不会自动切换端口。macOS 的「隔空播放接收器」可能占用此端口，可在系统设置中关闭，或指定本机的局域网 IP 尝试启动：
+Flutter 与 FlClash dev 的正式构建版本一致，目前为 **3.47.6**。本项目 `.fvmrc` 是本地、GitHub Actions、Docker 和云平台构建的统一版本来源。
 
 ```sh
-LOCAL_HOST=192.168.1.100 pnpm start
+fvm install
+fvm flutter pub get
 ```
 
-将示例 IP 替换为本机实际地址；指定后通过该 IP 访问。
+本地统一使用 `fvm flutter` 和 `fvm dart`。GitHub Actions 从 `.fvmrc` 读取版本，通过 `subosito/flutter-action` 安装。云平台构建机没有 Flutter 时，构建脚本自动获取指定版本的 SDK。
 
-## 部署到 Cloudflare
+## 本地 Web：一条命令
+
+```sh
+fvm dart run tool/dev.dart
+```
+
+该命令生成共享脚本、安装 Dart 依赖、构建 Flutter Web 并启动 Dart 后端，无需 Node.js、pnpm 或额外服务器。默认地址为 `http://127.0.0.1:5000`。
+
+端口被占用时可指定 `PORT=5050`；需要局域网访问时指定 `LOCAL_HOST=0.0.0.0`：
+
+```sh
+PORT=5050 fvm dart run tool/dev.dart
+# Web 已构建且没有修改前端时，可跳过构建
+fvm dart run tool/dev.dart --skip-build
+```
+
+Web 的前端与 API 使用同一地址。此启动方式运行构建产物；修改前端后重新启动构建即可。已安装 Node/pnpm 时，`pnpm start` 是相同命令的别名。
+
+## 原生应用
+
+安装目标平台所需的 Flutter 工具链后运行：
+
+```sh
+fvm flutter run -d macos
+fvm flutter run -d windows
+fvm flutter run -d linux
+# Android / iOS：先查看设备，再指定目标
+fvm flutter devices
+fvm flutter run -d <device-id>
+```
+
+发布构建：
+
+```sh
+fvm flutter build apk --release
+fvm flutter build appbundle
+fvm flutter build ipa
+fvm flutter build macos --release
+fvm flutter build windows --release
+fvm flutter build linux --release
+```
+
+iOS 需在 Xcode 中配置自己的开发团队和签名；Android 商店发布需配置自己的发布签名。原生应用的 SSH 在应用内执行，不需要启动 `server/`。macOS 已配置出站网络和用户选中文件读写权限；Android 已配置网络权限。
+
+## Docker
+
+```sh
+docker compose up --build -d
+```
+
+访问 `http://127.0.0.1:5000`。镜像构建读取 `.fvmrc`，同时编译 Flutter Web 和 Dart 服务；运行镜像使用非 root 用户，不需要 Node.js。
+
+如通过 HTTPS 反向代理访问，请在 `.env` 中设置 `PUBLIC_ORIGIN=https://你的域名`，使同源校验与访问地址一致。需要对外开放监听时调整 Compose 端口绑定，并由反向代理提供 HTTPS。
+
+## Cloudflare
+
+需要 Node.js 22.12+ 和 pnpm 11。
 
 ```sh
 pnpm install --frozen-lockfile
@@ -48,75 +99,98 @@ pnpm exec wrangler login
 pnpm deploy:cloudflare
 ```
 
-默认 Worker 名称为 `5a-ui`，可修改 `wrangler.jsonc` 的 `name`。静态页面和 API 都部署到同一个 Worker。配置已包含原生 IP 限流：每分钟最多 60 次请求、3 次安装请求；关闭应用日志记录。生产使用需确保 Workers 的 CPU 配额足以完成 SSH 握手与加密私钥解密，建议使用 Workers Paid。
+部署命令构建 Flutter Web，并将 `build/web` 和 SSH Worker 一同发布，无需额外服务器。Worker 名称为 `5a-ui`；配置包含每分钟 60 次请求、3 次安装的原生 IP 限流，并关闭应用日志记录。
 
-项目更名后，部署会创建或更新名为 `5a-ui` 的 Worker，已有的其他名称 Worker 不会自动更名。
+Workers 使用 NIST P-256 密钥交换、AES-CTR 和 SHA-2 HMAC，关闭 SSH 压缩和可选原生加速模块。生产部署需确保 CPU 配额支持 SSH 握手与加密私钥解密，建议使用 Workers Paid。
 
-Cloudflare 的部分 CommonJS 加密接口与 Node.js 不同。项目使用测试过的 NIST P-256 密钥交换、AES-CTR 与 SHA-2 HMAC，并关闭 SSH 压缩和可选原生加速模块；标准 OpenSSH 服务支持此组合。Worker 使用自定义打包脚本，不需要另一台 SSH 中转服务器。
+通过 Workers Builds 部署时，将构建命令设为 `pnpm build`，部署命令设为 `pnpm exec wrangler deploy`。
 
-## 部署到 Vercel
+## Vercel
 
-在 Vercel 导入本项目仓库，框架使用 Vite。`vercel.json` 已配置构建命令、输出目录和 Node.js API Functions；不要改成 Edge Runtime。
+[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2Ffreephilx%2F5a-ui)
 
-安装请求只负责在用户服务器上启动后台任务，状态请求重新通过 SSH 读取结果，因此不依赖 Vercel 函数的持续运行，也不需要保存用户凭据。Vercel 版本的内置限流是实例内计数；公开使用时建议同时启用 Turnstile，并在 Vercel 平台设置分布式防滥用规则。
+导入仓库后选择 **Other** 框架。`vercel.json` 已配置 Flutter 构建命令、`build/web` 输出目录和 Node.js API Functions；不要使用 Edge Runtime。页面和 SSH 后端随一次部署一同发布。
 
-## 可选：Turnstile 人机验证
+也可在项目根目录使用 Vercel CLI 部署：
 
-公开站点可配置 Cloudflare Turnstile。创建 widget 时添加实际站点域名，并配置两项服务器环境变量：
+```sh
+npx vercel --prod
+```
+
+安装请求只负责启动远端后台任务，状态请求重新连接 SSH，因此无需让函数持续运行，也无需保存凭据。
+
+## 服务器要求
+
+- 公网 IPv4 / IPv6，Debian 11+ 或 Ubuntu 20.04+，x86_64 / arm64，正在运行的 systemd。
+- `root` 或具有**免密 sudo** 权限的用户，服务器可访问软件源和 GitHub。
+- 云平台安全组允许 SSH 端口与节点 TCP 端口（默认 443）。安装器会为启用的 UFW 添加规则，不停用防火墙。
+
+当前只管理本项目部署的节点，不覆盖其他 3x-ui 安装。管理文件位于 `/var/lib/5a-ui/`，安装任务为 `5a-ui-install.service`，节点服务为 `x-ui.service`。3x-ui 固定使用 `v3.10.0`，安装脚本校验 SHA-256。
+
+## 隐私与访问控制
+
+- Web 后端会接触用户输入的 SSH 凭据，使用公共实例时应信任该实例运营者；可选择自行部署或使用原生应用。
+- 凭据不进入 URL、应用日志、数据库或浏览器存储；API 响应禁止缓存，只接受同源 POST JSON。
+- 首次连接记录并展示 SHA-256 主机指纹，当前会话后续连接固定该指纹；也可预填已核对的主机指纹。
+- 只允许公网 IP，拦截回环、内网、链路本地、保留地址及 IPv4 映射的私网地址。
+- 面板绑定 `127.0.0.1`，网站和原生应用通过 SSH 读取面板；面板密码、API token 与 REALITY 私钥保存在用户服务器的 root 专用文件中。
+- 复制或导出的节点链接、二维码也是访问凭据，请妥善保存。
+- 本地和 Vercel 的限流为实例内计数；Cloudflare 使用平台限流。反向代理后的 Dart 服务按连接来源 IP 计数。
+- Web 渲染引擎随静态文件部署；缺少的文字字形可能从 `fonts.gstatic.com` 加载，不包含连接凭据。
+
+## 可选 Turnstile
+
+Web 后端支持以下环境变量；两项需同时配置，原生应用不需要此验证：
 
 | 变量 | 用途 |
 | --- | --- |
-| `TURNSTILE_SITE_KEY` | 公开站点 key，由 `/api/config` 返回 |
-| `TURNSTILE_SECRET_KEY` | 仅在后端校验验证结果，绝不进入前端构建 |
+| `TURNSTILE_SITE_KEY` | 公开 widget key，由 `/api/config` 提供给页面 |
+| `TURNSTILE_SECRET_KEY` | 仅后端使用的校验密钥 |
+| `PUBLIC_ORIGIN` | Dart 服务位于反向代理后时的完整外部源地址 |
 
-Cloudflare 将 site key 放入 Worker Variables，将 secret key 使用 `pnpm exec wrangler secret put TURNSTILE_SECRET_KEY` 设置。Vercel 在项目的环境变量中设置这两项后重新部署。本地开发可复制 `.env.example`，使用 `node --env-file=.env` 加载；`wrangler dev` 可使用 `.dev.vars`。
+Cloudflare 使用 Worker Variables 和 `pnpm exec wrangler secret put TURNSTILE_SECRET_KEY`；Vercel 使用项目环境变量；Docker Compose 可从 `.env` 读取。本地 Dart 启动时继承环境变量。
 
-一次验证通过后会签发 30 分钟的短期证明，用于安装进度轮询。证明绑定访问者 IP、服务器 IP、SSH 端口和用户名，不包含 SSH 凭据，不替代 SSH 认证。未配置 Turnstile 时保留 IP 限流。
+验证成功后签发 30 分钟证明，用于安装进度轮询。证明绑定访问来源、服务器 IP、SSH 端口和用户名，不包含 SSH 密码，不替代 SSH 认证。
 
-## 数据和权限
-
-网页后端会接触用户提供的 SSH 登录凭据。开源代码不等于对任意公共实例的信任；希望完全掌握运行环境时，请自行部署。
-
-- SSH 密码、私钥和口令不进入 URL、网站日志、数据库、浏览器 localStorage 或 sessionStorage。
-- 首次连接采用首次信任（TOFU），显示 SHA-256 主机指纹；同一页面后续连接固定此指纹。可在高级设置中填写通过云平台控制台核对的已知指纹。
-- 只允许公网 IP，拦截回环、内网、链路本地、保留和 IPv4 映射的私网地址。不提供任意命令执行接口。
-- 所有带凭据的请求使用同源 POST JSON，API 响应禁止缓存。生产通过平台 HTTPS 访问。
-- 3x-ui 面板在第一次启动前即通过 systemd `ExecStartPre` 绑定到 `127.0.0.1`，后续重启仍保持；同时关闭不需要的订阅服务。网站通过 SSH 调用本机管理 API。
-- 3x-ui 管理密码、API token、REALITY 私钥与安装进度保存在**用户自己的服务器**上，文件由 root 持有，权限 `0600`，目录权限 `0700`。
-- 返回网页的 VLESS 链接与二维码是节点访问凭据，请妥善保存。
-
-服务器上的管理文件位于 `/var/lib/5a-ui/`；安装日志为 `install.log`（可能包含上游安装器生成的面板凭据，仅限 root 读取）。安装任务为 `5a-ui-install.service`，服务为 `x-ui.service`。安装器固定使用上游 `v3.10.0`，先校验安装脚本 SHA-256，上游再校验发布压缩包的校验和。
-
-此前版本的管理目录、安装服务和节点标识不会自动迁移；这些节点会被识别为已有 3x-ui 安装，请使用原版本或现有面板继续管理。更名后已有的 Turnstile 短期证明需重新验证。
-
-## 验证
+## 开发与验证
 
 ```sh
+fvm flutter pub get
+(cd packages/five_a_core && fvm dart pub get)
+(cd server && fvm dart pub get)
+fvm dart run tool/generate.dart --check
+fvm flutter analyze
+fvm flutter test
+(cd packages/five_a_core && fvm dart pub get && fvm dart test)
+(cd server && fvm dart pub get && fvm dart test)
+pnpm install --frozen-lockfile
 pnpm check
 pnpm test
+pnpm test:ssh
 pnpm test:worker
 pnpm test:remote
 pnpm check:cloudflare
 ```
 
-`test:worker` 在真实 workerd 运行时中连接本地 SSH 服务，验证密码、私钥、加密私钥和主机指纹。Python 测试使用本地 HTTP 面板验证真实请求格式、重复部署复用、已有节点保护与状态中的凭据过滤。
+`test:ssh` 使用临时本机 SSH 服务验证 Dart 的密码、私钥、指纹与错误处理。`test:worker` 在 workerd 中验证相同 SSH 能力。它们不访问用户服务器、不执行真实安装。跨语言测试逐字比较 Dart 与 TypeScript 生成的远端命令。
 
-已在 Oracle ARM64 主机上的独立 Ubuntu 24.04 环境完成真实安装、节点复用、REALITY 客户端 HTTPS 连接、流量统计与服务重启回归；Cloudflare 线上 SSH 也已验证。详见 [验证记录](docs/verification.md)。这些检查尚未覆盖所有支持的系统与云平台防火墙组合。端口探测只代表网站所在网络的 TCP 可达性；服务运行状态不等于用户本地客户端可用。
-
-## 技术结构
+GitHub Actions 检查共享契约、客户端和后端测试，并配置六个平台的构建。实际已完成的本机验证及未验证的平台见 [验证记录](docs/verification.md)。
 
 ```text
-src/App.tsx                 页面、轮询、节点导出
-src/server/                共用 API、SSH、校验与防滥用
-scripts/remote/            在用户服务器运行的安装和管理脚本
-src/server/remote.generated.ts  自动生成的脚本文本
-src/worker.ts              Cloudflare 入口
-api/                       Vercel Node.js 入口
-scripts/dev.ts             本地 Vite + API 服务
+lib/                         Flutter 界面、轮询、平台入口
+packages/five_a_core/         契约、校验、结果解析、原生 Dart SSH
+server/                      本地 / Docker Dart API 与静态服务
+contracts/                   两种后端共用的输入样例与地址规则
+scripts/remote/              共用安装、状态查询及 systemd 任务脚本
+tool/generate.dart           生成两种语言内嵌的远端资源
+tool/dev.dart                本地完整 Web 启动命令
+src/server/                  Vercel / Cloudflare TypeScript 适配
+src/worker.ts                Cloudflare 入口
+api/                         Vercel 入口
 ```
 
-修改 `scripts/remote/` 后运行 `pnpm generate`。不要直接修改生成文件。更新上游版本时须同步固定版本和脚本 SHA-256，并重新核对 API 契约。
+修改 `scripts/remote/` 或地址规则后运行 `fvm dart run tool/generate.dart`，不要直接编辑生成文件。升级 3x-ui 时同步版本、SHA-256 与 API 契约验证。
 
 ## 开源许可
 
-本项目采用 MIT License。通过安装器独立安装的 [3x-ui](https://github.com/MHSanaei/3x-ui) 和 Xray 保留各自的开源许可。
+本项目采用 MIT License。独立安装的 [3x-ui](https://github.com/MHSanaei/3x-ui) 和 Xray 保留各自的开源许可。

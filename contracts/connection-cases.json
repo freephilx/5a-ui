@@ -1,0 +1,262 @@
+[
+  {
+    "name": "defaults",
+    "input": {
+      "host": "8.8.8.8",
+      "authMethod": "password",
+      "password": "test-only"
+    },
+    "expected": {
+      "host": "8.8.8.8",
+      "authMethod": "password",
+      "password": "test-only",
+      "username": "root",
+      "port": 22,
+      "nodePort": 443
+    }
+  },
+  {
+    "name": "IPv6",
+    "input": {
+      "host": "2606:4700:4700:0:0:0:0:1111",
+      "authMethod": "password",
+      "password": "test-only"
+    },
+    "expected": {
+      "host": "2606:4700:4700::1111",
+      "authMethod": "password",
+      "password": "test-only",
+      "username": "root",
+      "port": 22,
+      "nodePort": 443
+    }
+  },
+  {
+    "name": "mapped public",
+    "input": {
+      "host": "::ffff:8.8.8.8",
+      "authMethod": "password",
+      "password": "test-only"
+    },
+    "expected": {
+      "host": "8.8.8.8",
+      "authMethod": "password",
+      "password": "test-only",
+      "username": "root",
+      "port": 22,
+      "nodePort": 443
+    }
+  },
+  {
+    "name": "reject 127.0.0.1",
+    "input": {
+      "host": "127.0.0.1",
+      "authMethod": "password",
+      "password": "test-only"
+    },
+    "error": "PRIVATE_HOST"
+  },
+  {
+    "name": "reject 10.0.0.1",
+    "input": {
+      "host": "10.0.0.1",
+      "authMethod": "password",
+      "password": "test-only"
+    },
+    "error": "PRIVATE_HOST"
+  },
+  {
+    "name": "reject 172.16.0.1",
+    "input": {
+      "host": "172.16.0.1",
+      "authMethod": "password",
+      "password": "test-only"
+    },
+    "error": "PRIVATE_HOST"
+  },
+  {
+    "name": "reject 192.168.1.1",
+    "input": {
+      "host": "192.168.1.1",
+      "authMethod": "password",
+      "password": "test-only"
+    },
+    "error": "PRIVATE_HOST"
+  },
+  {
+    "name": "reject 169.254.169.254",
+    "input": {
+      "host": "169.254.169.254",
+      "authMethod": "password",
+      "password": "test-only"
+    },
+    "error": "PRIVATE_HOST"
+  },
+  {
+    "name": "reject 100.64.0.1",
+    "input": {
+      "host": "100.64.0.1",
+      "authMethod": "password",
+      "password": "test-only"
+    },
+    "error": "PRIVATE_HOST"
+  },
+  {
+    "name": "reject 0.0.0.0",
+    "input": {
+      "host": "0.0.0.0",
+      "authMethod": "password",
+      "password": "test-only"
+    },
+    "error": "PRIVATE_HOST"
+  },
+  {
+    "name": "reject 224.0.0.1",
+    "input": {
+      "host": "224.0.0.1",
+      "authMethod": "password",
+      "password": "test-only"
+    },
+    "error": "PRIVATE_HOST"
+  },
+  {
+    "name": "reject 192.0.2.1",
+    "input": {
+      "host": "192.0.2.1",
+      "authMethod": "password",
+      "password": "test-only"
+    },
+    "error": "PRIVATE_HOST"
+  },
+  {
+    "name": "reject ::1",
+    "input": {
+      "host": "::1",
+      "authMethod": "password",
+      "password": "test-only"
+    },
+    "error": "PRIVATE_HOST"
+  },
+  {
+    "name": "reject fc00::1",
+    "input": {
+      "host": "fc00::1",
+      "authMethod": "password",
+      "password": "test-only"
+    },
+    "error": "PRIVATE_HOST"
+  },
+  {
+    "name": "reject fe80::1",
+    "input": {
+      "host": "fe80::1",
+      "authMethod": "password",
+      "password": "test-only"
+    },
+    "error": "PRIVATE_HOST"
+  },
+  {
+    "name": "reject ::ffff:127.0.0.1",
+    "input": {
+      "host": "::ffff:127.0.0.1",
+      "authMethod": "password",
+      "password": "test-only"
+    },
+    "error": "PRIVATE_HOST"
+  },
+  {
+    "name": "reject 2001:db8::1",
+    "input": {
+      "host": "2001:db8::1",
+      "authMethod": "password",
+      "password": "test-only"
+    },
+    "error": "PRIVATE_HOST"
+  },
+  {
+    "name": "INVALID_HOST{'host': 'example.com'}",
+    "input": {
+      "host": "example.com",
+      "authMethod": "password",
+      "password": "test-only"
+    },
+    "error": "INVALID_HOST"
+  },
+  {
+    "name": "INVALID_HOST{'host': '1.1.1.1;echo secret'}",
+    "input": {
+      "host": "1.1.1.1;echo secret",
+      "authMethod": "password",
+      "password": "test-only"
+    },
+    "error": "INVALID_HOST"
+  },
+  {
+    "name": "INVALID_HOST{'host': 'fe80::1%en0'}",
+    "input": {
+      "host": "fe80::1%en0",
+      "authMethod": "password",
+      "password": "test-only"
+    },
+    "error": "INVALID_HOST"
+  },
+  {
+    "name": "INVALID_PORT{'port': '22'}",
+    "input": {
+      "host": "8.8.8.8",
+      "authMethod": "password",
+      "password": "test-only",
+      "port": "22"
+    },
+    "error": "INVALID_PORT"
+  },
+  {
+    "name": "INVALID_PORT{'port': 65536}",
+    "input": {
+      "host": "8.8.8.8",
+      "authMethod": "password",
+      "password": "test-only",
+      "port": 65536
+    },
+    "error": "INVALID_PORT"
+  },
+  {
+    "name": "PORT_CONFLICT{'nodePort': 22}",
+    "input": {
+      "host": "8.8.8.8",
+      "authMethod": "password",
+      "password": "test-only",
+      "nodePort": 22
+    },
+    "error": "PORT_CONFLICT"
+  },
+  {
+    "name": "INVALID_USERNAME{'username': 'root;reboot'}",
+    "input": {
+      "host": "8.8.8.8",
+      "authMethod": "password",
+      "password": "test-only",
+      "username": "root;reboot"
+    },
+    "error": "INVALID_USERNAME"
+  },
+  {
+    "name": "INVALID_REALITY_TARGET{'realityServerName': 'localhost'}",
+    "input": {
+      "host": "8.8.8.8",
+      "authMethod": "password",
+      "password": "test-only",
+      "realityServerName": "localhost"
+    },
+    "error": "INVALID_REALITY_TARGET"
+  },
+  {
+    "name": "MISSING_PASSWORD{'password': ''}",
+    "input": {
+      "host": "8.8.8.8",
+      "authMethod": "password",
+      "password": ""
+    },
+    "error": "MISSING_PASSWORD"
+  }
+]

@@ -1,0 +1,93 @@
+set -eu
+umask 077
+existing_xui() {
+  [ -e /usr/local/x-ui/x-ui ] || [ -e /etc/x-ui/x-ui.db ] || systemctl cat x-ui.service >/dev/null 2>&1 || {
+    command -v docker >/dev/null 2>&1 && docker ps -a --format '{{.Image}} {{.Names}}' 2>/dev/null | grep -Eiq '(^|[/[:space:]])(3x-ui|x-ui|mhsanaei)([:/[:space:]]|$)'
+  }
+}
+
+if [ ! -f '/var/lib/5a-ui/.managed' ] && existing_xui; then
+  printf '%s\n' '5A_UI_RESULT={"error":{"code":"EXISTING_INSTALLATION","message":"检测到已有 3x-ui 安装。为保留现有配置，请使用现有面板；首次自建需要一台尚未安装 3x-ui 的服务器。"}}'
+exit 0
+
+fi
+if [ ! -f /etc/os-release ]; then
+  printf '%s\n' '5A_UI_RESULT={"error":{"code":"UNSUPPORTED_OS","message":"当前支持 Debian 11+ 或 Ubuntu 20.04+。"}}'
+exit 0
+
+fi
+. /etc/os-release
+case "$ID" in debian|ubuntu) ;; *)
+  printf '%s\n' '5A_UI_RESULT={"error":{"code":"UNSUPPORTED_OS","message":"当前支持 Debian 11+ 或 Ubuntu 20.04+。"}}'
+exit 0
+
+esac
+os_major=$(printf '%s' "$VERSION_ID" | cut -d. -f1)
+if { [ "$ID" = debian ] && [ "$os_major" -lt 11 ]; } || { [ "$ID" = ubuntu ] && [ "$os_major" -lt 20 ]; }; then
+  printf '%s\n' '5A_UI_RESULT={"error":{"code":"UNSUPPORTED_OS","message":"请使用 Debian 11+ 或 Ubuntu 20.04+。"}}'
+exit 0
+
+fi
+case "$(uname -m)" in x86_64|aarch64) ;; *)
+  printf '%s\n' '5A_UI_RESULT={"error":{"code":"UNSUPPORTED_ARCH","message":"当前支持 x86_64 和 arm64 服务器。"}}'
+exit 0
+
+esac
+if ! command -v systemd-run >/dev/null 2>&1 || ! command -v flock >/dev/null 2>&1 || ! command -v ss >/dev/null 2>&1; then
+  printf '%s\n' '5A_UI_RESULT={"error":{"code":"SYSTEMD_REQUIRED","message":"需要使用 systemd 管理服务的完整 Debian 或 Ubuntu 服务器。"}}'
+exit 0
+
+fi
+if [ -L '/var/lib/5a-ui' ]; then exit 1; fi
+install -d -m 700 '/var/lib/5a-ui'
+exec 9>'/var/lib/5a-ui/dispatch.lock'
+flock -x -w 5 9
+if systemctl is-active --quiet 5a-ui-install.service; then
+  if command -v python3 >/dev/null 2>&1 && [ -f '/var/lib/5a-ui/manage.py' ]; then
+  python3 '/var/lib/5a-ui/manage.py' status
+elif [ -f '/var/lib/5a-ui/state.json' ]; then
+  printf '5A_UI_RESULT='; cat '/var/lib/5a-ui/state.json'; printf '\n'
+else
+  printf '%s\n' '5A_UI_RESULT={"phase":"not-installed","message":"这台服务器还没有部署节点，点击一键自建开始。"}'
+exit 0
+
+fi
+  exit 0
+fi
+if [ -f '/var/lib/5a-ui/.managed' ] && [ -f '/var/lib/5a-ui/state.json' ] && grep -Eq '"phase"[[:space:]]*:[[:space:]]*"ready"' '/var/lib/5a-ui/state.json'; then
+  if command -v python3 >/dev/null 2>&1 && [ -f '/var/lib/5a-ui/manage.py' ]; then
+  python3 '/var/lib/5a-ui/manage.py' status
+elif [ -f '/var/lib/5a-ui/state.json' ]; then
+  printf '5A_UI_RESULT='; cat '/var/lib/5a-ui/state.json'; printf '\n'
+else
+  printf '%s\n' '5A_UI_RESULT={"phase":"not-installed","message":"这台服务器还没有部署节点，点击一键自建开始。"}'
+exit 0
+
+fi
+  exit 0
+fi
+if [ ! -f '/var/lib/5a-ui/.managed' ]; then
+  if existing_xui; then
+    printf '%s\n' '5A_UI_RESULT={"error":{"code":"EXISTING_INSTALLATION","message":"检测到已有 3x-ui 安装。为保留现有配置，请使用现有面板；首次自建需要一台尚未安装 3x-ui 的服务器。"}}'
+exit 0
+
+  fi
+  if [ -n "$(ss -H -ltn 'sport = :@@NODE_PORT@@')" ]; then
+    printf '%s\n' '5A_UI_RESULT={"error":{"code":"NODE_PORT_BUSY","message":"节点端口 @@NODE_PORT@@ 已被占用，请在高级设置中选择其他端口。"}}'
+exit 0
+
+  fi
+fi
+printf '%s' '@@CONFIG@@' | base64 -d >'/var/lib/5a-ui/request.json'
+printf '%s' '@@JOB@@' | base64 -d >'/var/lib/5a-ui/job.sh'
+printf '%s' '@@MANAGER@@' | base64 -d >'/var/lib/5a-ui/manage.py'
+chmod 600 '/var/lib/5a-ui/request.json' '/var/lib/5a-ui/job.sh' '/var/lib/5a-ui/manage.py'
+touch '/var/lib/5a-ui/.managed'
+printf '%s\n' '{"phase":"queued","message":"已连接服务器，安装任务正在启动…"}' >'/var/lib/5a-ui/state.json.tmp'
+mv '/var/lib/5a-ui/state.json.tmp' '/var/lib/5a-ui/state.json'
+systemctl reset-failed 5a-ui-install.service 2>/dev/null || true
+if ! systemd-run --quiet --collect --unit=5a-ui-install --property=RuntimeMaxSec=1800 /bin/bash '/var/lib/5a-ui/job.sh'; then
+  printf '%s\n' '{"phase":"failed","message":"无法启动安装任务，请检查 systemd 服务。"}' >'/var/lib/5a-ui/state.json.tmp'
+  mv '/var/lib/5a-ui/state.json.tmp' '/var/lib/5a-ui/state.json'
+fi
+printf '5A_UI_RESULT='; cat '/var/lib/5a-ui/state.json'; printf '\n'

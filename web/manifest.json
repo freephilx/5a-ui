@@ -1,0 +1,35 @@
+{
+  "name": "5a-ui",
+  "short_name": "5a-ui",
+  "start_url": ".",
+  "display": "standalone",
+  "background_color": "#f5f1f2",
+  "theme_color": "#825761",
+  "description": "3x-ui 一键部署与状态管理",
+  "orientation": "portrait-primary",
+  "prefer_related_applications": false,
+  "icons": [
+    {
+      "src": "icons/Icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "icons/Icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    },
+    {
+      "src": "icons/Icon-maskable-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "maskable"
+    },
+    {
+      "src": "icons/Icon-maskable-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
+  ]
+}
