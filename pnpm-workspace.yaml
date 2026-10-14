@@ -1,0 +1,10 @@
+allowBuilds:
+  esbuild: true
+  workerd: true
+  ssh2: false
+  cpu-features: false
+minimumReleaseAgeExclude:
+  - '@cloudflare/workers-types@5.20261014.1'
+  - lucide-react@1.57.0
+  - miniflare@5.20261012.0-beta
+  - wrangler@4.151.0

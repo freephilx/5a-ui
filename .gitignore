@@ -1,0 +1,62 @@
+# Dependencies and package-manager caches
+node_modules/
+.pnpm-store/
+
+# Build output and tooling caches
+dist/
+.vite/
+.cache/
+*.tsbuildinfo
+vite.config.*.timestamp-*
+
+# Cloudflare and Vercel local state
+.wrangler/
+.vercel/
+
+# Temporary artifacts, including remote test credentials and results
+.tmp/
+
+# Local environment files; keep shareable templates
+.env
+.env.*
+!.env.example
+!.env.*.example
+.dev.vars
+.dev.vars.*
+!.dev.vars.example
+!.dev.vars.*.example
+
+# Local secrets and SSH private keys
+.secrets/
+.ssh/
+*.pem
+*.key
+*.p12
+*.pfx
+id_rsa
+id_dsa
+id_ecdsa
+id_ed25519
+id_ecdsa_sk
+id_ed25519_sk
+
+# Test output and logs
+coverage/
+*.log
+
+# Python test caches and virtual environments
+__pycache__/
+*.py[cod]
+.venv/
+
+# Personal editor and operating-system files
+.idea/
+.vscode/*
+!.vscode/extensions.json
+*.swp
+*.swo
+*~
+.DS_Store
+Thumbs.db
+
+# Keep pnpm-lock.yaml and src/server/remote.generated.ts in version control.

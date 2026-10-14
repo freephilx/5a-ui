@@ -1,0 +1,3 @@
+# Optional for wrangler dev. Configure both together.
+TURNSTILE_SITE_KEY=""
+TURNSTILE_SECRET_KEY=""
