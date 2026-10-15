@@ -41,7 +41,7 @@ const server = new ssh2.Server({hostKeys:[hostKey]},client=> {
      stream.on('end',()=> {
        if(script==='hang')return;
        stream.stderr.write('secret-stderr-must-not-leak');
-       stream.write(script==='large'?'x'.repeat(130*1024):'fixture-中文-ok');
+       stream.write(script==='large'?'x'.repeat(4*1024*1024+1):'fixture-中文-ok');
        stream.exit(script==='sudo'?77:0);stream.end();
      });
    });
