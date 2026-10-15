@@ -1,5 +1,13 @@
 # 验证记录
 
+## SSH 测试随机失败修复（2026-10-15）
+
+- 提交 `237a2cf` 的 [CI](https://github.com/freephilx/5a-ui/actions/runs/38612576866) 中 Android、iOS、macOS、Windows、Linux 构建成功，verify 在 Workers 加密 Ed25519 密钥解析断言失败；后续 Web 构建、Cloudflare dry-run 与 Dart 后端 AOT 编译未执行。
+- 定向复现确认 `ssh2@1.17.0` 的密钥生成器会删除 Ed25519 公钥的有效前导零字节，导致公钥从 32 字节变为 31 字节；加密和未加密输出均受影响。两套 SSH 测试改用 OpenSSH `ssh-keygen` 生成临时密钥，未修改产品认证逻辑或放宽解析检查。
+- 本地 `pnpm check`、59 项 TypeScript 测试、`pnpm test:ssh`、`pnpm test:worker` 均通过。Dart 与 workerd 保留六种认证方式，以及各自的指纹、错误处理和请求拦截检查。
+- 额外验证新生成器产生的前导零公钥：原始未加密密钥及用 `ssh-keygen` 加密后的同一密钥均能解析，公钥保持一致，签名验证成功；测试密钥未写入仓库。修复提交的完整跨平台结果见 GitHub Actions 的 Check and build。
+- 本机 FVM 3.47.6 最初缺少 `sky_engine` 缓存，已通过 `fvm flutter precache --web` 和 `fvm flutter pub get` 补齐后完成上述验证。
+
 ## 已有 3x-ui 接入（本地，2026-10-15）
 
 - 参考 3x-ui `v3.10.0`（`74c3cc3`）的数据库、客户端关联与分享协议；视觉参考仓库 FlClash dev 已更新至 `53838773`。接入逻辑不再要求 `.managed` 标记，原生、systemd 与 Docker 实例使用同一份远端只读检查器。

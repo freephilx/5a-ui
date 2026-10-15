@@ -3,14 +3,15 @@ import { workerBundle } from './worker-bundle';
 import { Miniflare, convertV4MiniflareOptions } from 'miniflare';
 import ssh2 from 'ssh2';
 import { strict as assert } from 'node:assert';
+import { generateEd25519Key } from '../tests/ssh-keys.mjs';
 
-const hostKey = ssh2.utils.generateKeyPairSync('ed25519').private;
+const hostKey = generateEd25519Key();
 const parsedHostKey = ssh2.utils.parseKey(hostKey);
 assert(!(parsedHostKey instanceof Error) && !Array.isArray(parsedHostKey));
 const fingerprint = `SHA256:${createHash('sha256').update(parsedHostKey.getPublicSSH()).digest('base64').replace(/=+$/, '')}`;
 const rsa = generateKeyPairSync('rsa', { modulusLength: 2048, privateKeyEncoding: { type: 'pkcs1', format: 'pem', cipher: 'aes-256-cbc', passphrase: 'test-key-passphrase' }, publicKeyEncoding: { type: 'spki', format: 'pem' } });
-const edKey = ssh2.utils.generateKeyPairSync('ed25519').private;
-const encryptedEdKey = ssh2.utils.generateKeyPairSync('ed25519', { cipher: 'aes256-ctr', passphrase: 'test-key-passphrase', rounds: 16 }).private;
+const edKey = generateEd25519Key();
+const encryptedEdKey = generateEd25519Key('test-key-passphrase');
 const rsaPKCS8 = generateKeyPairSync('rsa', { modulusLength: 2048, privateKeyEncoding: { type: 'pkcs8', format: 'pem', cipher: 'aes-256-cbc', passphrase: 'test-key-passphrase' }, publicKeyEncoding: { type: 'spki', format: 'pem' } });
 const ecPKCS8 = generateKeyPairSync('ec', { namedCurve: 'prime256v1', privateKeyEncoding: { type: 'pkcs8', format: 'pem' }, publicKeyEncoding: { type: 'spki', format: 'pem' } });
 const rsaParsed = ssh2.utils.parseKey(rsa.privateKey, 'test-key-passphrase');

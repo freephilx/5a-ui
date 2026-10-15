@@ -221,7 +221,7 @@ pnpm test:remote
 pnpm check:cloudflare
 ```
 
-`test:ssh` 使用临时本机 SSH 服务验证 Dart 的密码、私钥、指纹与错误处理。`test:worker` 在 workerd 中验证相同 SSH 能力。它们不访问用户服务器、不执行真实安装。跨语言测试逐字比较 Dart 与 TypeScript 生成的远端命令。
+`test:ssh` 使用临时本机 SSH 服务验证 Dart 的密码、私钥、指纹与错误处理。`test:worker` 在 workerd 中验证相同 SSH 能力。两者需要 PATH 中有 OpenSSH 的 `ssh-keygen`，用于生成一次性测试密钥，读取后立即清理临时文件。它们不访问用户服务器、不执行真实安装。跨语言测试逐字比较 Dart 与 TypeScript 生成的远端命令。
 
 GitHub Actions 的 Check and build 检查共享契约、客户端和后端测试；Package 负责版本打包与上传。`pnpm test:remote` 同时运行打包脚本测试。实际已完成的验证及未验证的平台见 [验证记录](docs/verification.md)。
 
