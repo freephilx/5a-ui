@@ -1,5 +1,24 @@
 # 验证记录
 
+## 概览布局与配色优化（2026-10-15）
+
+- 更新并核对最新 FlClash dev `53838773` 的 surface、color 与 dashboard 实现；空状态两入口在宽屏等宽并排，窄屏上下排列，断点随字体缩放调整。去除重复卡片标题、收紧间距并精简说明，中性灰表面与低饱和蓝灰强调色统一侧栏和内容区。
+- Flutter analyze 与 38 项现有 Flutter 测试通过；修正 320 像素下长按钮文案孤字换行后，16 项连接/Cloudflare 回归再次通过。最终 Web/macOS release 构建通过。
+- 浏览器实显验证 1280×900 和 320×740 布局、明暗主题、两条完整按钮文案，以及进入服务器连接表单和 Cloudflare 部署页；控制台无 warning/error。已重启最终 macOS Release 并确认两卡等高并排、无重复标题、最终配色和说明文案。
+- 未执行真实 SSH 或 Cloudflare 部署，未实测系统放大字体或其他原生平台，未提交、推送或发布。
+
+## 统一服务器与 CF 部署入口（2026-10-15）
+
+- 更新并核对 FlClash dev `53838773` 的仪表盘卡片实现；服务器与 Cloudflare 入口共用居中图标、标题、说明和按钮布局，CF 按钮为“无服务器，CF 一键部署”。
+- Flutter analyze、38 项现有 Flutter 测试（含 320/390/1280 布局）与 macOS release 构建通过；原生实显确认卡片一致，CF 按钮正确进入部署页并可返回概览。
+- 本轮未重建 Web 或其他平台，未提交真实 Cloudflare 部署或执行 SSH 操作。
+
+## 空状态隐藏刷新按钮（2026-10-15）
+
+- 更新并核对 FlClash dev `53838773`；未连接服务器时隐藏“服务与节点”标题右侧的刷新按钮，已连接和读取中的刷新/暂停逻辑保持原有行为。
+- Flutter analyze、13 项现有连接页回归（含 320/390/1280 布局）和 macOS release 构建通过；重启本项目 Release 应用，实际界面与可访问树均确认空状态刷新按钮已移除。
+- 本轮未重建 Web 或其他平台，未执行真实 SSH 操作。
+
 ## SSH 测试随机失败修复（2026-10-15）
 
 - 提交 `237a2cf` 的 [CI](https://github.com/freephilx/5a-ui/actions/runs/38612576866) 中 Android、iOS、macOS、Windows、Linux 构建成功，verify 在 Workers 加密 Ed25519 密钥解析断言失败；后续 Web 构建、Cloudflare dry-run 与 Dart 后端 AOT 编译未执行。

@@ -12,6 +12,68 @@ String formatBytes(Object? raw) {
   return '${value.toStringAsFixed(unit == 0 ? 0 : 1)} ${units[unit]}';
 }
 
+class SetupPrompt extends StatelessWidget {
+  const SetupPrompt({
+    super.key,
+    required this.icon,
+    required this.title,
+    required this.description,
+    required this.actionLabel,
+    required this.onAction,
+  });
+
+  final IconData icon;
+  final String title, description, actionLabel;
+  final VoidCallback onAction;
+
+  @override
+  Widget build(BuildContext context) {
+    final colors = Theme.of(context).colorScheme;
+    final text = Theme.of(context).textTheme;
+    return Center(
+      child: Padding(
+        padding: const EdgeInsets.symmetric(vertical: 16),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Container(
+              padding: const EdgeInsets.all(14),
+              decoration: BoxDecoration(
+                color: colors.surfaceContainer,
+                borderRadius: BorderRadius.circular(16),
+              ),
+              child: Icon(icon, size: 28, color: colors.primary),
+            ),
+            const SizedBox(height: 20),
+            Text(title, textAlign: TextAlign.center, style: text.titleLarge),
+            const SizedBox(height: 8),
+            Text(
+              description,
+              textAlign: TextAlign.center,
+              style: text.bodyMedium!.copyWith(color: colors.onSurfaceVariant),
+            ),
+            const SizedBox(height: 20),
+            SizedBox(
+              width: 280,
+              child: FilledButton.icon(
+                onPressed: onAction,
+                style: FilledButton.styleFrom(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 16,
+                    vertical: 14,
+                  ),
+                ),
+                icon: const Icon(Icons.add_rounded),
+                label: Text(actionLabel, textAlign: TextAlign.center),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
 /// Shared surfaces follow FlClash dev: neutral page, raised card, inset controls.
 class StateNotice extends StatelessWidget {
   const StateNotice(

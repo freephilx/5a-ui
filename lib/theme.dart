@@ -4,27 +4,26 @@ import 'package:flutter/material.dart';
 // Use Flutter's own Material components with the same spacing and surface roles.
 ThemeData appTheme(Brightness brightness) {
   final scheme = ColorScheme.fromSeed(
-    seedColor: const Color(0xffd8c0c3),
+    seedColor: const Color(0xff8493a3),
     brightness: brightness,
     dynamicSchemeVariant: DynamicSchemeVariant.content,
   );
   final dark = brightness == Brightness.dark;
   final neutral = scheme.copyWith(
-    // The fixed seed's surface tones, capped at chroma 3 (paper at 1.5),
-    // following FlClash dev's neutral surface palette.
-    surface: dark ? const Color(0xff151313) : const Color(0xfffef8f7),
-    surfaceBright: dark ? const Color(0xff3b3839) : const Color(0xfffef8f7),
-    surfaceContainer: dark ? const Color(0xff211f1f) : const Color(0xfff3ecec),
+    // Near-neutral surface levels follow FlClash dev and the native sidebar.
+    surface: dark ? const Color(0xff141516) : const Color(0xfffafafa),
+    surfaceBright: dark ? const Color(0xff3a3b3d) : const Color(0xfffafafa),
+    surfaceContainer: dark ? const Color(0xff202123) : const Color(0xfff0f1f3),
     surfaceContainerLow: dark
-        ? const Color(0xff1d1b1b)
-        : const Color(0xfff9f2f2),
+        ? const Color(0xff1c1d1f)
+        : const Color(0xfff6f6f7),
     surfaceContainerHigh: dark
-        ? const Color(0xff2c2929)
-        : const Color(0xffede7e6),
+        ? const Color(0xff2b2c2f)
+        : const Color(0xffe9eaed),
     surfaceContainerHighest: dark
-        ? const Color(0xff373434)
-        : const Color(0xffe7e1e1),
-    outlineVariant: dark ? const Color(0xff4d4546) : const Color(0xffcfc4c4),
+        ? const Color(0xff36373a)
+        : const Color(0xffe3e5e8),
+    outlineVariant: dark ? const Color(0xff44474d) : const Color(0xffc5c8cd),
   );
   return _theme(neutral, brightness);
 }

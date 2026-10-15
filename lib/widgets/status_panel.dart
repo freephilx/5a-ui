@@ -63,66 +63,41 @@ class StatusPanel extends StatelessWidget {
     final text = Theme.of(context).textTheme;
     final busy = controller.busy || controller.polling;
     return SectionCard(
+      padding: status == null && !busy ? 24 : 20,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Row(
-            children: [
-              Icon(Icons.hub_outlined, color: colors.primary),
-              const SizedBox(width: 10),
-              Expanded(child: Text('服务与节点', style: text.titleMedium)),
-              if (busy)
-                IconButton(
-                  onPressed: controller.pause,
-                  tooltip: '暂停刷新',
-                  icon: const Icon(Icons.pause_circle_outline),
-                )
-              else
-                IconButton(
-                  onPressed: controller.canRefresh ? controller.refresh : null,
-                  tooltip: '刷新状态',
-                  icon: const Icon(Icons.refresh_rounded),
-                ),
-            ],
-          ),
-          const SizedBox(height: 24),
+          if (status != null || busy) ...[
+            Row(
+              children: [
+                Icon(Icons.hub_outlined, color: colors.primary),
+                const SizedBox(width: 10),
+                Expanded(child: Text('服务与节点', style: text.titleMedium)),
+                if (busy)
+                  IconButton(
+                    onPressed: controller.pause,
+                    tooltip: '暂停刷新',
+                    icon: const Icon(Icons.pause_circle_outline),
+                  )
+                else if (controller.connectedHost != null)
+                  IconButton(
+                    onPressed: controller.canRefresh
+                        ? controller.refresh
+                        : null,
+                    tooltip: '刷新状态',
+                    icon: const Icon(Icons.refresh_rounded),
+                  ),
+              ],
+            ),
+            const SizedBox(height: 24),
+          ],
           if (status == null && !busy) ...[
-            Center(
-              child: Padding(
-                padding: const EdgeInsets.symmetric(vertical: 8),
-                child: Column(
-                  children: [
-                    Container(
-                      padding: const EdgeInsets.all(16),
-                      decoration: BoxDecoration(
-                        color: colors.surfaceContainer,
-                        borderRadius: BorderRadius.circular(20),
-                      ),
-                      child: Icon(
-                        Icons.dns_outlined,
-                        size: 32,
-                        color: colors.primary,
-                      ),
-                    ),
-                    const SizedBox(height: 24),
-                    Text('从一台服务器开始', style: text.titleLarge),
-                    const SizedBox(height: 10),
-                    Text(
-                      '连接后自动识别已有 3x-ui / 3m-ui。\n未安装面板时，可继续一键部署。',
-                      textAlign: TextAlign.center,
-                      style: text.bodyMedium!.copyWith(
-                        color: colors.onSurfaceVariant,
-                      ),
-                    ),
-                    const SizedBox(height: 24),
-                    FilledButton.icon(
-                      onPressed: onConnect,
-                      icon: const Icon(Icons.add_rounded),
-                      label: const Text('连接服务器，一键自建'),
-                    ),
-                  ],
-                ),
-              ),
+            SetupPrompt(
+              icon: Icons.dns_outlined,
+              title: '从一台服务器开始',
+              description: '接入已有面板，或一键自建。\n支持 3x-ui / 3m-ui。',
+              actionLabel: '连接服务器，一键自建',
+              onAction: onConnect,
             ),
           ] else ...[
             Row(

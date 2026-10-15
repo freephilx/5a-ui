@@ -470,6 +470,34 @@ class _HomeScreenState extends State<HomeScreen> {
 
   Widget _overview() {
     final data = controller.status?.data;
+    if (data == null && !working) {
+      return LayoutBuilder(
+        builder: (context, constraints) {
+          final server = StatusPanel(
+            controller: controller,
+            onConnect: _connect,
+          );
+          final cloud = _cloudflareEntry();
+          final textScale = MediaQuery.textScalerOf(context).scale(14) / 14;
+          if (constraints.maxWidth < 720 * textScale) {
+            return Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [server, const SizedBox(height: 16), cloud],
+            );
+          }
+          return IntrinsicHeight(
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                Expanded(child: server),
+                const SizedBox(width: 16),
+                Expanded(child: cloud),
+              ],
+            ),
+          );
+        },
+      );
+    }
     final memory = data?['memory'] as Map?;
     final traffic = data?['traffic'] as Map?;
     final cpu = data?['cpu'] as num?;
@@ -537,19 +565,21 @@ class _HomeScreenState extends State<HomeScreen> {
         if (data != null) const SizedBox(height: 20),
         _statusResult(),
         const SizedBox(height: 16),
-        SectionCard(
-          child: ListTile(
-            contentPadding: EdgeInsets.zero,
-            leading: const Icon(Icons.cloud_outlined),
-            title: const Text('部署 cfnew'),
-            subtitle: const Text('Cloudflare Workers · 无需 VPS'),
-            trailing: const Icon(Icons.chevron_right),
-            onTap: () => setState(() => page = 2),
-          ),
-        ),
+        _cloudflareEntry(),
       ],
     );
   }
+
+  Widget _cloudflareEntry() => SectionCard(
+    padding: 24,
+    child: SetupPrompt(
+      icon: Icons.cloud_outlined,
+      title: '无需服务器也能开始',
+      description: '一键部署 cfnew 到 Cloudflare。\n无需 VPS，自带管理页面与订阅。',
+      actionLabel: '无服务器，CF 一键部署',
+      onAction: () => setState(() => page = 2),
+    ),
+  );
 
   Widget _serverPage() => LayoutBuilder(
     builder: (context, constraints) {
