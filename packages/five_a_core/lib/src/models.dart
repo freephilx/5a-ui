@@ -9,6 +9,18 @@ class AppException implements Exception {
 
 enum ServerAction { install, status, manage }
 
+// An explicit empty username selects automatic login; omitted API usernames
+// keep the legacy root default. Keep in sync with contracts/ssh-usernames.json.
+const defaultSshUsernames = [
+  'root',
+  'ubuntu',
+  'debian',
+  'ec2-user',
+  'centos',
+  'admin',
+  'opc',
+];
+
 class ConnectionInput {
   const ConnectionInput({
     required this.host,
@@ -56,21 +68,24 @@ class ConnectionInput {
     if (management != null) 'management': management,
   };
 
-  ConnectionInput withTrust({String? fingerprint, String? proof}) =>
-      ConnectionInput(
-        host: host,
-        username: username,
-        port: port,
-        authMethod: authMethod,
-        password: password,
-        privateKey: privateKey,
-        passphrase: passphrase,
-        nodePort: nodePort,
-        panelType: panelType,
-        realityServerName: realityServerName,
-        hostFingerprint: fingerprint ?? hostFingerprint,
-        proofToken: proof ?? proofToken,
-      );
+  ConnectionInput withTrust({
+    String? fingerprint,
+    String? proof,
+    String? resolvedUsername,
+  }) => ConnectionInput(
+    host: host,
+    username: resolvedUsername ?? username,
+    port: port,
+    authMethod: authMethod,
+    password: password,
+    privateKey: privateKey,
+    passphrase: passphrase,
+    nodePort: nodePort,
+    panelType: panelType,
+    realityServerName: realityServerName,
+    hostFingerprint: fingerprint ?? hostFingerprint,
+    proofToken: proof ?? proofToken,
+  );
 }
 
 const phases = {
@@ -100,6 +115,7 @@ class ServerStatus {
   bool get isInstalling => activePhases.contains(phase);
   bool get isReady => phase == 'ready';
   bool get running => data['running'] == true;
+  String? get sshUsername => data['sshUsername'] as String?;
   String? get fingerprint => data['hostFingerprint'] as String?;
   String? get proofToken => data['proofToken'] as String?;
   Map<String, dynamic>? get node => data['node'] as Map<String, dynamic>?;

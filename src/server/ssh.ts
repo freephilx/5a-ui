@@ -3,6 +3,7 @@ import { createHash, createPrivateKey } from 'node:crypto';
 import { StringDecoder } from 'node:string_decoder';
 import type { ConnectionInput } from '../shared/types';
 import { AppError } from './errors';
+import defaultSshUsernames from '../../contracts/ssh-usernames.json';
 
 const { Client, utils } = ssh2;
 const MAX_OUTPUT = 4 * 1024 * 1024;
@@ -35,11 +36,32 @@ function connectionError(error: Error & { level?: string }): AppError {
   return new AppError('SSH_CONNECTION', '无法建立 SSH 连接，请检查服务器网络和 SSH 设置。', 502);
 }
 
-export async function runSSH(input: ConnectionInput, script: string, timeoutMs = 30_000): Promise<{ stdout: string; fingerprint: string }> {
+export async function runSSH(input: ConnectionInput, script: string, timeoutMs = 30_000): Promise<{ stdout: string; fingerprint: string; username: string }> {
+  const deadline = Date.now() + timeoutMs;
   const privateKey = validatePrivateKey(input);
+  const candidates = input.username ? [input.username] : defaultSshUsernames;
+  let fingerprint = input.hostFingerprint;
+  for (const username of candidates) {
+    const remaining = deadline - Date.now();
+    if (remaining <= 0) throw new AppError('SSH_TIMEOUT', '自动登录超时，请手动指定用户名后重试。', 504);
+    try {
+      const result = await runAttempt({ ...input, username, hostFingerprint: fingerprint }, script, remaining, privateKey,
+        (observed) => { fingerprint ??= observed; });
+      return { ...result, username };
+    } catch (error) {
+      // Never retry a command, network failure, or host-key mismatch.
+      if (!(error instanceof AppError) || error.code !== 'SSH_AUTH') throw error;
+      if (input.username) throw error;
+    }
+  }
+  throw new AppError('SSH_AUTH', `自动登录失败，已尝试 ${candidates.join('、')}。请手动指定用户名，并检查密码或私钥。`, 401);
+}
+
+function runAttempt(input: ConnectionInput, script: string, timeoutMs: number, privateKey: string | undefined, observe: (fingerprint: string) => void): Promise<{ stdout: string; fingerprint: string }> {
   return new Promise((resolve, reject) => {
     const client = new Client();
     let settled = false;
+    let authenticated = false;
     let fingerprint = '';
     let stdout = '';
     const decoder = new StringDecoder('utf8');
@@ -51,13 +73,16 @@ export async function runSSH(input: ConnectionInput, script: string, timeoutMs =
       client.end();
       if (error) reject(error); else resolve({ stdout, fingerprint });
     }
-    client.on('error', (error) => { const wrapped = connectionError(error); wrapped.cause = error; finish(wrapped); });
+    client.on('error', (error) => { const wrapped = authenticated ? new AppError('SSH_CONNECTION', 'SSH 连接中断，请重新读取状态。', 502) : connectionError(error); wrapped.cause = error; finish(wrapped); });
     client.on('close', () => { if (!settled) finish(new AppError('SSH_CLOSED', 'SSH 连接提前断开，请重新读取状态。', 502)); });
     client.on('ready', () => {
+      if (settled) return;
+      authenticated = true;
       // The command is fixed. All script content is sent over encrypted stdin.
       // Only root or passwordless sudo is supported; sudo never consumes script input as a password.
       client.exec('if [ "$(id -u)" = 0 ]; then exec /bin/bash -s; elif sudo -n true 2>/dev/null; then exec sudo -n /bin/bash -s; else exit 77; fi', (error, stream) => {
-        if (error) { finish(connectionError(error)); return; }
+        if (settled) { stream?.close(); return; }
+        if (error) { finish(new AppError('REMOTE_COMMAND', '无法执行服务器操作，请重新读取状态。', 502)); return; }
         stream.on('data', (chunk: Buffer) => {
           stdout += decoder.write(chunk);
           if (Buffer.byteLength(stdout) > MAX_OUTPUT) finish(new AppError('REMOTE_OUTPUT', '服务器返回的数据过大。', 502));
@@ -87,6 +112,7 @@ export async function runSSH(input: ConnectionInput, script: string, timeoutMs =
             finish(new AppError('HOST_KEY_CHANGED', 'SSH 主机指纹与记录不一致。请核对服务器是否重装或更换；确认后再更新指纹。', 409));
             return false;
           }
+          observe(fingerprint);
           return true;
         },
         // Workers' CommonJS crypto lacks diffieHellman; its GCM requires the tag before update().

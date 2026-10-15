@@ -32,6 +32,52 @@ class FakeGateway implements ServerGateway {
 }
 
 void main() {
+  test('resolved username and proof are reused by refresh, deployment and management', () async {
+    final gateway = FakeGateway()
+      ..response = () async => ServerStatus({
+        'phase': 'not-installed',
+        'message': 'ok',
+        'sshUsername': 'ubuntu',
+        'proofToken': 'resolved-proof',
+      });
+    final controller = ServerController(gateway);
+    addTearDown(controller.dispose);
+    await controller.initialize();
+    await controller.start(
+      ServerAction.status,
+      const ConnectionInput(
+        host: '8.8.8.8',
+        username: '',
+        password: 'test-only',
+      ),
+    );
+    expect(controller.connectedUsername, 'ubuntu');
+    await controller.refresh();
+    expect(gateway.calls.last.username, 'ubuntu');
+    expect(gateway.calls.last.proofToken, 'resolved-proof');
+    await controller.start(
+      ServerAction.install,
+      const ConnectionInput(
+        host: '8.8.8.8',
+        username: 'ubuntu',
+        password: 'test-only',
+      ),
+    );
+    expect(gateway.actions.last, ServerAction.install);
+    expect(gateway.calls.last.username, 'ubuntu');
+    gateway.response = () async => ServerStatus({
+      'phase': 'existing',
+      'message': 'ok',
+      'management': <String, dynamic>{'result': 'ok'},
+    });
+    await controller.manage({
+      'instanceId': 'native:3x-ui',
+      'operation': 'catalog',
+    });
+    expect(gateway.calls.last.username, 'ubuntu');
+    expect(gateway.calls.last.proofToken, 'resolved-proof');
+  });
+
   for (final size in [
     const Size(320, 740),
     const Size(390, 844),
@@ -321,6 +367,14 @@ void main() {
         await tester.pump();
         expect(tester.widget<OutlinedButton>(keyChoice).onPressed, isNull);
         expect(tester.widget<OutlinedButton>(passwordChoice).onPressed, isNull);
+        expect(
+          tester
+              .widget<OutlinedButton>(
+                find.widgetWithText(OutlinedButton, 'SSH 命令'),
+              )
+              .onPressed,
+          isNull,
+        );
         expect(gateway.calls.last.authMethod, 'password');
         expect(gateway.calls.last.privateKey, isNull);
         expect(gateway.calls.last.passphrase, isNull);

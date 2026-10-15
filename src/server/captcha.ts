@@ -28,8 +28,21 @@ export async function authorize(input: ConnectionInput, ip: string, env: Captcha
     result = await response.json();
   } catch { throw new AppError('CAPTCHA_UNAVAILABLE', '人机验证服务暂时不可用，请稍后重试。', 503); }
   if (!result.success || result.hostname !== hostname) throw new AppError('CAPTCHA_FAILED', '人机验证已过期或失败，请重新验证。', 403);
-  // A short proof allows polling without reusing the one-time Turnstile token. No SSH secret is in it.
-  const data = Buffer.from(JSON.stringify({ identity, expires: Date.now() + 30 * 60_000 })).toString('base64url');
+  return issueProof(input, ip, env.TURNSTILE_SECRET_KEY, Date.now() + 30 * 60_000);
+}
+
+// Only call with the proof returned by authorize in this request, after SSH
+// resolves an automatic username. Preserve its expiry and never reuse CAPTCHA.
+export async function rebindAuthorizedProof(proof: string, input: ConnectionInput, ip: string, env: CaptchaEnv): Promise<string> {
+  const payload = JSON.parse(Buffer.from(proof.split('.')[0], 'base64url').toString());
+  return issueProof(input, ip, env.TURNSTILE_SECRET_KEY!, payload.expires);
+}
+
+async function issueProof(input: ConnectionInput, ip: string, secret: string, expires: number): Promise<string> {
+  const identity = `${ip}|${input.host}|${input.port}|${input.username}`;
+  const key = await signingKey(secret);
+  // A short proof allows polling without reusing the one-time Turnstile token.
+  const data = Buffer.from(JSON.stringify({ identity, expires })).toString('base64url');
   const signature = await crypto.subtle.sign('HMAC', key, new TextEncoder().encode(data));
   return `${data}.${Buffer.from(signature).toString('base64url')}`;
 }

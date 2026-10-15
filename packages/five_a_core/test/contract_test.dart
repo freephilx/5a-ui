@@ -5,6 +5,28 @@ import 'package:five_a_core/five_a_core.dart';
 import 'package:test/test.dart';
 
 void main() {
+  test('automatic usernames match the shared ordered contract', () {
+    expect(
+      defaultSshUsernames,
+      jsonDecode(File('../../contracts/ssh-usernames.json').readAsStringSync()),
+    );
+  });
+  test('only transport status can supply a valid resolved username', () {
+    final status = {
+      'phase': 'not-installed',
+      'message': 'ok',
+      'sshUsername': 'ubuntu',
+    };
+    expect(parseStatus(status).sshUsername, 'ubuntu');
+    expect(
+      parseRemoteResult('5A_UI_RESULT=${jsonEncode(status)}').sshUsername,
+      isNull,
+    );
+    expect(
+      parseStatus({...status, 'sshUsername': 'root;reboot'}).sshUsername,
+      isNull,
+    );
+  });
   final statuses = jsonDecode(
     File('../../contracts/status-cases.json').readAsStringSync(),
   ) as List;

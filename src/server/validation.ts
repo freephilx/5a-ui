@@ -37,7 +37,7 @@ export function validateInput(value: unknown): ConnectionInput {
   const raw = value as Record<string, unknown>;
   const host = publicIP(raw.host);
   const username = raw.username === undefined ? 'root' : text(raw.username, 32, '用户名').trim();
-  if (!/^[a-z_][a-z0-9_-]{0,31}$/i.test(username)) throw new AppError('INVALID_USERNAME', '请输入有效的服务器用户名，例如 root、ubuntu 或 debian。');
+  if (username && !/^[a-z_][a-z0-9_-]{0,31}$/i.test(username)) throw new AppError('INVALID_USERNAME', '请输入有效的服务器用户名，例如 root、ubuntu 或 debian。');
   if (raw.authMethod !== 'password' && raw.authMethod !== 'key') throw new AppError('INVALID_AUTH', '请选择密码登录或私钥登录。');
   const panelType = raw.panelType ?? '3x-ui';
   if (panelType !== '3x-ui' && panelType !== '3m-ui') throw new AppError('INVALID_PANEL_TYPE', '请选择 3x-ui 或 3m-ui。');

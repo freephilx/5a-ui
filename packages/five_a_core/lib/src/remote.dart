@@ -50,6 +50,8 @@ ServerStatus parseRemoteResult(String stdout) {
   } catch (_) {
     throw const AppException('REMOTE_RESULT', '服务器状态格式不正确，请稍后重试。', 502);
   }
+  // Login identity is supplied by the SSH transport, never a remote script.
+  if (value is Map) value.remove('sshUsername');
   return parseStatus(value);
 }
 
@@ -80,6 +82,14 @@ ServerStatus parseStatus(Object? value) {
     'proofToken',
   ]) {
     if (value[key] is String) result[key] = value[key];
+  }
+  final sshUsername = value['sshUsername'];
+  if (sshUsername is String &&
+      RegExp(
+        r'^[a-z_][a-z0-9_-]{0,31}$',
+        caseSensitive: false,
+      ).hasMatch(sshUsername)) {
+    result['sshUsername'] = sshUsername;
   }
   for (final key in ['installed', 'running', 'portReachable', 'truncated']) {
     if (value[key] is bool) result[key] = value[key];

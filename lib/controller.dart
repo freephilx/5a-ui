@@ -30,6 +30,7 @@ class ServerController extends ChangeNotifier {
       !polling &&
       (siteKey == null || token.isNotEmpty || _connection?.proofToken != null);
   bool get canRefresh => _connection != null && canRequest;
+  String? get connectedUsername => _connection?.username;
   String? get connectedHost => _connection?.host;
   String? fingerprintFor(ConnectionInput input) =>
       _connection?.host == input.host &&
@@ -147,6 +148,9 @@ class ServerController extends ChangeNotifier {
           next.instances.isEmpty &&
           next.data['installed'] != true;
       _connection = _connection!.withTrust(
+        resolvedUsername: _connection!.username.isEmpty
+            ? next.sshUsername
+            : null,
         fingerprint: next.fingerprint,
         proof: next.proofToken,
       );

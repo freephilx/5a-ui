@@ -3,14 +3,14 @@ import { AppError } from './errors';
 import { readInput, readJsonBody } from './validation';
 import { runSSH } from './ssh';
 import { installScript, parseRemoteResult, statusScript } from './remote';
-import { authorize, type CaptchaEnv } from './captcha';
+import { authorize, rebindAuthorizedProof, type CaptchaEnv } from './captcha';
 import { limitRequest, type RateEnv } from './rate-limit';
 import { securityHeaders } from './security';
 import { managementScript } from './management';
 import { createCfnewDeployer, parseCfnewInput, cfnewCaptchaIdentity } from './cfnew';
 
 export type AppEnv = CaptchaEnv & RateEnv;
-export type SSHRunner = typeof runSSH;
+export type SSHRunner = (...args: Parameters<typeof runSSH>) => Promise<{ stdout: string; fingerprint: string; username?: string }>;
 
 export async function probePort(host: string, port: number): Promise<boolean> {
   return new Promise((resolve) => {
@@ -53,7 +53,10 @@ export function createApp(ssh: SSHRunner = runSSH, probe = probePort, cfnew = cr
       const result = await ssh(input, action === 'install' ? installScript(input) : action === 'manage' ? managementScript(input.management, input.host) : statusScript(input.host));
       const status = parseRemoteResult(result.stdout);
       status.hostFingerprint = result.fingerprint;
-      if (proofToken) status.proofToken = proofToken;
+      if (result.username) status.sshUsername = result.username;
+      if (proofToken) status.proofToken = !input.username && result.username
+        ? await rebindAuthorizedProof(proofToken, { ...input, username: result.username }, ip, env)
+        : proofToken;
       if (status.node) {
         // A server's public IP may have changed since installation.
         const nodeURL = new URL(status.node.link);

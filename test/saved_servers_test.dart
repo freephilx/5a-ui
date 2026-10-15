@@ -23,6 +23,133 @@ const syntheticKey =
     '-----BEGIN OPENSSH PRIVATE KEY-----\nsynthetic-only\n-----END OPENSSH PRIVATE KEY-----\n';
 
 void main() {
+  test('auto login roundtrips, preserves identity and disabling strips all credentials', () async {
+    final storage = TestProfileStorage();
+    final saved = SavedServers(storage);
+    addTearDown(saved.dispose);
+    await saved.initialize();
+    final profile = (await saved.save(
+      input: const ConnectionInput(
+        host: '8.8.8.8',
+        username: '',
+        authMethod: 'key',
+        privateKey: syntheticKey,
+        passphrase: 'synthetic-passphrase',
+      ),
+      name: 'My server',
+      includeCredentials: true,
+      autoLogin: true,
+    ))!;
+    final fingerprint = 'SHA256:${'A' * 43}';
+    await saved.save(
+      input: profile.connection.withTrust(
+        resolvedUsername: 'ubuntu',
+        fingerprint: fingerprint,
+      ),
+      name: profile.name,
+      includeCredentials: true,
+      autoLogin: true,
+      previousId: profile.id,
+    );
+    await saved.initialize();
+    expect(saved.servers.length, 1);
+    expect(saved.selected!.id, profile.id);
+    expect(saved.selected!.connection.username, 'ubuntu');
+    expect(saved.selected!.autoLogin, isTrue);
+    await saved.rememberFingerprint(
+      profile.id,
+      saved.selected!.connection,
+      fingerprint,
+    );
+    expect(saved.selected!.autoLogin, isTrue);
+    final raw = storage.value;
+    storage.failWrite = true;
+    expect(await saved.disableAutoLogin(profile.id), isFalse);
+    expect(saved.selected!.autoLogin, isTrue);
+    expect(storage.value, raw);
+    storage.failWrite = false;
+    expect(await saved.disableAutoLogin(profile.id), isTrue);
+    await saved.initialize();
+    expect(saved.selected!.id, profile.id);
+    expect(saved.selected!.name, 'My server');
+    expect(saved.selected!.connection.hostFingerprint, fingerprint);
+    expect(saved.selected!.autoLogin, isFalse);
+    expect(saved.selected!.includesCredentials, isFalse);
+    expect(storage.value, isNot(contains('PRIVATE KEY')));
+    expect(storage.value, isNot(contains('synthetic-passphrase')));
+    await saved.remove(profile.id);
+    expect(
+      await saved.save(
+        input: profile.connection,
+        name: profile.name,
+        includeCredentials: true,
+        autoLogin: true,
+        previousId: profile.id,
+      ),
+      isNull,
+    );
+    expect(storage.value, isNull);
+  });
+
+  test('legacy and metadata-only profiles never opt into automatic login', () {
+    final record = SavedServer.create(
+      id: 'legacy',
+      name: 'Legacy',
+      input: connection,
+      includeCredentials: true,
+    ).toJson()..remove('autoLogin');
+    final legacy = SavedServer.fromJson(record);
+    expect(legacy.autoLogin, isFalse);
+    expect(legacy.connection.password, connection.password);
+    expect(
+      SavedServer.create(
+        id: 'metadata',
+        name: '',
+        input: connection,
+        includeCredentials: false,
+        autoLogin: true,
+      ).autoLogin,
+      isFalse,
+    );
+  });
+
+  test('automatic saved profile remembers resolved user without adding credentials', () async {
+    final storage = TestProfileStorage();
+    final saved = SavedServers(storage);
+    addTearDown(saved.dispose);
+    await saved.initialize();
+    const auto = ConnectionInput(
+      host: '8.8.8.8',
+      username: '',
+      password: 'not-saved',
+    );
+    final profile = (await saved.save(
+      input: auto,
+      name: 'auto',
+      includeCredentials: false,
+    ))!;
+    final fingerprint = 'SHA256:${'A' * 43}';
+    await saved.rememberFingerprint(
+      profile.id,
+      auto,
+      fingerprint,
+      resolvedUsername: 'ubuntu',
+    );
+    expect(saved.selected!.id, profile.id);
+    expect(saved.selected!.connection.username, 'ubuntu');
+    expect(saved.selected!.connection.password, isNull);
+    expect(saved.selected!.connection.hostFingerprint, fingerprint);
+    await saved.initialize();
+    expect(saved.selected!.connection.username, 'ubuntu');
+    await saved.rememberFingerprint(
+      profile.id,
+      auto,
+      fingerprint,
+      resolvedUsername: 'debian',
+    );
+    expect(saved.selected!.connection.username, 'ubuntu');
+  });
+
   test(
     'explicit metadata save never persists secrets, proof or sessions',
     () async {
@@ -216,29 +343,53 @@ void main() {
   });
 
   for (final size in [const Size(320, 740), const Size(1280, 900)]) {
-    for (final credentials in [false, true]) {
+    for (final enabled in [false, true]) {
       testWidgets(
-        'manual save, restart, session clear and delete at $size credentials=$credentials',
+        'automatic login, restart, disable and delete at $size enabled=$enabled',
         (tester) async {
           tester.view.physicalSize = size;
           tester.view.devicePixelRatio = 1;
           addTearDown(tester.view.resetPhysicalSize);
           addTearDown(tester.view.resetDevicePixelRatio);
           final storage = TestProfileStorage();
-          final gateway = FakeGateway();
+          final gateway = FakeGateway()
+            ..response = () async => ServerStatus({
+              'phase': 'not-installed',
+              'message': 'ok',
+              'sshUsername': 'ubuntu',
+              'hostFingerprint': 'SHA256:${'A' * 43}',
+            });
           Future<void> tap(String text) async {
+            await tester.pumpAndSettle();
             final finder = find.text(text);
             await tester.ensureVisible(finder);
+            await tester.pumpAndSettle();
             await tester.tap(finder);
             await tester.pumpAndSettle();
           }
 
-          await tester.pumpWidget(
-            FiveAApp(gateway: gateway, profileStorage: storage),
+          Future<void> restart() async {
+            await tester.pumpWidget(const SizedBox.shrink());
+            await tester.pumpAndSettle();
+            await tester.pumpWidget(
+              FiveAApp(gateway: gateway, profileStorage: storage),
+            );
+            await tester.pumpAndSettle();
+          }
+
+          String password() => tester
+              .widget<TextField>(find.widgetWithText(TextField, 'SSH 密码'))
+              .controller!
+              .text;
+
+          await restart();
+          await tap('连接服务器，一键自建');
+          expect(
+            tester.widget<SwitchListTile>(find.byType(SwitchListTile)).value,
+            isTrue,
           );
-          await tester.pumpAndSettle();
-          await tester.tap(find.widgetWithText(FilledButton, '连接服务器，一键自建'));
-          await tester.pumpAndSettle();
+          expect(find.text('保存服务器'), findsNothing);
+          if (!enabled) await tap('自动登录');
           await tester.enterText(
             find.widgetWithText(TextField, '公网 IP'),
             '8.8.8.8',
@@ -248,58 +399,46 @@ void main() {
             'synthetic-password',
           );
           expect(storage.value, isNull);
-          await tap('保存服务器');
-          await tester.enterText(
-            find.widgetWithText(TextField, '名称'),
-            'Saved fixture',
+          await tap('连接并读取');
+          expect(gateway.calls.length, 1);
+          if (!enabled) {
+            expect(storage.value, isNull);
+            await restart();
+            expect(gateway.calls.length, 1);
+            expect(find.text('连接服务器，一键自建'), findsOneWidget);
+            return;
+          }
+          final records = jsonDecode(storage.value!)['servers'] as List;
+          expect(records.single['username'], 'ubuntu');
+          expect(records.single['autoLogin'], isTrue);
+          final id = records.single['id'];
+          await restart();
+          expect(password(), 'synthetic-password');
+          expect(gateway.calls.length, 2);
+          expect(gateway.actions, everyElement(ServerAction.status));
+          expect(gateway.calls.last.username, 'ubuntu');
+          expect(gateway.calls.last.hostFingerprint, 'SHA256:${'A' * 43}');
+          expect(
+            (jsonDecode(storage.value!)['servers'] as List).single['id'],
+            id,
           );
+          await tap('自动登录');
+          expect(password(), 'synthetic-password');
+          expect(storage.value, isNot(contains('synthetic-password')));
+          await restart();
+          expect(gateway.calls.length, 2);
+          expect(password(), isEmpty);
           expect(
             tester.widget<SwitchListTile>(find.byType(SwitchListTile)).value,
             isFalse,
           );
-          if (credentials) await tap('同时保存登录凭据');
-          await tap('保存');
-          expect(storage.value, isNotNull);
-          expect(gateway.calls, isEmpty);
-          await tester.pumpWidget(const SizedBox.shrink());
-          await tester.pumpAndSettle();
-          await tester.pumpWidget(
-            FiveAApp(gateway: gateway, profileStorage: storage),
-          );
-          await tester.pumpAndSettle();
-          expect(find.text('Saved fixture'), findsOneWidget);
-          expect(
-            tester
-                .widget<TextField>(find.widgetWithText(TextField, '公网 IP'))
-                .controller!
-                .text,
-            '8.8.8.8',
-          );
-          expect(
-            tester
-                .widget<TextField>(find.widgetWithText(TextField, 'SSH 密码'))
-                .controller!
-                .text,
-            credentials ? 'synthetic-password' : '',
-          );
-          expect(gateway.calls, isEmpty);
-          await tap('清除登录凭据');
-          expect(storage.value, isNotNull);
-          expect(
-            tester
-                .widget<TextField>(find.widgetWithText(TextField, 'SSH 密码'))
-                .controller!
-                .text,
-            isEmpty,
-          );
           await tap('设置');
-          final delete = find.byTooltip('删除 Saved fixture');
+          final delete = find.byTooltip('删除 8.8.8.8');
           await tester.ensureVisible(delete);
           await tester.tap(delete);
           await tester.pumpAndSettle();
           await tap('删除');
           expect(storage.value, isNull);
-          expect(find.text('Saved fixture'), findsNothing);
           expect(tester.takeException(), isNull);
         },
       );

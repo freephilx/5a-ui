@@ -289,5 +289,77 @@
       "panelType": "unknown"
     },
     "error": "INVALID_PANEL_TYPE"
+  },
+  {
+    "name": "automatic username",
+    "input": {
+      "host": "8.8.8.8",
+      "authMethod": "password",
+      "password": "test-only",
+      "username": ""
+    },
+    "expected": {
+      "host": "8.8.8.8",
+      "authMethod": "password",
+      "password": "test-only",
+      "username": "",
+      "port": 22,
+      "nodePort": 443,
+      "panelType": "3x-ui"
+    }
+  },
+  {
+    "name": "trimmed automatic username",
+    "input": {
+      "host": "8.8.8.8",
+      "authMethod": "password",
+      "password": "test-only",
+      "username": "   "
+    },
+    "expected": {
+      "host": "8.8.8.8",
+      "authMethod": "password",
+      "password": "test-only",
+      "username": "",
+      "port": 22,
+      "nodePort": 443,
+      "panelType": "3x-ui"
+    }
+  },
+  {
+    "name": "explicit root",
+    "input": {
+      "host": "8.8.8.8",
+      "authMethod": "password",
+      "password": "test-only",
+      "username": "root"
+    },
+    "expected": {
+      "host": "8.8.8.8",
+      "authMethod": "password",
+      "password": "test-only",
+      "username": "root",
+      "port": 22,
+      "nodePort": 443,
+      "panelType": "3x-ui"
+    }
+  },
+  {
+    "name": "literal auto account",
+    "input": {
+      "host": "8.8.8.8",
+      "authMethod": "password",
+      "password": "test-only",
+      "username": "auto"
+    },
+    "expected": {
+      "host": "8.8.8.8",
+      "authMethod": "password",
+      "password": "test-only",
+      "username": "auto",
+      "port": 22,
+      "nodePort": 443,
+      "panelType": "3x-ui"
+    }
   }
 ]

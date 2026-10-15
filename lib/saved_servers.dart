@@ -12,10 +12,12 @@ class SavedServer {
     this.name,
     this.connection,
     this.includesCredentials,
+    this.autoLogin,
   );
   final String id, name;
   final ConnectionInput connection;
   final bool includesCredentials;
+  final bool autoLogin;
 
   bool matches(ConnectionInput other) =>
       connection.host == other.host &&
@@ -27,6 +29,7 @@ class SavedServer {
     required String name,
     required ConnectionInput input,
     required bool includeCredentials,
+    bool autoLogin = false,
   }) {
     final title = name.trim().isEmpty ? input.host.trim() : name.trim();
     if (title.length > 80 || title.contains(RegExp(r'[\x00-\x1f]'))) {
@@ -70,6 +73,7 @@ class SavedServer {
             : null,
       ),
       includeCredentials,
+      autoLogin && includeCredentials,
     );
   }
 
@@ -77,6 +81,7 @@ class SavedServer {
     'id': id,
     'name': name,
     'includesCredentials': includesCredentials,
+    'autoLogin': autoLogin,
     'host': connection.host,
     'port': connection.port,
     'username': connection.username,
@@ -100,6 +105,8 @@ class SavedServer {
       id: id,
       name: json['name'] as String,
       includeCredentials: json['includesCredentials'] as bool,
+      // Existing profiles keep their original manual-connect behavior.
+      autoLogin: json['autoLogin'] as bool? ?? false,
       input: ConnectionInput(
         host: json['host'] as String,
         port: json['port'] as int,
@@ -211,6 +218,8 @@ class SavedServers extends ChangeNotifier {
     required ConnectionInput input,
     required String name,
     required bool includeCredentials,
+    bool autoLogin = false,
+    String? previousId,
   }) async {
     // Validate before entering the storage operation so actionable field errors
     // reach the caller without being confused with a storage failure.
@@ -219,14 +228,27 @@ class SavedServers extends ChangeNotifier {
       name: name,
       input: input,
       includeCredentials: includeCredentials,
+      autoLogin: autoLogin,
     );
     SavedServer? saved;
     final ok = await _run(() async {
       if (!loaded) throw const FormatException('Storage has not loaded');
       final current = _Catalog.decode(await storage.read());
       final existing = current.servers
-          .where((s) => s.matches(candidate.connection))
+          .where(
+            (s) => previousId == null
+                ? s.matches(candidate.connection)
+                : s.id == previousId &&
+                      s.connection.host == candidate.connection.host &&
+                      s.connection.port == candidate.connection.port &&
+                      (s.connection.username.isEmpty ||
+                          s.connection.username ==
+                              candidate.connection.username),
+          )
           .firstOrNull;
+      if (previousId != null && existing == null) {
+        throw const FormatException('Saved server changed or was removed');
+      }
       if (existing == null && current.servers.length >= 50) {
         throw const FormatException('Too many records');
       }
@@ -244,12 +266,30 @@ class SavedServers extends ChangeNotifier {
               existing?.connection.hostFingerprint,
         ),
         candidate.includesCredentials,
+        candidate.autoLogin,
       );
       final next = [...current.servers.where((s) => s.id != id), saved!];
       return _persist(_Catalog(next, id));
     }, '保存未能确认，请重试。安全存储不可用时不会改用明文保存；最多可保存 50 台服务器。');
     return ok ? saved : null;
   }
+
+  Future<bool> disableAutoLogin(String id) => _run(() async {
+    final current = _Catalog.decode(await storage.read());
+    final next = [
+      for (final server in current.servers)
+        if (server.id == id)
+          SavedServer.create(
+            id: server.id,
+            name: server.name,
+            input: server.connection,
+            includeCredentials: false,
+          )
+        else
+          server,
+    ];
+    return _persist(_Catalog(next, current.selectedId));
+  }, '关闭自动登录未能确认，保存的登录凭据可能仍然存在，请重试。');
 
   Future<bool> select(String id) => _run(() async {
     final current = _Catalog.decode(await storage.read());
@@ -277,22 +317,36 @@ class SavedServers extends ChangeNotifier {
   Future<bool> rememberFingerprint(
     String id,
     ConnectionInput input,
-    String fingerprint,
-  ) => _run(() async {
+    String fingerprint, {
+    String? resolvedUsername,
+  }) => _run(() async {
     final current = _Catalog.decode(await storage.read());
     final saved = current.servers
         .where((s) => s.id == id && s.matches(input))
         .firstOrNull;
     // A deleted record is never resurrected, and a known host key is never
-    // silently replaced. Credentials are updated only by an explicit Save.
-    if (saved == null || saved.connection.hostFingerprint != null) {
+    // silently replaced. This operation never changes credential preferences.
+    if (saved == null ||
+        (saved.connection.hostFingerprint != null &&
+            saved.connection.hostFingerprint != fingerprint)) {
+      return current;
+    }
+    final resolved = saved.connection.username.isEmpty
+        ? resolvedUsername
+        : null;
+    if (saved.connection.hostFingerprint == fingerprint &&
+        (resolved == null || resolved.isEmpty)) {
       return current;
     }
     final next = SavedServer.create(
       id: id,
       name: saved.name,
-      input: saved.connection.withTrust(fingerprint: fingerprint),
+      input: saved.connection.withTrust(
+        fingerprint: fingerprint,
+        resolvedUsername: resolved,
+      ),
       includeCredentials: saved.includesCredentials,
+      autoLogin: saved.autoLogin,
     );
     return _persist(
       _Catalog([
@@ -300,7 +354,7 @@ class SavedServers extends ChangeNotifier {
           if (s.id == id) next else s,
       ], current.selectedId),
     );
-  }, '已连接，但 SSH 主机指纹未能保存，请重试。');
+  }, '已连接，但登录用户名和 SSH 主机指纹未能保存，请重试。');
 
   @override
   void dispose() {

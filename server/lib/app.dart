@@ -127,7 +127,24 @@ class ApiApp {
       final input = validateInput(raw);
       final proof = await _authorize(input, ip, Uri.parse(origin).host);
       var status = await executeAction(action, input, ssh: ssh, probe: probe);
-      if (proof != null) status = status.withFields({'proofToken': proof});
+      if (proof != null) {
+        final resolved = status.sshUsername;
+        final rebound = input.username.isEmpty && resolved != null
+            ? _issueProof(
+                input.withTrust(resolvedUsername: resolved),
+                ip,
+                (jsonDecode(
+                      utf8.decode(
+                        base64Url.decode(
+                          base64Url.normalize(proof.split('.').first),
+                        ),
+                      ),
+                    ) as Map)['expires']
+                    as int,
+              )
+            : proof;
+        status = status.withFields({'proofToken': rebound});
+      }
       return _json(status.toJson());
     } catch (error) {
       final safe = error is AppException
@@ -231,11 +248,20 @@ class ApiApp {
         verified['hostname'] != hostname) {
       throw const AppException('CAPTCHA_FAILED', '人机验证已过期或失败，请重新验证。', 403);
     }
+    return _issueProof(input, ip, now + 30 * 60000);
+  }
+
+  // Called only after authorization; the resolved account retains the original
+  // proof expiry and cannot expand authorization to another server or account.
+  String _issueProof(ConnectionInput input, String ip, int expires) {
+    final identity = '$ip|${input.host}|${input.port}|${input.username}';
+    final hmac = Hmac(
+      sha256,
+      utf8.encode('5a-ui-proof-v1:${env['TURNSTILE_SECRET_KEY']}'),
+    );
     final data = base64Url
         .encode(
-          utf8.encode(
-            jsonEncode({'identity': identity, 'expires': now + 30 * 60000}),
-          ),
+          utf8.encode(jsonEncode({'identity': identity, 'expires': expires})),
         )
         .replaceAll('=', '');
     return '$data.${base64Url.encode(hmac.convert(utf8.encode(data)).bytes).replaceAll('=', '')}';

@@ -3,6 +3,7 @@ export type LoginMethod = 'password' | 'key';
 export interface ConnectionInput {
   management?: Record<string, unknown>;
   host: string;
+  /** Empty selects automatic login; explicit names never fall back. */
   username: string;
   port: number;
   authMethod: LoginMethod;
@@ -65,6 +66,7 @@ export interface ServerStatus {
   message: string;
   updatedAt?: string;
   hostFingerprint?: string;
+  sshUsername?: string;
   installed?: boolean;
   running?: boolean;
   panelVersion?: string;

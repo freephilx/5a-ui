@@ -27,10 +27,14 @@ const ecPKCS8Parsed = ssh2.utils.parseKey(createPrivateKey(ecPKCS8.privateKey).e
 assert(!(rsaPKCS8Parsed instanceof Error) && !Array.isArray(rsaPKCS8Parsed));
 assert(!(ecPKCS8Parsed instanceof Error) && !Array.isArray(ecPKCS8Parsed));
 const publicKeys = [rsaParsed, edParsed, encryptedEdParsed, rsaPKCS8Parsed, ecPKCS8Parsed];
+let acceptedUsername = 'root';
+const attempts: string[] = [];
 const server = new ssh2.Server({ hostKeys: [hostKey] }, (client) => {
+  let seen = false;
   client.on('error', () => {});
   client.on('authentication', (ctx) => {
-    if (ctx.username !== 'root') return ctx.reject();
+    if (!seen) { seen = true; attempts.push(ctx.username); }
+    if (ctx.username !== acceptedUsername) return ctx.reject();
     if (ctx.method === 'password' && ctx.password === 'test-password') return ctx.accept();
     if (ctx.method === 'publickey') {
       const key = publicKeys.find((key) => key.getPublicSSH().equals(ctx.key.data));
@@ -72,6 +76,20 @@ try {
     assert.equal(body.stdout, 'worker-ssh-ok');
     assert.equal(body.fingerprint, fingerprint);
     console.log(`Workers SSH ${auth.label}: passed`);
+  }
+  acceptedUsername = 'ubuntu';
+  for (const auth of [
+    { authMethod: 'password', password: 'test-password' },
+    { authMethod: 'key', privateKey: edKey },
+  ]) {
+    attempts.length = 0;
+    const response = await mf.dispatchFetch('http://worker.test/', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ host: '127.0.0.1', port, username: '', ...auth }) });
+    const body = await response.json() as { username?: string; stdout?: string };
+    assert.equal(response.status, 200, JSON.stringify(body));
+    assert.equal(body.username, 'ubuntu');
+    assert.equal(body.stdout, 'worker-ssh-ok');
+    assert.deepEqual(attempts, ['root', 'ubuntu']);
+    console.log(`Workers SSH automatic ${auth.authMethod} fallback: passed`);
   }
   const changed = await mf.dispatchFetch('http://worker.test/', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ host: '127.0.0.1', port, username: 'root', authMethod: 'password', password: 'test-password', hostFingerprint: 'SHA256:wrong' }) });
   assert.equal(changed.status, 500);

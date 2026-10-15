@@ -14,8 +14,35 @@ const remoteCommand =
     'if [ "\$(id -u)" = 0 ]; then exec /bin/bash -s; elif sudo -n true 2>/dev/null; then exec sudo -n /bin/bash -s; else exit 77; fi';
 
 class SshResult {
-  const SshResult(this.stdout, this.fingerprint);
+  const SshResult(this.stdout, this.fingerprint, {this.username});
+  final String? username;
   final String stdout, fingerprint;
+}
+
+// dartssh2 can close from its stream's onDone without awaiting the result.
+// A peer disconnect may also fail the write-side close; the transport already
+// reports that failure through done/authenticated, so cleanup must not throw.
+class _SafeCloseSocket implements SSHSocket {
+  _SafeCloseSocket(this.socket);
+  final SSHSocket socket;
+  @override
+  Stream<Uint8List> get stream => socket.stream;
+  @override
+  StreamSink<List<int>> get sink => socket.sink;
+  @override
+  Future<void> get done => socket.done;
+  @override
+  void destroy() => socket.destroy();
+  @override
+  Future<void> flush() => socket.flush();
+  @override
+  Future<void> close() async {
+    try {
+      await socket.close();
+    } on SocketException {
+      socket.destroy();
+    }
+  }
 }
 
 Future<List<SSHKeyPair>> _parseKeys(String pem, String? passphrase) =>
@@ -39,6 +66,8 @@ class SshRunner {
     var stopped = false;
     var mismatch = false;
     var fingerprint = '';
+    String? pinnedFingerprint = input.hostFingerprint;
+    var username = input.username;
     final cancelled = Completer<SshResult>();
     void checkActive() {
       if (stopped) throw const AppException('CANCELLED', '已暂停刷新，服务器上的安装会继续。');
@@ -61,33 +90,63 @@ class SshRunner {
         }
       }
       checkActive();
-      socket = await SSHSocket.connect(
-        input.host,
-        input.port,
-        timeout: const Duration(seconds: 15),
-      );
-      if (stopped) {
-        socket!.destroy();
+      final candidates = input.username.isEmpty
+          ? defaultSshUsernames
+          : [input.username];
+      for (username in candidates) {
         checkActive();
+        socket = _SafeCloseSocket(
+          await SSHSocket.connect(
+            input.host,
+            input.port,
+            timeout: const Duration(seconds: 15),
+          ),
+        );
+        if (stopped) {
+          socket!.destroy();
+          checkActive();
+        }
+        client = SSHClient(
+          socket!,
+          username: username,
+          identities: keys,
+          onPasswordRequest: input.authMethod == 'password'
+              ? () => input.password
+              : null,
+          keepAliveInterval: const Duration(seconds: 5),
+          onVerifyHostKey: (type, bytes) {
+            fingerprint = utf8.decode(bytes);
+            mismatch =
+                pinnedFingerprint != null && pinnedFingerprint != fingerprint;
+            if (!mismatch) pinnedFingerprint ??= fingerprint;
+            return !mismatch;
+          },
+        );
+        // Authenticate before executing anything. Only rejected credentials may
+        // advance to another account; all attempts share the timeout and key pin.
+        unawaited(client!.done.catchError((Object _) {}));
+        try {
+          await client!.authenticated;
+          checkActive();
+          break;
+        } catch (error) {
+          unawaited(client!.close().catchError((Object _) {}));
+          socket!.destroy();
+          checkActive();
+          if (mismatch || error is! SSHAuthFailError) {
+            rethrow;
+          }
+          if (username == candidates.last) {
+            throw AppException(
+              'SSH_AUTH',
+              input.username.isEmpty
+                  ? '自动登录失败，已尝试 ${candidates.join('、')}。请手动指定用户名，并检查密码或私钥。'
+                  : 'SSH 登录失败，请检查用户名、密码或私钥。',
+              401,
+            );
+          }
+        }
       }
-      client = SSHClient(
-        socket!,
-        username: input.username,
-        identities: keys,
-        onPasswordRequest: input.authMethod == 'password'
-            ? () => input.password
-            : null,
-        keepAliveInterval: const Duration(seconds: 5),
-        onVerifyHostKey: (type, bytes) {
-          fingerprint = utf8.decode(bytes);
-          mismatch =
-              input.hostFingerprint != null &&
-              input.hostFingerprint != fingerprint;
-          return !mismatch;
-        },
-      );
-      // Transport errors are returned through authenticate/execute; never log them.
-      unawaited(client!.done.catchError((Object _) {}));
       final session = await client!.execute(remoteCommand);
       checkActive();
       final output = BytesBuilder(copy: false);
@@ -122,7 +181,11 @@ class SshRunner {
           502,
         );
       }
-      return SshResult(utf8.decode(output.takeBytes()), fingerprint);
+      return SshResult(
+        utf8.decode(output.takeBytes()),
+        fingerprint,
+        username: username,
+      );
     }
 
     try {
@@ -143,7 +206,7 @@ class SshRunner {
           409,
         );
       }
-      if (error is SSHAuthFailError || error is SSHAuthAbortError) {
+      if (error is SSHAuthFailError) {
         throw const AppException('SSH_AUTH', 'SSH 登录失败，请检查用户名、密码或私钥。', 401);
       }
       throw const AppException(
@@ -153,7 +216,7 @@ class SshRunner {
       );
     } finally {
       stopped = true;
-      client?.close();
+      unawaited(client?.close().catchError((Object _) {}));
       socket?.destroy();
       _cancel = null;
     }
@@ -195,8 +258,10 @@ Future<ServerStatus> executeAction(
       host: validated.host,
     ),
   });
-  var status = parseRemoteResult(result.stdout)
-      .withFields({'hostFingerprint': result.fingerprint});
+  var status = parseRemoteResult(result.stdout).withFields({
+    'hostFingerprint': result.fingerprint,
+    if (result.username != null) 'sshUsername': result.username,
+  });
   if (status.node case final node?) {
     final link = Uri.parse(node['link'] as String)
         .replace(host: validated.host)

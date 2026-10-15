@@ -5,24 +5,22 @@ class MainFlutterWindow: NSWindow {
   override func awakeFromNib() {
     let flutterViewController = FlutterViewController()
     flutterViewController.backgroundColor = .clear
-    let container = NSViewController()
-    container.view = NSView()
-    container.addChild(flutterViewController)
+    self.contentViewController = flutterViewController
+    let flutterView = flutterViewController.view
     let sidebarMaterial = NSVisualEffectView()
     sidebarMaterial.material = .sidebar
     sidebarMaterial.blendingMode = .behindWindow
     sidebarMaterial.state = .followsWindowActiveState
-    for view in [sidebarMaterial, flutterViewController.view] {
-      view.translatesAutoresizingMaskIntoConstraints = false
-      container.view.addSubview(view)
-      NSLayoutConstraint.activate([
-        view.leadingAnchor.constraint(equalTo: container.view.leadingAnchor),
-        view.trailingAnchor.constraint(equalTo: container.view.trailingAnchor),
-        view.topAnchor.constraint(equalTo: container.view.topAnchor),
-        view.bottomAnchor.constraint(equalTo: container.view.bottomAnchor),
-      ])
-    }
-    self.contentViewController = container
+    // Keep Flutter as the window's content controller so AppKit dispatches
+    // input through its normal responder chain. The material only paints behind it.
+    sidebarMaterial.translatesAutoresizingMaskIntoConstraints = false
+    flutterView.addSubview(sidebarMaterial, positioned: .below, relativeTo: nil)
+    NSLayoutConstraint.activate([
+      sidebarMaterial.leadingAnchor.constraint(equalTo: flutterView.leadingAnchor),
+      sidebarMaterial.trailingAnchor.constraint(equalTo: flutterView.trailingAnchor),
+      sidebarMaterial.topAnchor.constraint(equalTo: flutterView.topAnchor),
+      sidebarMaterial.bottomAnchor.constraint(equalTo: flutterView.bottomAnchor),
+    ])
     self.titleVisibility = .hidden
     self.titlebarAppearsTransparent = true
     self.styleMask.insert(.fullSizeContentView)
@@ -32,6 +30,14 @@ class MainFlutterWindow: NSWindow {
       binaryMessenger: flutterViewController.engine.binaryMessenger
     )
     channel.setMethodCallHandler { [weak self] call, result in
+      if call.method == "userHomeDirectory" {
+        if let path = getpwuid(getuid())?.pointee.pw_dir {
+          result(String(cString: path))
+        } else {
+          result(FlutterError(code: "HOME_DIRECTORY", message: "Unable to resolve user home", details: nil))
+        }
+        return
+      }
       guard call.method == "setAppearance", let brightness = call.arguments as? String else {
         result(FlutterMethodNotImplemented)
         return

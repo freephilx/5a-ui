@@ -50,35 +50,27 @@ ThemeData _theme(ColorScheme scheme, Brightness brightness) {
       shape: RoundedSuperellipseBorder(borderRadius: BorderRadius.circular(20)),
     ),
     inputDecorationTheme: InputDecorationThemeData(
-      filled: true,
-      fillColor: dark
-          ? scheme.surfaceContainerHigh
-          : scheme.surfaceContainerLow,
+      // FlClash dev keeps inputs outlined so they read as editable controls.
+      // Material supplies the hover, focus, error and disabled border states.
+      filled: false,
       contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
-      border: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(16),
-        borderSide: BorderSide.none,
-      ),
-      enabledBorder: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(16),
-        borderSide: BorderSide.none,
-      ),
-      focusedBorder: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(16),
-        borderSide: BorderSide(color: scheme.primary, width: 2),
-      ),
+      border: OutlineInputBorder(borderRadius: BorderRadius.circular(16)),
     ),
     filledButtonTheme: FilledButtonThemeData(
       style: FilledButton.styleFrom(
         minimumSize: const Size(0, 48),
         padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 14),
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+        shape: RoundedSuperellipseBorder(
+          borderRadius: BorderRadius.circular(1000),
+        ),
       ),
     ),
     outlinedButtonTheme: OutlinedButtonThemeData(
       style: OutlinedButton.styleFrom(
         minimumSize: const Size(0, 48),
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+        shape: RoundedSuperellipseBorder(
+          borderRadius: BorderRadius.circular(1000),
+        ),
       ),
     ),
     dividerTheme: DividerThemeData(

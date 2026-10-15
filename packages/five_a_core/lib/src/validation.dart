@@ -86,10 +86,11 @@ ConnectionInput validateInput(Object? value) {
   }
   final host = publicIP(value['host']);
   final username = _text(value['username'] ?? 'root', 32, '用户名').trim();
-  if (!RegExp(
-    r'^[a-z_][a-z0-9_-]{0,31}$',
-    caseSensitive: false,
-  ).hasMatch(username)) {
+  if (username.isNotEmpty &&
+      !RegExp(
+        r'^[a-z_][a-z0-9_-]{0,31}$',
+        caseSensitive: false,
+      ).hasMatch(username)) {
     throw const AppException(
       'INVALID_USERNAME',
       '请输入有效的服务器用户名，例如 root、ubuntu 或 debian。',

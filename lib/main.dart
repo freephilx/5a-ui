@@ -10,6 +10,7 @@ import 'theme.dart';
 import 'screens/home.dart';
 import 'saved_servers.dart';
 import 'services/profile_storage.dart';
+import 'services/key_file.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
@@ -17,9 +18,15 @@ void main() {
 }
 
 class FiveAApp extends StatefulWidget {
-  const FiveAApp({super.key, this.gateway, this.profileStorage});
+  const FiveAApp({
+    super.key,
+    this.gateway,
+    this.profileStorage,
+    this.privateKeyReader,
+  });
   final ServerGateway? gateway;
   final ProfileStorage? profileStorage;
+  final PrivateKeyReader? privateKeyReader;
   @override
   State<FiveAApp> createState() => _FiveAAppState();
 }
@@ -68,6 +75,7 @@ class _FiveAAppState extends State<FiveAApp> {
       controller: controller,
       savedServers: savedServers,
       themeMode: mode,
+      privateKeyReader: widget.privateKeyReader,
       onThemeChanged: (value) {
         setState(() => mode = value);
         _updateWindowAppearance();

@@ -180,6 +180,59 @@ void main() {
       413,
     );
   });
+  test(
+    'automatic login proof is rebound to the authenticated account',
+    () async {
+      var verifies = 0;
+      var sshCalls = 0;
+      final app = ApiApp(
+        env: {'TURNSTILE_SITE_KEY': 'site', 'TURNSTILE_SECRET_KEY': 'secret'},
+        captchaClient: MockClient((_) async {
+          verifies++;
+          return http.Response(
+            '{"success":true,"hostname":"test.example"}',
+            200,
+          );
+        }),
+        ssh: (input, _) async {
+          sshCalls++;
+          return const SshResult(
+            '5A_UI_RESULT={"phase":"not-installed","message":"ok","sshUsername":"forged"}',
+            'SHA256:observed',
+            username: 'ubuntu',
+          );
+        },
+      );
+      addTearDown(app.close);
+      final initial = await app.handle(
+        request(
+          data: {...input, 'username': '', 'turnstileToken': 'single-use'},
+        ),
+      );
+      expect(initial.statusCode, 200);
+      final body = jsonDecode(await initial.readAsString()) as Map;
+      expect(body['sshUsername'], 'ubuntu');
+      final proof = body['proofToken'];
+      expect(
+        (await app.handle(
+          request(data: {...input, 'username': 'ubuntu', 'proofToken': proof}),
+        )).statusCode,
+        200,
+      );
+      for (final username in ['', 'root', 'debian']) {
+        expect(
+          (await app.handle(
+            request(
+              data: {...input, 'username': username, 'proofToken': proof},
+            ),
+          )).statusCode,
+          403,
+        );
+      }
+      expect(verifies, 1);
+      expect(sshCalls, 2);
+    },
+  );
   test('Turnstile proof supports polling, binds identity and rejects an expired proof', () async {
     var verifies = 0;
     final client = MockClient((_) async {
