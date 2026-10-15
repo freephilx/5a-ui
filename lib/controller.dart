@@ -19,6 +19,11 @@ class ServerController extends ChangeNotifier {
   Timer? _timer;
   DateTime? _until;
   bool _disposed = false;
+  bool _deploymentAvailable = false;
+  ServerAction? _activeAction;
+  bool get deploymentAvailable => _deploymentAvailable;
+  bool get canDeploy => deploymentAvailable && canRequest;
+  bool get startingDeployment => busy && _activeAction == ServerAction.install;
   bool get canRequest =>
       configLoaded &&
       !busy &&
@@ -26,6 +31,12 @@ class ServerController extends ChangeNotifier {
       (siteKey == null || token.isNotEmpty || _connection?.proofToken != null);
   bool get canRefresh => _connection != null && canRequest;
   String? get connectedHost => _connection?.host;
+  String? fingerprintFor(ConnectionInput input) =>
+      _connection?.host == input.host &&
+          _connection?.port == input.port &&
+          _connection?.username == input.username
+      ? _connection?.hostFingerprint
+      : null;
 
   Future<void> initialize() async {
     error = null;
@@ -59,6 +70,12 @@ class ServerController extends ChangeNotifier {
           _connection?.host == input.host &&
           _connection?.port == input.port &&
           _connection?.username == input.username;
+      if (action == ServerAction.install && (!same || !canDeploy)) {
+        throw const AppException(
+          'INSPECTION_REQUIRED',
+          '请先连接并读取服务器，确认没有已有面板或存在未完成的部署后再继续。',
+        );
+      }
       _connection = validateInput({
         ...input.toJson(),
         if (same &&
@@ -75,6 +92,7 @@ class ServerController extends ChangeNotifier {
       return;
     }
     paused = false;
+    _deploymentAvailable = false;
     _until = DateTime.now().add(const Duration(minutes: 30));
     await _request(action, ++_epoch);
   }
@@ -83,13 +101,51 @@ class ServerController extends ChangeNotifier {
     if (_connection != null) await start(ServerAction.status, _connection!);
   }
 
+  Future<Map<String, dynamic>> manage(Map<String, dynamic> request) async {
+    if (_connection == null || !canRequest) {
+      throw const AppException('NOT_CONNECTED', '请先连接服务器，并等待当前操作完成。');
+    }
+    final epoch = _epoch;
+    final input = validateInput({
+      ..._connection!.toJson(),
+      'management': request,
+    });
+    busy = true;
+    notifyListeners();
+    try {
+      final response = await gateway.perform(ServerAction.manage, input);
+      if (_disposed || epoch != _epoch) {
+        throw const AppException('CANCELLED', '连接已更换或操作已取消，请重新读取确认结果。');
+      }
+      _connection = _connection!.withTrust(
+        fingerprint: response.fingerprint,
+        proof: response.proofToken,
+      );
+      final result = response.data['management'];
+      if (result is! Map<String, dynamic>) {
+        throw const AppException('PANEL_RESPONSE', '管理响应格式不正确，请重新读取确认结果。');
+      }
+      return result;
+    } finally {
+      if (!_disposed && epoch == _epoch) {
+        busy = false;
+        notifyListeners();
+      }
+    }
+  }
+
   Future<void> _request(ServerAction action, int epoch) async {
+    _activeAction = action;
     busy = true;
     notifyListeners();
     try {
       final next = await gateway.perform(action, _connection!);
       if (_disposed || epoch != _epoch) return;
       status = next;
+      _deploymentAvailable =
+          (next.phase == 'not-installed' || next.phase == 'failed') &&
+          next.instances.isEmpty &&
+          next.data['installed'] != true;
       _connection = _connection!.withTrust(
         fingerprint: next.fingerprint,
         proof: next.proofToken,
@@ -109,6 +165,7 @@ class ServerController extends ChangeNotifier {
     } catch (exception) {
       if (_disposed || epoch != _epoch) return;
       polling = false;
+      _deploymentAvailable = false;
       paused = status?.isInstalling ?? false;
       error = exception is AppException
           ? exception.message
@@ -126,6 +183,7 @@ class ServerController extends ChangeNotifier {
       }
     } finally {
       if (!_disposed && epoch == _epoch) {
+        _activeAction = null;
         busy = false;
         notifyListeners();
       }
@@ -136,9 +194,11 @@ class ServerController extends ChangeNotifier {
     _epoch++;
     _timer?.cancel();
     gateway.cancel();
+    _activeAction = null;
     busy = false;
     polling = false;
     paused = true;
+    _deploymentAvailable = false;
     notifyListeners();
   }
 

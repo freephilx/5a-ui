@@ -51,6 +51,7 @@ void main() {
       expect(jsonDecode(utf8.decode(base64Decode(config))), {
         'host': '8.8.8.8',
         'nodePort': 443,
+        'panelType': '3x-ui',
         'realityServerName': '',
       });
       if (!Platform.isWindows) {

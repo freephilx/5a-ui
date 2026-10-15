@@ -7,7 +7,7 @@ class AppException implements Exception {
   String toString() => message;
 }
 
-enum ServerAction { install, status }
+enum ServerAction { install, status, manage }
 
 class ConnectionInput {
   const ConnectionInput({
@@ -20,12 +20,15 @@ class ConnectionInput {
     this.passphrase,
     this.hostFingerprint,
     this.nodePort = 443,
+    this.panelType = '3x-ui',
     this.realityServerName,
     this.turnstileToken,
     this.proofToken,
+    this.management,
   });
-  final String host, username, authMethod;
+  final String host, username, authMethod, panelType;
   final int port, nodePort;
+  final Map<String, dynamic>? management;
   final String? password,
       privateKey,
       passphrase,
@@ -40,6 +43,7 @@ class ConnectionInput {
     'port': port,
     'authMethod': authMethod,
     'nodePort': nodePort,
+    'panelType': panelType,
     if (authMethod == 'password') 'password': password,
     if (authMethod == 'key') ...{
       'privateKey': privateKey,
@@ -49,6 +53,7 @@ class ConnectionInput {
     if (realityServerName != null) 'realityServerName': realityServerName,
     if (turnstileToken != null) 'turnstileToken': turnstileToken,
     if (proofToken != null) 'proofToken': proofToken,
+    if (management != null) 'management': management,
   };
 
   ConnectionInput withTrust({String? fingerprint, String? proof}) =>
@@ -61,6 +66,7 @@ class ConnectionInput {
         privateKey: privateKey,
         passphrase: passphrase,
         nodePort: nodePort,
+        panelType: panelType,
         realityServerName: realityServerName,
         hostFingerprint: fingerprint ?? hostFingerprint,
         proofToken: proof ?? proofToken,

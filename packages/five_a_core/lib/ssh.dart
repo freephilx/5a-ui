@@ -93,7 +93,7 @@ class SshRunner {
       final output = BytesBuilder(copy: false);
       Future<void> readOutput() async {
         await for (final chunk in session.stdout) {
-          if (output.length + chunk.length > 128 * 1024) {
+          if (output.length + chunk.length > 4 * 1024 * 1024) {
             throw const AppException('REMOTE_OUTPUT', '服务器返回的数据过大。', 502);
           }
           output.add(chunk);
@@ -132,7 +132,7 @@ class SshRunner {
     } on TimeoutException {
       throw const AppException(
         'SSH_TIMEOUT',
-        '服务器响应超时。已启动的安装会继续，可重新读取状态。',
+        '服务器响应超时。安装会继续；配置操作可能已生效，请重新读取后确认。',
         504,
       );
     } catch (error) {
@@ -187,12 +187,14 @@ Future<ServerStatus> executeAction(
   PortProbe? probe,
 }) async {
   final validated = validateInput(input.toJson());
-  final result = await (ssh ?? SshRunner().run)(
-    validated,
-    action == ServerAction.install
-        ? installScript(validated)
-        : statusScript(validated.host),
-  );
+  final result = await (ssh ?? SshRunner().run)(validated, switch (action) {
+    ServerAction.install => installScript(validated),
+    ServerAction.status => statusScript(validated.host),
+    ServerAction.manage => managementScript(
+      validated.management ?? {},
+      host: validated.host,
+    ),
+  });
   var status = parseRemoteResult(result.stdout)
       .withFields({'hostFingerprint': result.fingerprint});
   if (status.node case final node?) {

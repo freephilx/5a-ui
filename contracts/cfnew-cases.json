@@ -1,0 +1,12 @@
+[
+  {"name":"valid prepare","patch":{},"valid":true},
+  {"name":"upper account","patch":{"accountId":"AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"},"valid":false},
+  {"name":"invalid token","patch":{"apiToken":"short"},"valid":false},
+  {"name":"newline token","patch":{"apiToken":"synthetic-token-0000000000\n"},"valid":false},
+  {"name":"path injection","patch":{"workerName":"worker/../other"},"valid":false},
+  {"name":"invalid UUID","patch":{"uuid":"not-a-uuid"},"valid":false},
+  {"name":"upload needs KV","patch":{"step":"upload"},"valid":false},
+  {"name":"valid upload","patch":{"step":"upload","namespaceId":"bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"},"valid":true},
+  {"name":"unknown operation","patch":{"step":"delete"},"valid":false},
+  {"name":"extra metadata ignored","patch":{"sourceUrl":"https://evil.example/worker.js","password":"must-not-forward"},"valid":true}
+]

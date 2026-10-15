@@ -1,6 +1,7 @@
 import 'package:ipaddr/ipaddr.dart';
 
 import 'models.dart';
+import 'management.dart';
 import 'remote_generated.dart' show networkRanges;
 
 const maxBodyBytes = 80 * 1024;
@@ -19,11 +20,13 @@ String publicIP(Object? value) {
       if (host.contains('.')) {
         final split = host.lastIndexOf(':');
         final tail = host.substring(split + 1);
-        if (!RegExp(r'^(0|[1-9]\d{0,2})(\.(0|[1-9]\d{0,2})){3}$').hasMatch(tail)) {
+        if (!RegExp(r'^(0|[1-9]\d{0,2})(\.(0|[1-9]\d{0,2})){3}$')
+            .hasMatch(tail)) {
           throw const FormatException();
         }
         final ipv4 = IPv4Address(tail).toBigInt();
-        normalized = '${host.substring(0, split + 1)}${(ipv4 >> 16).toRadixString(16)}:${(ipv4 & BigInt.from(65535)).toRadixString(16)}';
+        normalized =
+            '${host.substring(0, split + 1)}${(ipv4 >> 16).toRadixString(16)}:${(ipv4 & BigInt.from(65535)).toRadixString(16)}';
       }
       final address = IPv6Address(normalized);
       final number = address.toBigInt();
@@ -96,6 +99,10 @@ ConnectionInput validateInput(Object? value) {
   if (auth != 'password' && auth != 'key') {
     throw const AppException('INVALID_AUTH', '请选择密码登录或私钥登录。');
   }
+  final panelType = value['panelType'] ?? '3x-ui';
+  if (!{'3x-ui', '3m-ui'}.contains(panelType)) {
+    throw const AppException('INVALID_PANEL_TYPE', '请选择 3x-ui 或 3m-ui。');
+  }
   final port = _port(value['port'], 22);
   final nodePort = _port(value['nodePort'], 443);
   if (port == nodePort) {
@@ -143,6 +150,9 @@ ConnectionInput validateInput(Object? value) {
     }
   }
   return ConnectionInput(
+    management: value['management'] == null
+        ? null
+        : validateManagement(value['management']),
     host: host,
     username: username,
     port: port,
@@ -152,6 +162,7 @@ ConnectionInput validateInput(Object? value) {
     passphrase: passphrase,
     hostFingerprint: fingerprint,
     nodePort: nodePort,
+    panelType: panelType as String,
     realityServerName: target,
     turnstileToken: value['turnstileToken'] == null
         ? null

@@ -4,21 +4,11 @@ import 'package:qr_flutter/qr_flutter.dart';
 
 import '../controller.dart';
 import '../services/export.dart';
-
-String formatBytes(Object? raw) {
-  if (raw is! num || !raw.isFinite) return '—';
-  var value = raw.toDouble();
-  const units = ['B', 'KB', 'MB', 'GB', 'TB'];
-  var unit = 0;
-  while (value >= 1024 && unit < units.length - 1) {
-    value /= 1024;
-    unit++;
-  }
-  return '${value.toStringAsFixed(unit == 0 ? 0 : 1)} ${units[unit]}';
-}
+import '../screens/management.dart';
+import 'ui.dart';
 
 class SectionCard extends StatelessWidget {
-  const SectionCard({super.key, required this.child, this.padding = 24});
+  const SectionCard({super.key, required this.child, this.padding = 20});
   final Widget child;
   final double padding;
   @override
@@ -99,26 +89,26 @@ class StatusPanel extends StatelessWidget {
           if (status == null && !busy) ...[
             Center(
               child: Padding(
-                padding: const EdgeInsets.symmetric(vertical: 20),
+                padding: const EdgeInsets.symmetric(vertical: 8),
                 child: Column(
                   children: [
                     Container(
-                      padding: const EdgeInsets.all(24),
+                      padding: const EdgeInsets.all(16),
                       decoration: BoxDecoration(
-                        color: colors.primaryContainer,
-                        shape: BoxShape.circle,
+                        color: colors.surfaceContainer,
+                        borderRadius: BorderRadius.circular(20),
                       ),
                       child: Icon(
                         Icons.dns_outlined,
-                        size: 44,
-                        color: colors.onPrimaryContainer,
+                        size: 32,
+                        color: colors.primary,
                       ),
                     ),
                     const SizedBox(height: 24),
                     Text('从一台服务器开始', style: text.titleLarge),
                     const SizedBox(height: 10),
                     Text(
-                      '连接你的服务器，接入已有 3x-ui。\n也可以在新服务器上一键部署。',
+                      '连接后自动识别已有 3x-ui / 3m-ui。\n未安装面板时，可继续一键部署。',
                       textAlign: TextAlign.center,
                       style: text.bodyMedium!.copyWith(
                         color: colors.onSurfaceVariant,
@@ -128,7 +118,7 @@ class StatusPanel extends StatelessWidget {
                     FilledButton.icon(
                       onPressed: onConnect,
                       icon: const Icon(Icons.add_rounded),
-                      label: const Text('连接服务器'),
+                      label: const Text('连接服务器，一键自建'),
                     ),
                   ],
                 ),
@@ -159,14 +149,21 @@ class StatusPanel extends StatelessWidget {
                   child: Text(
                     controller.paused
                         ? '已暂停刷新'
+                        : busy
+                        ? controller.startingDeployment ||
+                                  status?.isInstalling == true
+                              ? '正在部署面板'
+                              : '正在读取服务器'
                         : status?.instances.isNotEmpty == true
-                        ? '已连接 3x-ui'
+                        ? '已连接面板'
                         : status?.isReady == true
                         ? status!.running
                               ? '节点运行中'
                               : '节点未运行'
-                        : busy
-                        ? '正在连接与部署'
+                        : status?.phase == 'not-installed'
+                        ? '未发现面板'
+                        : status?.phase == 'failed'
+                        ? '上次部署未完成'
                         : '服务器状态',
                     style: text.titleLarge,
                   ),
@@ -178,9 +175,12 @@ class StatusPanel extends StatelessWidget {
               status?.message ?? '正在连接服务器，请稍候…',
               style: text.bodyMedium!.copyWith(color: colors.onSurfaceVariant),
             ),
-            if (status?.isInstalling == true || busy && status == null) ...[
+            if (status?.isInstalling == true ||
+                controller.startingDeployment) ...[
               const SizedBox(height: 24),
-              _Stages(phase: status?.phase ?? 'queued'),
+              _Stages(
+                phase: status?.isInstalling == true ? status!.phase : 'queued',
+              ),
               const SizedBox(height: 16),
               Text(
                 '安装在服务器上后台运行，离开页面或暂停刷新不会中断安装。',
@@ -204,6 +204,14 @@ class StatusPanel extends StatelessWidget {
                 truncated: status.data['truncated'] == true,
                 onCopy: (link) => _copy(context, link),
                 onSave: (link) => _save(context, link),
+                onManage: (instance) => Navigator.of(context).push<void>(
+                  MaterialPageRoute(
+                    builder: (_) => ManagementScreen(
+                      controller: controller,
+                      instance: instance,
+                    ),
+                  ),
+                ),
               ),
             ],
             if (status?.link case final link?) ...[
@@ -312,10 +320,12 @@ class _Instances extends StatefulWidget {
     required this.truncated,
     required this.onCopy,
     required this.onSave,
+    required this.onManage,
   });
   final List<Map<String, dynamic>> instances;
   final bool truncated;
   final Future<void> Function(String) onCopy, onSave;
+  final void Function(Map<String, dynamic>) onManage;
   @override
   State<_Instances> createState() => _InstancesState();
 }
@@ -426,7 +436,7 @@ class _InstancesState extends State<_Instances> {
             key: ValueKey(current['id']),
             initialValue: current['id'] as String,
             isExpanded: true,
-            decoration: const InputDecoration(labelText: '3x-ui 实例'),
+            decoration: const InputDecoration(labelText: '面板实例'),
             items: [
               for (final item in widget.instances)
                 DropdownMenuItem(
@@ -445,32 +455,36 @@ class _InstancesState extends State<_Instances> {
           spacing: 8,
           runSpacing: 8,
           children: [
-            Chip(
-              avatar: Icon(
-                current['kind'] == 'docker'
-                    ? Icons.inventory_2_outlined
-                    : Icons.dns_outlined,
-                size: 18,
-              ),
-              label: Text(current['name'] as String),
+            StatusBadge(
+              current['name'] as String,
+              icon: current['kind'] == 'docker'
+                  ? Icons.inventory_2_outlined
+                  : Icons.dns_outlined,
             ),
-            Chip(
-              label: Text(
-                current['running'] == true
-                    ? '服务运行中'
-                    : current['running'] == false
-                    ? '服务已停止'
-                    : '运行状态未知',
-              ),
+            StatusBadge(
+              current['running'] == true
+                  ? '服务运行中'
+                  : current['running'] == false
+                  ? '服务已停止'
+                  : '运行状态未知',
+              active: current['running'] as bool?,
             ),
             if (current['panelVersion'] is String)
-              Chip(label: Text('3x-ui ${current['panelVersion']}')),
+              StatusBadge(
+                "${current['panelType'] ?? '3x-ui'} ${current['panelVersion']}",
+              ),
           ],
         ),
         const SizedBox(height: 8),
         Text(
           current['message'] as String? ?? '',
           style: TextStyle(color: colors.onSurfaceVariant),
+        ),
+        const SizedBox(height: 12),
+        FilledButton.icon(
+          onPressed: () => widget.onManage(current),
+          icon: const Icon(Icons.tune),
+          label: const Text('管理此实例'),
         ),
         if (widget.truncated || current['truncated'] == true) ...[
           const SizedBox(height: 8),
@@ -555,7 +569,7 @@ class _Stages extends StatelessWidget {
   Widget build(BuildContext context) {
     const stages = [
       ('preparing', '检查服务器'),
-      ('installing', '安装 3x-ui'),
+      ('installing', '安装面板'),
       ('configuring', '配置节点'),
       ('checking', '验证连接'),
     ];
@@ -634,7 +648,7 @@ class MetricCard extends StatelessWidget {
               Expanded(child: Text(label, style: theme.textTheme.labelLarge)),
             ],
           ),
-          const SizedBox(height: 20),
+          const SizedBox(height: 16),
           Text(
             value,
             style: theme.textTheme.headlineMedium!.copyWith(

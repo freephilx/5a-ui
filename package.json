@@ -3,7 +3,7 @@
   "version": "0.2.0",
   "private": true,
   "type": "module",
-  "description": "Flutter 跨平台 3x-ui 一键部署和状态管理",
+  "description": "Flutter 跨平台 3x-ui / 3m-ui 部署与管理",
   "packageManager": "pnpm@11.25.0",
   "engines": {
     "node": ">=22.12.0"
@@ -16,6 +16,7 @@
     "build:worker": "tsx scripts/build-worker.ts",
     "check": "fvm dart run tool/generate.dart --check && tsc --noEmit",
     "test": "vitest run",
+    "test:cfnew-runtime": "tsx scripts/smoke-cfnew.ts",
     "test:worker": "tsx scripts/smoke-worker-ssh.ts",
     "test:remote": "python3 -m unittest discover -s tests -p 'test_*.py'",
     "dev:cloudflare": "wrangler dev",

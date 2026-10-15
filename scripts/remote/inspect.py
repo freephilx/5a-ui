@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
-"""Read existing 3x-ui instances over SSH without changing their configuration."""
+"""Read existing 3x-ui / 3m-ui instances without changing their configuration."""
 import base64
+from contextlib import closing
 import ipaddress
 import json
 import os
@@ -30,13 +31,13 @@ class InspectError(Exception):
     pass
 
 
-def run(args, *, env=None, input=None):
+def run(args, *, env=None, input=None, merge_stderr=False):
     remaining = DEADLINE - time.monotonic() if DEADLINE is not None else 4
     if remaining <= 0:
         raise InspectError('读取超时，部分实例未能读取，请稍后重试。')
     try:
         return subprocess.run(args, input=input, env=env, text=True,
-                              stdout=subprocess.PIPE, stderr=subprocess.DEVNULL,
+                              stdout=subprocess.PIPE, stderr=subprocess.STDOUT if merge_stderr else subprocess.DEVNULL,
                               timeout=min(4, remaining), check=True).stdout.strip()
     except (OSError, subprocess.SubprocessError):
         raise InspectError('无法读取服务信息，请检查服务状态和 SSH 账号权限。') from None
@@ -75,7 +76,7 @@ def traffic(value):
 def environment(items):
     # Read values as data; never source an environment file as a shell program.
     return {key: value for item in items if '=' in item
-            for key, value in [item.split('=', 1)] if key.startswith('XUI_')}
+            for key, value in [item.split('=', 1)] if key.startswith(('XUI_', 'THREE_M_UI_')) or key in ('PANEL_PORT','PANEL_LISTEN')}
 
 
 def env_file(path):
@@ -94,7 +95,7 @@ def process_env(pid):
 
 def native_instance(name, binary, env, running, pid=0):
     directory = env.get('XUI_DB_FOLDER') or str(DEFAULT_DB.parent)
-    return {'id': 'native:' + name, 'name': name, 'kind': 'native',
+    return {'id': 'native:' + name, 'name': name, 'kind': 'native', 'panelType': '3x-ui',
             'running': running, '_binary': binary, '_pid': pid, '_env': env,
             '_database': str(Path(directory) / 'x-ui.db')}
 
@@ -113,8 +114,8 @@ def discover_native():
                 for block in detail.split('\n\n'):
                     values = dict(line.split('=', 1) for line in block.splitlines() if '=' in line)
                     name, command = values.get('Id', ''), values.get('ExecStart', '')
-                    if not (re.search(r'(^|/|\s)(?:3x-ui|x-ui)(?:\s|;|$)', command)
-                            or re.match(r'(?:3x-ui|x-ui)(?:[.@-]|$)', name)):
+                    if not (re.search(r'(^|/|\s)(?:3x-ui|x-ui|3m-ui|3m-ui-bin)(?:\s|;|$)', command)
+                            or re.match(r'(?:3x-ui|x-ui|3m-ui)(?:[.@-]|$)', name)):
                         continue
                     match = re.search(r'path=([^ ;]+)', command)
                     binary = match[1] if match else str(DEFAULT_BINARY)
@@ -130,6 +131,9 @@ def discover_native():
                     if env.get('XUI_DB_FOLDER') and not Path(env['XUI_DB_FOLDER']).is_absolute():
                         env['XUI_DB_FOLDER'] = str(Path(values.get('WorkingDirectory') or '/') / env['XUI_DB_FOLDER'])
                     item = native_instance(name, binary, env, values.get('ActiveState') == 'active', pid)
+                    if '3m-ui' in command or name.startswith('3m-ui'):
+                        args = re.search(r'argv\[\]=(.*?)(?: ;|$)', command)
+                        item = three_m_instance(item, args[1] if args else '', values.get('WorkingDirectory') or '/')
                     seen.add(str(Path(item['_database']).resolve()))
                     instances.append(item)
     except (InspectError, ValueError) as error:
@@ -141,12 +145,14 @@ def discover_native():
             continue
         try:
             binary = os.readlink(path)
-            if Path(binary).name not in ('x-ui', '3x-ui'):
+            if Path(binary).name not in ('x-ui', '3x-ui', '3m-ui', '3m-ui-bin'):
                 continue
             # Container processes are represented by Docker discovery instead.
             if (path.parent / 'ns/mnt').stat().st_ino != (PROC / '1/ns/mnt').stat().st_ino:
                 continue
             item = native_instance(f'{Path(binary).name} (PID {pid})', binary, process_env(pid), True, pid)
+            if '3m-ui' in Path(binary).name:
+                item = three_m_instance(item, (path.parent / 'cmdline').read_text().replace('\0', ' '), os.readlink(path.parent / 'cwd'))
             db = str(Path(item['_database']).resolve())
             if db not in seen:
                 instances.append(item)
@@ -158,6 +164,8 @@ def discover_native():
         for path in ('/etc/default/x-ui', '/etc/conf.d/x-ui', '/etc/sysconfig/x-ui'):
             env.update(env_file(path))
         instances.append(native_instance('x-ui', str(DEFAULT_BINARY), env, None))
+    if not any(i.get('panelType') == '3m-ui' for i in instances) and (Path('/etc/3m-ui/config.yaml').exists() or Path('/usr/local/lib/3m-ui/3m-ui-bin').exists()):
+        instances.append(three_m_instance(native_instance('3m-ui', '/usr/local/lib/3m-ui/3m-ui-bin', {}, None)))
     if discovery_error:
         if not instances:
             raise InspectError('无法检查 systemd 服务，请检查 SSH 权限和服务环境。')
@@ -167,7 +175,11 @@ def discover_native():
 
 
 def container_database(container, directory):
-    path = Path(directory) / 'x-ui.db'
+    return container_path(container, str(Path(directory) / 'x-ui.db'))
+
+
+def container_path(container, path):
+    path = Path(path)
     mounts = sorted(container.get('Mounts') or [], key=lambda m: len(m.get('Destination', '')), reverse=True)
     for mount in mounts:
         try:
@@ -193,19 +205,25 @@ def discover_docker():
         config = container.get('Config') or {}
         env = environment(config.get('Env') or [])
         image = config.get('Image', '')
-        cmd = ' '.join(config.get('Cmd') or [])
+        cmd = ' '.join([*(config.get('Entrypoint') or []), *(config.get('Cmd') or [])])
         paths = [mount.get('Destination', '') for mount in container.get('Mounts') or []]
-        if not (re.search(r'(^|[/\s])(?:3x-ui|x-ui)(?:[:/\s]|$)', image + ' ' + cmd)
-                or env.get('XUI_IN_DOCKER') == 'true' or '/etc/x-ui' in paths):
+        if not (re.search(r'(^|[/\s])(?:3x-ui|x-ui|3m-ui)(?:[:/\s]|$)', image + ' ' + cmd)
+                or env.get('XUI_IN_DOCKER') == 'true' or '/etc/x-ui' in paths or '/etc/3m-ui' in paths):
             continue
         identifier = container['Id']
-        result.append({'id': 'docker:' + identifier, 'name': container.get('Name', '').lstrip('/') or identifier[:12],
+        item = {'id': 'docker:' + identifier, 'name': container.get('Name', '').lstrip('/') or identifier[:12],
                        'kind': 'docker', 'running': bool(container.get('State', {}).get('Running')),
                        '_container': identifier, '_env': env,
                        '_database': container_database(container, env.get('XUI_DB_FOLDER') or '/etc/x-ui'),
                        '_network': container.get('HostConfig', {}).get('NetworkMode', ''),
                        '_ports': container.get('NetworkSettings', {}).get('Ports')
-                       or container.get('HostConfig', {}).get('PortBindings') or {}})
+                       or container.get('HostConfig', {}).get('PortBindings') or {}}
+        item['panelType'] = '3x-ui'
+        if '3m-ui' in image+' '+cmd or '/etc/3m-ui' in paths:
+            item['_container_info'] = container
+            item['_binary'] = '/usr/local/bin/3m-ui'
+            item = three_m_instance(item, cmd, config.get('WorkingDir') or '/')
+        result.append(item)
     return result
 
 
@@ -236,7 +254,7 @@ def read_tables(instance):
         raise InspectError('已发现 3x-ui，但数据库不可读；请检查数据库挂载、服务环境和 SSH 权限。')
     try:
         # mode=ro (not immutable) includes committed WAL records from a live panel.
-        with sqlite3.connect(Path(path).resolve().as_uri() + '?mode=ro', uri=True, timeout=2) as db:
+        with closing(sqlite3.connect(Path(path).resolve().as_uri() + '?mode=ro', uri=True, timeout=2)) as db:
             db.row_factory = sqlite3.Row
             db.execute('PRAGMA query_only=ON')
             db.execute('BEGIN')
@@ -471,27 +489,32 @@ def inbound_status(instance, inbound, data, host):
 
 def inspect_instance(instance, host):
     result = {key: instance[key] for key in ('id', 'name', 'kind', 'running')}
-    result.update({'inbounds': [], 'readable': False})
+    result.update({'inbounds': [], 'readable': False, 'panelType': instance.get('panelType','3x-ui')})
     try:
         if DEADLINE is not None and time.monotonic() >= DEADLINE:
             raise InspectError('读取超时，此实例暂未读取，请稍后重试。')
-        data = read_tables(instance)
-        result['truncated'] = any(len(rows) > MAX_ROWS for rows in data.values())
-        result['inbounds'] = [inbound_status(instance, inbound, data, host) for inbound in data['inbounds'][:MAX_ROWS]]
+        if instance.get('panelType') == '3m-ui':
+            result['inbounds'], result['truncated'] = three_m_status(instance)
+        else:
+            data = read_tables(instance)
+            result['truncated'] = any(len(rows) > MAX_ROWS for rows in data.values())
+            result['inbounds'] = [inbound_status(instance, inbound, data, host) for inbound in data['inbounds'][:MAX_ROWS]]
         result['readable'] = True
         result['message'] = '已读取现有配置' if result['inbounds'] else '服务已接入，尚未配置入站'
     except (InspectError, ValueError, KeyError) as error:
         result['message'] = str(error) if isinstance(error, InspectError) else '数据库结构暂时无法识别；原有配置未修改。'
     try:
-        if instance['kind'] == 'docker' and instance['running']:
+        if instance.get('panelType') == '3m-ui':
+            version = run(three_m_version_command(instance), merge_stderr=True)
+        elif instance['kind'] == 'docker' and instance['running']:
             version = run(['docker', 'exec', instance['_container'], '/app/x-ui', '-v'])
         elif instance.get('_binary') and Path(instance['_binary']).is_file():
             version = run([instance['_binary'], '-v'])
         else:
             version = ''
-        match = re.search(r'\b\d+\.\d+\.\d+(?:[-.][\w]+)*', version)
+        match = re.search(r'\bv?\d+\.\d+\.\d+(?:[-.][\w]+)*', version)
         if match:
-            result['panelVersion'] = match[0]
+            result['panelVersion'] = match[0].lstrip('v')
     except InspectError:
         pass
     return result
@@ -533,6 +556,17 @@ def installation_state():
 
 def owned_installation(instance):
     # An old .managed marker alone must never authorize overwriting a service.
+    if instance.get('panelType') == '3m-ui':
+        if (instance['kind'] != 'native' or
+                Path(instance.get('_database') or '/').resolve() != Path('/var/lib/3m-ui/3m-ui.db') or
+                Path(instance.get('_binary') or '/').resolve() != Path('/usr/local/lib/3m-ui/3m-ui-bin') or
+                instance.get('_config') != '/etc/3m-ui/config.yaml' or
+                not (ROOT / '3m-connection.json').is_file()):
+            return False
+        try:
+            return f'EnvironmentFile={ROOT}/3m-panel.env' in Path('/etc/systemd/system/3m-ui.service.d/20-5a-ui.conf').read_text().splitlines()
+        except OSError:
+            return False
     if (instance['kind'] != 'native'
             or Path(instance.get('_database', '')).resolve() != DEFAULT_DB.resolve()
             or Path(instance.get('_binary', '')).resolve() != DEFAULT_BINARY.resolve()
@@ -565,12 +599,12 @@ def status(host, only_existing=False):
             return {'error': {'code': 'DISCOVERY_FAILED', 'message': warnings[0]}}
         if only_existing:
             return None
-        return {'phase': 'not-installed', 'message': '这台服务器还没有部署 3x-ui，可以一键部署。'}
+        return {'phase': 'not-installed', 'message': '这台服务器还没有部署面板，可以选择 3x-ui 或 3m-ui 一键部署。'}
     results = [inspect_instance(instance, host) for instance in instances]
     readable = sum(item['readable'] for item in results)
     result = {'phase': 'ready' if readable else 'existing', 'installed': True,
             'running': any(item.get('running') is True for item in results), 'instances': results,
-              'message': f'发现 {len(results)} 个 3x-ui 实例，已读取 {readable} 个。', **host_metrics()}
+              'message': f'发现 {len(results)} 个面板实例，已读取 {readable} 个。', **host_metrics()}
     if warnings:
         result['message'] += warnings[0]
     result['traffic'] = {key: sum(inbound['traffic'][key] for item in results for inbound in item['inbounds']) for key in ('up', 'down')}
@@ -593,6 +627,146 @@ def encode_result(result):
     return json.dumps(result, ensure_ascii=False, separators=(',', ':'))
 
 
+
+def three_m_config(instance):
+    """Read connection facts only. Never initialize/reset an existing config.
+
+    Prefer PyYAML when installed. The dependency-free fallback accepts the
+    scalar mappings emitted by 3m-ui; complex syntax fails closed.
+    """
+    if instance.get('_config_error'):
+        raise InspectError(instance['_config_error'])
+    path = instance['_config']
+    if instance.get('_container_info'):
+        path = container_path(instance['_container_info'], path)
+    try:
+        raw = Path(path).read_text()
+        try:
+            import yaml
+        except ImportError:
+            if raw.lstrip().startswith('{'):
+                values = json.loads(raw)
+                raw = ''
+            else:
+                values = {}
+            section, seen = None, set()
+            for line in raw.splitlines():
+                if not line.strip() or line.lstrip().startswith('#'):
+                    continue
+                if not line.startswith(' '):
+                    match = re.fullmatch(r'([a-z_]+):\s*(?:#.*)?', line)
+                    if not match or match[1] in seen:
+                        raise ValueError('Unsupported YAML')
+                    section = match[1]
+                    seen.add(section)
+                    values[section] = {}
+                elif section in ('server','database','mihomo'):
+                    match = re.fullmatch(r' +([a-z_]+):\s*(.*)',line)
+                    if not match or match[1] in values[section]:
+                        raise ValueError('Unsupported YAML')
+                    key, value = match.groups()
+                    if value.startswith('"'):
+                        value = json.loads(value)
+                    elif value.startswith("'"):
+                        if not value.endswith("'"): raise ValueError('Unsupported YAML')
+                        value = value[1:-1].replace("''", "'")
+                    else:
+                        value = re.split(r'\s+#',value)[0].strip()
+                        if any(c in value for c in '{}[]&*!|>\t'):
+                            raise ValueError('Unsupported YAML')
+                    values[section][key] = value
+        else:
+            values = yaml.safe_load(raw)
+        if not isinstance(values,dict): raise ValueError('Invalid YAML')
+        server = dict(values.get('server',{}))
+        env = instance['_env']
+        for key, aliases in {'port':('THREE_M_UI_PORT','PANEL_PORT'), 'listen':('THREE_M_UI_LISTEN','PANEL_LISTEN')}.items():
+            for alias in aliases:
+                if env.get(alias):
+                    server[key] = env[alias]
+                    break
+        database = values['database']['path']
+        if not isinstance(database,str) or not database:
+            raise ValueError('Missing database path')
+        return {'server':server,'database':database,'mihomo':values.get('mihomo',{})}
+    except (OSError, ValueError, KeyError, TypeError):
+        raise InspectError('已发现 3m-ui，但配置无法安全读取。请检查配置路径 / 权限，或在管理页指定已有面板入口。') from None
+
+
+def three_m_instance(item, command='', cwd='/'):
+    item['panelType'] = '3m-ui'
+    item['_config'] = item['_env'].get('THREE_M_UI_CONFIG') or '/etc/3m-ui/config.yaml'
+    try:
+        args = shlex.split(command)
+        for index, value in enumerate(args):
+            if value in ('--config','-c'):
+                item['_config'] = args[index+1]
+            elif value.startswith('--config='):
+                item['_config'] = value.split('=',1)[1]
+        if not Path(item['_config']).is_absolute():
+            item['_config'] = str(Path(cwd) / item['_config'])
+        cfg = three_m_config(item)
+        path = str(Path(cwd) / cfg['database']) if not Path(cfg['database']).is_absolute() else cfg['database']
+        item['_database'] = container_path(item['_container_info'],path) if item.get('_container_info') else path
+        item['_core_binary'] = cfg['mihomo'].get('binary','')
+    except (InspectError, ValueError, IndexError) as error:
+        item['_database'] = ''
+        item['_config_error'] = str(error) if isinstance(error,InspectError) else '3m-ui 启动参数无法识别，请手动指定面板入口。'
+    return item
+
+
+def three_m_tables(instance):
+    if instance.get('_config_error'): raise InspectError(instance['_config_error'])
+    tables = ('listeners','proxy_users','listener_users','user_node_traffics')
+    try:
+        with closing(sqlite3.connect(Path(instance['_database']).resolve().as_uri()+'?mode=ro',uri=True,timeout=2)) as db:
+            db.row_factory=sqlite3.Row
+            db.execute('PRAGMA query_only=ON')
+            db.execute('BEGIN')
+            names={r[0] for r in db.execute("SELECT name FROM sqlite_master WHERE type='table'")}
+            if 'listeners' not in names: raise ValueError('Unknown schema')
+            return {name:[dict(r) for r in db.execute(f'SELECT * FROM "{name}" LIMIT ?', (MAX_ROWS+1,))]
+                    for name in tables if name in names}
+    except (sqlite3.Error,ValueError,OSError):
+        raise InspectError('已发现 3m-ui，但数据库无法读取。原配置未修改，可在管理页使用现有账号接入。') from None
+
+
+def three_m_status(instance):
+    import datetime
+    data = three_m_tables(instance)
+    result=[]
+    for listener in data['listeners'][:MAX_ROWS]:
+        if listener.get('deleted_at'): continue
+        identifier=listener['id']
+        bindings={b['proxy_user_id'] for b in data.get('listener_users',[]) if b['listener_id']==identifier and not b.get('deleted_at')}
+        clients=[]
+        for user in data.get('proxy_users',[])[:MAX_ROWS]:
+            if user['id'] not in bindings or user.get('deleted_at'): continue
+            expiry=0
+            try:
+                expiry=max(0,int(datetime.datetime.fromisoformat(user.get('expire_time','').replace('Z','+00:00')).timestamp()*1000))
+            except (ValueError,TypeError,OverflowError): pass
+            quota=number(user.get('traffic_limit'))
+            active=bool(user.get('enabled')) and (not quota or number(user.get('traffic_used'))<quota) and (not expiry or expiry>time.time()*1000)
+            clients.append({'id':str(user['id']),'name':short(user.get('username')),
+                'enabled':bool(user.get('enabled')),'available':active and bool(listener.get('enabled')),
+                'total':quota,'expiryTime':expiry,
+                'traffic':{'up':number(user.get('upload_bytes')),'down':number(user.get('download_bytes'))},
+                'linkMessage':'进入面板管理生成分享链接 / 订阅；不从加密数据库推测凭据。'})
+        rows=[t for t in data.get('user_node_traffics',[]) if t.get('listener_id')==identifier]
+        result.append({'id':str(identifier),'name':short(listener.get('name')),'protocol':short(listener.get('protocol')),
+            'port':number(listener.get('port')), 'enabled':bool(listener.get('enabled')), 'clients':clients,
+            'message':'端口 '+short(listener.get('port'))+' · 配置已读取，运行情况请在管理页检查',
+            'traffic':{'up':sum(number(t.get('upload_bytes')) for t in rows),'down':sum(number(t.get('download_bytes')) for t in rows)}})
+    return result, any(len(rows)>MAX_ROWS for rows in data.values())
+
+
+def three_m_version_command(instance):
+    if instance['kind']=='docker':
+        return ['docker','exec',instance['_container'],instance.get('_binary') or '/usr/local/bin/3m-ui','--version']
+    return [instance['_binary'],'--version']
+
+
 if __name__ == '__main__':
     try:
         host = base64.b64decode(sys.argv[1]).decode()
@@ -603,4 +777,4 @@ if __name__ == '__main__':
             print('5A_UI_RESULT=' + encode_result(result))
     except Exception:
         # Do not expose database DSNs, server paths or raw subprocess errors.
-        print('5A_UI_RESULT=' + json.dumps({'error': {'code': 'INSPECT_FAILED', 'message': '无法读取已有 3x-ui，请检查服务环境、Python 3 和数据库权限。'}}, ensure_ascii=False))
+        print('5A_UI_RESULT=' + json.dumps({'error': {'code': 'INSPECT_FAILED', 'message': '无法读取已有面板，请检查服务环境、Python 3 和数据库权限。'}}, ensure_ascii=False))

@@ -1,5 +1,5 @@
 import type { ConnectionInput, ServerStatus } from '../shared/types';
-import { JOB_SCRIPT, MANAGER_SCRIPT, INSTALL_TEMPLATE, STATUS_SCRIPT, INSPECTOR_SCRIPT } from './remote.generated';
+import { MIHOMO_JOB_SCRIPT, MIHOMO_MANAGER_SCRIPT, JOB_SCRIPT, MANAGER_SCRIPT, INSTALL_TEMPLATE, STATUS_SCRIPT, INSPECTOR_SCRIPT } from './remote.generated';
 import { AppError } from './errors';
 
 const inspect = (script: string, host: string) => script
@@ -9,9 +9,11 @@ export function statusScript(host: string): string { return inspect(STATUS_SCRIP
 
 export function installScript(input: ConnectionInput): string {
   const b64 = (text: string) => Buffer.from(text).toString('base64');
-  const config = JSON.stringify({ host: input.host, nodePort: input.nodePort ?? 443, realityServerName: input.realityServerName || '' });
+  const config = JSON.stringify({ host: input.host, panelType: input.panelType ?? '3x-ui', nodePort: input.nodePort ?? 443, realityServerName: input.realityServerName || '' });
   return inspect(INSTALL_TEMPLATE, input.host).replaceAll('@@CONFIG@@', b64(config))
     .replaceAll('@@JOB@@', b64(JOB_SCRIPT)).replaceAll('@@MANAGER@@', b64(MANAGER_SCRIPT))
+    .replaceAll('@@MIHOMO_JOB@@', Buffer.from(MIHOMO_JOB_SCRIPT).toString('base64'))
+    .replaceAll('@@MIHOMO_MANAGER@@', Buffer.from(MIHOMO_MANAGER_SCRIPT).toString('base64'))
     .replaceAll('@@NODE_PORT@@', String(input.nodePort ?? 443));
 }
 
@@ -45,6 +47,10 @@ export function parseRemoteResult(stdout: string): ServerStatus {
     } catch { /* Ignore malformed nodes; do not probe arbitrary destinations. */ }
   }
   if (Array.isArray(parsed.instances)) status.instances = instances(parsed.instances);
+  if (object(parsed.management)) {
+    const management = parsed.management;
+    status.management = Object.fromEntries(['result', 'revision', 'session'].filter(k => k in management).map(k => [k, management[k]]));
+  }
   return status as unknown as ServerStatus;
 }
 
@@ -77,7 +83,7 @@ function shareLink(value: unknown): boolean {
 function instances(values: unknown[]): Raw[] {
   return values.filter((item): item is Raw => object(item) && typeof item.id === 'string' && typeof item.name === 'string' &&
     ['native', 'docker'].includes(String(item.kind)) && Array.isArray(item.inbounds)).map(item => {
-    const instance = fields(item, ['id', 'name', 'kind', 'message', 'panelVersion'], ['running', 'readable', 'truncated'], []);
+    const instance = fields(item, ['id', 'name', 'kind', 'message', 'panelVersion', 'panelType'], ['running', 'readable', 'truncated'], []);
     instance.inbounds = (item.inbounds as unknown[]).filter((row): row is Raw => object(row) && typeof row.id === 'string' && typeof row.name === 'string' &&
       typeof row.protocol === 'string' && typeof row.port === 'number' && Number.isInteger(row.port) && row.port >= 0 && row.port <= 65535 && Array.isArray(row.clients)).map(row => {
       const inbound = fields(row, ['id', 'name', 'protocol', 'message'], ['enabled'], ['port']);

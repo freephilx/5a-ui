@@ -3,10 +3,22 @@ import 'dart:io';
 
 import 'package:five_a_server/app.dart';
 import 'package:five_a_core/ssh.dart';
+import 'package:five_a_core/five_a_core.dart';
 import 'package:http/http.dart' as http;
 import 'package:http/testing.dart';
 import 'package:shelf/shelf.dart';
 import 'package:test/test.dart';
+
+class FakeCloud implements CfnewGateway {
+  int calls = 0;
+  @override
+  void dispose() {}
+  @override
+  Future<Map<String, dynamic>> perform(CfnewInput input) async {
+    calls++;
+    return {'step': input.step, 'namespaceId': 'b' * 32};
+  }
+}
 
 void main() {
   const input = {
@@ -26,6 +38,47 @@ void main() {
     body: jsonEncode(data),
     context: {'clientIp': 'client'},
   );
+
+  test('cfnew uses protected API, validates and never invokes SSH', () async {
+    final cloud = FakeCloud();
+    final app = ApiApp(
+      cfnew: cloud,
+      ssh: (_, _) async => throw StateError('Unexpected SSH'),
+    );
+    addTearDown(app.close);
+    final raw = {
+      'accountId': 'a' * 32,
+      'apiToken': 'synthetic-token-0000000000',
+      'workerName': 'cfnew-fixture',
+      'uuid': '12345678-1234-4123-8123-123456789abc',
+      'step': 'prepare',
+    };
+    expect(
+      (await app.handle(
+        request(path: 'cfnew', data: raw, origin: 'https://other.example'),
+      )).statusCode,
+      403,
+    );
+    expect(
+      (await app.handle(request(path: 'cfnew', data: {}))).statusCode,
+      400,
+    );
+    final response = await app.handle(request(path: 'cfnew', data: raw));
+    expect(response.statusCode, 200);
+    expect(response.headers['cache-control'], 'no-store');
+    expect(await response.readAsString(), isNot(contains(raw['apiToken']!)));
+    expect(cloud.calls, 1);
+    final protected = ApiApp(
+      cfnew: cloud,
+      env: {'TURNSTILE_SITE_KEY': 'site', 'TURNSTILE_SECRET_KEY': 'secret'},
+    );
+    addTearDown(protected.close);
+    expect(
+      (await protected.handle(request(path: 'cfnew', data: raw))).statusCode,
+      403,
+    );
+    expect(cloud.calls, 1);
+  });
 
   test(
     'existing instances are returned without probing their client addresses',

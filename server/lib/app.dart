@@ -23,14 +23,20 @@ class ApiApp {
     this.ssh,
     this.probe,
     http.Client? captchaClient,
-  }) : _captchaClient = captchaClient ?? http.Client();
+    CfnewGateway? cfnew,
+  }) : _captchaClient = captchaClient ?? http.Client(),
+       _cfnew = cfnew ?? CfnewDeployer();
   final Map<String, String> env;
   final SshExecutor? ssh;
   final PortProbe? probe;
   final http.Client _captchaClient;
+  final CfnewGateway _cfnew;
   final _buckets = <String, ({int count, int expires})>{};
 
-  void close() => _captchaClient.close();
+  void close() {
+    _captchaClient.close();
+    _cfnew.dispose();
+  }
 
   Response _json(Object data, [int status = 200]) => Response(
     status,
@@ -55,8 +61,10 @@ class ApiApp {
         });
       }
       final action = switch (path) {
+        'api/cfnew' => ServerAction.status,
         'api/install' => ServerAction.install,
         'api/status' => ServerAction.status,
+        'api/manage' => ServerAction.manage,
         _ => null,
       };
       if (action == null) throw const AppException('NOT_FOUND', '此接口不存在。', 404);
@@ -71,12 +79,15 @@ class ApiApp {
       }
       final ip = request.context['clientIp'] as String? ?? 'unknown';
       _limit(ip, action);
+      final bodyLimit = action == ServerAction.manage
+          ? maxManagementBytes + maxBodyBytes
+          : maxBodyBytes;
       if (!(request.headers['content-type'] ?? '').startsWith(
         'application/json',
       )) {
         throw const AppException('CONTENT_TYPE', '请使用 JSON 格式提交连接信息。', 415);
       }
-      if ((request.contentLength ?? 0) > maxBodyBytes) {
+      if ((request.contentLength ?? 0) > bodyLimit) {
         throw const AppException(
           'BODY_TOO_LARGE',
           '连接信息过大，私钥文件最大支持 64 KB。',
@@ -87,7 +98,7 @@ class ApiApp {
       await for (final chunk in request.read().timeout(
         const Duration(seconds: 10),
       )) {
-        if (bytes.length + chunk.length > maxBodyBytes) {
+        if (bytes.length + chunk.length > bodyLimit) {
           throw const AppException(
             'BODY_TOO_LARGE',
             '连接信息过大，私钥文件最大支持 64 KB。',
@@ -101,6 +112,17 @@ class ApiApp {
         raw = jsonDecode(utf8.decode(bytes));
       } catch (_) {
         throw const AppException('INVALID_JSON', '连接信息格式不正确。');
+      }
+      if (path == 'api/cfnew') {
+        final input = CfnewInput.parse(raw);
+        if (input.step == 'prepare') _limit(ip, ServerAction.install);
+        final proof = await _authorize(
+          input.captchaIdentity,
+          ip,
+          Uri.parse(origin).host,
+        );
+        final result = await _cfnew.perform(input);
+        return _json({...result, 'proofToken': ?proof});
       }
       final input = validateInput(raw);
       final proof = await _authorize(input, ip, Uri.parse(origin).host);

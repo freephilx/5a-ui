@@ -1,0 +1,8 @@
+{
+  "version": "v3.1",
+  "commit": "a327f9ca5adac1f605fb2cd33415daad1d75d444",
+  "sourceUrl": "https://raw.githubusercontent.com/byJoey/cfnew/a327f9ca5adac1f605fb2cd33415daad1d75d444/%E6%98%8E%E6%96%87%E6%BA%90%E5%90%97",
+  "sha256": "3063f650b1337d3e689cae5fb7b4b7a18b4a3c0a8e7ac5a17b16156edcb4e92c",
+  "compatibilityDate": "2026-01-20",
+  "defaults": {"ev":"yes","et":"no","ex":"no","ena":"yes","epd":"no","epi":"no","egi":"no","yxby":"yes","dkby":"yes","jk":"no","ae":"no"}
+}

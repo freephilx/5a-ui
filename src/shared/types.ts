@@ -1,6 +1,7 @@
 export type LoginMethod = 'password' | 'key';
 
 export interface ConnectionInput {
+  management?: Record<string, unknown>;
   host: string;
   username: string;
   port: number;
@@ -10,6 +11,7 @@ export interface ConnectionInput {
   passphrase?: string;
   hostFingerprint?: string;
   nodePort?: number;
+  panelType?: '3x-ui' | '3m-ui';
   realityServerName?: string;
   turnstileToken?: string;
   proofToken?: string;
@@ -48,6 +50,7 @@ export interface InstanceStatus {
   id: string;
   name: string;
   kind: 'native' | 'docker';
+  panelType?: '3x-ui' | '3m-ui';
   running?: boolean;
   readable?: boolean;
   truncated?: boolean;
@@ -57,6 +60,7 @@ export interface InstanceStatus {
 }
 
 export interface ServerStatus {
+  management?: { result?: unknown; revision?: string; session?: unknown };
   phase: Phase;
   message: string;
   updatedAt?: string;

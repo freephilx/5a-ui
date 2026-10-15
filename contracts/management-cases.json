@@ -1,0 +1,241 @@
+[
+  {
+    "name": "session-only reads discard unrelated auth fields",
+    "input": {
+      "instanceId": "native:fixture.service",
+      "operation": "get_panel_api_inbounds_list",
+      "auth": {
+        "session": {
+          "cookie": "session=fixture",
+          "csrf": "fixture-csrf",
+          "ignored": "secret"
+        },
+        "ignored": "secret"
+      },
+      "parameters": {}
+    },
+    "expected": {
+      "instanceId": "native:fixture.service",
+      "operation": "get_panel_api_inbounds_list",
+      "auth": {
+        "session": {
+          "cookie": "session=fixture",
+          "csrf": "fixture-csrf"
+        }
+      },
+      "parameters": {}
+    }
+  },
+  {
+    "name": "write preserves complete protocol fields and optimistic revision",
+    "input": {
+      "instanceId": "docker:fixture",
+      "operation": "post_panel_api_inbounds_update_id",
+      "auth": {
+        "token": "synthetic-token"
+      },
+      "confirmed": true,
+      "parameters": {
+        "id": 1
+      },
+      "data": {
+        "streamSettings": {
+          "network": "xhttp",
+          "security": "tls",
+          "customFutureField": {
+            "value": true
+          }
+        }
+      },
+      "precondition": {
+        "operation": "get_panel_api_inbounds_get_id",
+        "parameters": {
+          "id": 1
+        },
+        "revision": "synthetic-revision"
+      }
+    },
+    "expected": {
+      "instanceId": "docker:fixture",
+      "operation": "post_panel_api_inbounds_update_id",
+      "auth": {
+        "token": "synthetic-token"
+      },
+      "confirmed": true,
+      "parameters": {
+        "id": 1
+      },
+      "data": {
+        "streamSettings": {
+          "network": "xhttp",
+          "security": "tls",
+          "customFutureField": {
+            "value": true
+          }
+        }
+      },
+      "precondition": {
+        "operation": "get_panel_api_inbounds_get_id",
+        "parameters": {
+          "id": 1
+        },
+        "revision": "synthetic-revision"
+      }
+    }
+  },
+  {
+    "name": "arbitrary endpoint is rejected",
+    "input": {
+      "instanceId": "native:fixture.service",
+      "operation": "http://example.test/private"
+    },
+    "error": "PANEL_INPUT"
+  },
+  {
+    "name": "header injection is rejected",
+    "input": {
+      "instanceId": "native:fixture.service",
+      "operation": "catalog",
+      "auth": {
+        "token": "synthetic\r\nInjected: header"
+      }
+    },
+    "error": "PANEL_INPUT"
+  },
+  {
+    "name": "session header injection is rejected",
+    "input": {
+      "instanceId": "native:fixture.service",
+      "operation": "catalog",
+      "auth": {
+        "session": {
+          "cookie": "x\nInjected: header",
+          "csrf": "fixture"
+        }
+      }
+    },
+    "error": "PANEL_INPUT"
+  },
+  {
+    "name": "invalid instance is rejected",
+    "input": {
+      "instanceId": "http://example.test",
+      "operation": "catalog"
+    },
+    "error": "PANEL_INPUT"
+  },
+  {
+    "name": "invalid parameters are rejected",
+    "input": {
+      "instanceId": "native:fixture.service",
+      "operation": "catalog",
+      "parameters": []
+    },
+    "error": "PANEL_INPUT"
+  },
+  {
+    "name": "explicit local endpoint preserves only allowed fields",
+    "input": {
+      "instanceId": "docker:fixture",
+      "operation": "catalog",
+      "endpoint": {
+        "port": 2053,
+        "path": "/fixture/",
+        "https": true,
+        "domain": "panel.example.test",
+        "ignored": "secret"
+      }
+    },
+    "expected": {
+      "instanceId": "docker:fixture",
+      "operation": "catalog",
+      "endpoint": {
+        "port": 2053,
+        "path": "/fixture/",
+        "https": true,
+        "domain": "panel.example.test"
+      },
+      "auth": {}
+    }
+  },
+  {
+    "name": "nonlocal endpoint is rejected",
+    "input": {
+      "instanceId": "docker:fixture",
+      "operation": "catalog",
+      "endpoint": {
+        "port": 2053,
+        "path": "/",
+        "listen": "8.8.8.8"
+      }
+    },
+    "error": "PANEL_INPUT"
+  },
+  {
+    "name": "path injection is rejected",
+    "input": {
+      "instanceId": "docker:fixture",
+      "operation": "catalog",
+      "endpoint": {
+        "port": 2053,
+        "path": "/a?redirect=/"
+      }
+    },
+    "error": "PANEL_INPUT"
+  },
+  {
+    "name": "invalid port is rejected",
+    "input": {
+      "instanceId": "docker:fixture",
+      "operation": "catalog",
+      "endpoint": {
+        "port": 0,
+        "path": "/"
+      }
+    },
+    "error": "PANEL_INPUT"
+  },
+  {
+    "name": "3m JWT session resume",
+    "input": {
+      "instanceId": "docker:mihomo-fixture",
+      "operation": "3m.get.listeners",
+      "auth": {
+        "session": {
+          "cookie": "",
+          "csrf": "",
+          "bearer": "synthetic-jwt"
+        }
+      },
+      "parameters": {}
+    },
+    "expected": {
+      "instanceId": "docker:mihomo-fixture",
+      "operation": "3m.get.listeners",
+      "auth": {
+        "session": {
+          "cookie": "",
+          "csrf": "",
+          "bearer": "synthetic-jwt"
+        }
+      },
+      "parameters": {}
+    }
+  },
+  {
+    "name": "reject 3m JWT header injection",
+    "input": {
+      "instanceId": "docker:mihomo-fixture",
+      "operation": "3m.get.listeners",
+      "auth": {
+        "session": {
+          "cookie": "",
+          "csrf": "",
+          "bearer": "synthetic\r\nAuthorization: injected"
+        }
+      },
+      "parameters": {}
+    },
+    "error": "PANEL_INPUT"
+  }
+]

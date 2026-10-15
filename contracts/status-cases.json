@@ -2,69 +2,326 @@
   {
     "name": "existing native instance retains clients and strips panel secrets",
     "input": {
-      "phase": "ready", "message": "已接入", "installed": true, "running": true,
+      "phase": "ready",
+      "message": "已接入",
+      "installed": true,
+      "running": true,
       "apiToken": "panel-secret",
-      "instances": [{
-        "id": "native:x-ui.service", "name": "x-ui.service", "kind": "native",
-        "running": true, "readable": true, "panelVersion": "3.10.0", "databasePassword": "db-secret",
-        "inbounds": [{
-          "id": "7", "name": "Existing VLESS", "protocol": "vless", "port": 443, "enabled": true,
-          "settings": "private-server-key", "traffic": {"up": 12, "down": 34, "token": "nested-secret"},
-          "clients": [{
-            "id": "0", "name": "alice", "enabled": true, "available": true, "message": "已启用",
-            "total": 1024, "expiryTime": 0, "traffic": {"up": 1, "down": 2},
-            "host": "8.8.8.8", "port": 443, "serverName": "www.example.com",
-            "link": "vless://client-uuid@8.8.8.8:443?security=reality&pbk=public-key",
-            "privateKey": "private-secret", "apiToken": "nested-token"
-          }]
-        }]
-      }]
+      "instances": [
+        {
+          "id": "native:x-ui.service",
+          "name": "x-ui.service",
+          "kind": "native",
+          "running": true,
+          "readable": true,
+          "panelVersion": "3.10.0",
+          "databasePassword": "db-secret",
+          "inbounds": [
+            {
+              "id": "7",
+              "name": "Existing VLESS",
+              "protocol": "vless",
+              "port": 443,
+              "enabled": true,
+              "settings": "private-server-key",
+              "traffic": {
+                "up": 12,
+                "down": 34,
+                "token": "nested-secret"
+              },
+              "clients": [
+                {
+                  "id": "0",
+                  "name": "alice",
+                  "enabled": true,
+                  "available": true,
+                  "message": "已启用",
+                  "total": 1024,
+                  "expiryTime": 0,
+                  "traffic": {
+                    "up": 1,
+                    "down": 2
+                  },
+                  "host": "8.8.8.8",
+                  "port": 443,
+                  "serverName": "www.example.com",
+                  "link": "vless://client-uuid@8.8.8.8:443?security=reality&pbk=public-key",
+                  "privateKey": "private-secret",
+                  "apiToken": "nested-token"
+                }
+              ]
+            }
+          ]
+        }
+      ]
     },
     "expected": {
-      "phase": "ready", "message": "已接入", "installed": true, "running": true,
-      "instances": [{
-        "id": "native:x-ui.service", "name": "x-ui.service", "kind": "native",
-        "running": true, "readable": true, "panelVersion": "3.10.0",
-        "inbounds": [{
-          "id": "7", "name": "Existing VLESS", "protocol": "vless", "port": 443, "enabled": true,
-          "traffic": {"up": 12, "down": 34},
-          "clients": [{
-            "id": "0", "name": "alice", "enabled": true, "available": true, "message": "已启用",
-            "total": 1024, "expiryTime": 0, "traffic": {"up": 1, "down": 2},
-            "host": "8.8.8.8", "port": 443, "serverName": "www.example.com",
-            "link": "vless://client-uuid@8.8.8.8:443?security=reality&pbk=public-key"
-          }]
-        }]
-      }]
+      "phase": "ready",
+      "message": "已接入",
+      "installed": true,
+      "running": true,
+      "instances": [
+        {
+          "id": "native:x-ui.service",
+          "name": "x-ui.service",
+          "kind": "native",
+          "running": true,
+          "readable": true,
+          "panelVersion": "3.10.0",
+          "inbounds": [
+            {
+              "id": "7",
+              "name": "Existing VLESS",
+              "protocol": "vless",
+              "port": 443,
+              "enabled": true,
+              "traffic": {
+                "up": 12,
+                "down": 34
+              },
+              "clients": [
+                {
+                  "id": "0",
+                  "name": "alice",
+                  "enabled": true,
+                  "available": true,
+                  "message": "已启用",
+                  "total": 1024,
+                  "expiryTime": 0,
+                  "traffic": {
+                    "up": 1,
+                    "down": 2
+                  },
+                  "host": "8.8.8.8",
+                  "port": 443,
+                  "serverName": "www.example.com",
+                  "link": "vless://client-uuid@8.8.8.8:443?security=reality&pbk=public-key"
+                }
+              ]
+            }
+          ]
+        }
+      ]
     }
   },
   {
     "name": "unreadable stopped instance remains visible",
-    "input": {"phase": "existing", "message": "无法读取数据库", "installed": true, "running": false, "truncated": true,
-      "instances": [{"id": "docker:fixture", "name": "existing-container", "kind": "docker", "running": false,
-        "readable": false, "message": "数据库不可读", "_env": {"XUI_DB_DSN": "secret"}, "inbounds": []},
-        {"id": "bad", "name": "bad", "kind": "unknown", "inbounds": []}]},
-    "expected": {"phase": "existing", "message": "无法读取数据库", "installed": true, "running": false, "truncated": true,
-      "instances": [{"id": "docker:fixture", "name": "existing-container", "kind": "docker", "running": false,
-        "readable": false, "message": "数据库不可读", "inbounds": []}]}
+    "input": {
+      "phase": "existing",
+      "message": "无法读取数据库",
+      "installed": true,
+      "running": false,
+      "truncated": true,
+      "instances": [
+        {
+          "id": "docker:fixture",
+          "name": "existing-container",
+          "kind": "docker",
+          "running": false,
+          "readable": false,
+          "message": "数据库不可读",
+          "_env": {
+            "XUI_DB_DSN": "secret"
+          },
+          "inbounds": []
+        },
+        {
+          "id": "bad",
+          "name": "bad",
+          "kind": "unknown",
+          "inbounds": []
+        }
+      ]
+    },
+    "expected": {
+      "phase": "existing",
+      "message": "无法读取数据库",
+      "installed": true,
+      "running": false,
+      "truncated": true,
+      "instances": [
+        {
+          "id": "docker:fixture",
+          "name": "existing-container",
+          "kind": "docker",
+          "running": false,
+          "readable": false,
+          "message": "数据库不可读",
+          "inbounds": []
+        }
+      ]
+    }
   },
   {
     "name": "invalid links and unknown secrets are removed but clients remain",
-    "input": {"phase": "ready", "message": "ok", "instances": [{"id": "native:test", "name": "test", "kind": "native", "inbounds": [
-      {"id": "1", "name": "mixed", "protocol": "trojan", "port": 8443, "clients": [
-        {"id": "0", "name": "invalid", "host": "8.8.8.8", "port": 8443, "serverName": "", "link": "javascript:alert(1)", "password": "secret"},
-        {"id": "1", "name": "trojan", "host": "8.8.8.8", "port": 8443, "serverName": "example.com", "link": "trojan://client%40password@8.8.8.8:8443?security=tls", "expiryTime": -86400000},
-        {"id": "2", "name": "ss", "host": "8.8.8.8", "port": 443, "serverName": "", "link": "ss://YWVzLTEyOC1nY206cGFzcw@8.8.8.8:443#node"},
-        {"id": "3", "name": "vmess", "host": "8.8.8.8", "port": 443, "serverName": "", "link": "vmess://eyJhZGQiOiI4LjguOC44IiwicG9ydCI6NDQzLCJpZCI6InV1aWQifQ=="},
-        {"id": "4", "name": "broken-vmess", "host": "8.8.8.8", "port": 443, "serverName": "", "link": "vmess://!!eyJhZGQiOiI4LjguOC44IiwicG9ydCI6NDQzLCJpZCI6InV1aWQifQ=="}
-      ]}, {"id": "bad", "name": "bad", "protocol": "vless", "port": 70000, "clients": []}]}]},
-    "expected": {"phase": "ready", "message": "ok", "instances": [{"id": "native:test", "name": "test", "kind": "native", "inbounds": [
-      {"id": "1", "name": "mixed", "protocol": "trojan", "port": 8443, "clients": [
-        {"id": "0", "name": "invalid"},
-        {"id": "1", "name": "trojan", "host": "8.8.8.8", "port": 8443, "serverName": "example.com", "link": "trojan://client%40password@8.8.8.8:8443?security=tls", "expiryTime": -86400000},
-        {"id": "2", "name": "ss", "host": "8.8.8.8", "port": 443, "serverName": "", "link": "ss://YWVzLTEyOC1nY206cGFzcw@8.8.8.8:443#node"},
-        {"id": "3", "name": "vmess", "host": "8.8.8.8", "port": 443, "serverName": "", "link": "vmess://eyJhZGQiOiI4LjguOC44IiwicG9ydCI6NDQzLCJpZCI6InV1aWQifQ=="},
-        {"id": "4", "name": "broken-vmess"}
-      ]}]}]}
+    "input": {
+      "phase": "ready",
+      "message": "ok",
+      "instances": [
+        {
+          "id": "native:test",
+          "name": "test",
+          "kind": "native",
+          "inbounds": [
+            {
+              "id": "1",
+              "name": "mixed",
+              "protocol": "trojan",
+              "port": 8443,
+              "clients": [
+                {
+                  "id": "0",
+                  "name": "invalid",
+                  "host": "8.8.8.8",
+                  "port": 8443,
+                  "serverName": "",
+                  "link": "javascript:alert(1)",
+                  "password": "secret"
+                },
+                {
+                  "id": "1",
+                  "name": "trojan",
+                  "host": "8.8.8.8",
+                  "port": 8443,
+                  "serverName": "example.com",
+                  "link": "trojan://client%40password@8.8.8.8:8443?security=tls",
+                  "expiryTime": -86400000
+                },
+                {
+                  "id": "2",
+                  "name": "ss",
+                  "host": "8.8.8.8",
+                  "port": 443,
+                  "serverName": "",
+                  "link": "ss://YWVzLTEyOC1nY206cGFzcw@8.8.8.8:443#node"
+                },
+                {
+                  "id": "3",
+                  "name": "vmess",
+                  "host": "8.8.8.8",
+                  "port": 443,
+                  "serverName": "",
+                  "link": "vmess://eyJhZGQiOiI4LjguOC44IiwicG9ydCI6NDQzLCJpZCI6InV1aWQifQ=="
+                },
+                {
+                  "id": "4",
+                  "name": "broken-vmess",
+                  "host": "8.8.8.8",
+                  "port": 443,
+                  "serverName": "",
+                  "link": "vmess://!!eyJhZGQiOiI4LjguOC44IiwicG9ydCI6NDQzLCJpZCI6InV1aWQifQ=="
+                }
+              ]
+            },
+            {
+              "id": "bad",
+              "name": "bad",
+              "protocol": "vless",
+              "port": 70000,
+              "clients": []
+            }
+          ]
+        }
+      ]
+    },
+    "expected": {
+      "phase": "ready",
+      "message": "ok",
+      "instances": [
+        {
+          "id": "native:test",
+          "name": "test",
+          "kind": "native",
+          "inbounds": [
+            {
+              "id": "1",
+              "name": "mixed",
+              "protocol": "trojan",
+              "port": 8443,
+              "clients": [
+                {
+                  "id": "0",
+                  "name": "invalid"
+                },
+                {
+                  "id": "1",
+                  "name": "trojan",
+                  "host": "8.8.8.8",
+                  "port": 8443,
+                  "serverName": "example.com",
+                  "link": "trojan://client%40password@8.8.8.8:8443?security=tls",
+                  "expiryTime": -86400000
+                },
+                {
+                  "id": "2",
+                  "name": "ss",
+                  "host": "8.8.8.8",
+                  "port": 443,
+                  "serverName": "",
+                  "link": "ss://YWVzLTEyOC1nY206cGFzcw@8.8.8.8:443#node"
+                },
+                {
+                  "id": "3",
+                  "name": "vmess",
+                  "host": "8.8.8.8",
+                  "port": 443,
+                  "serverName": "",
+                  "link": "vmess://eyJhZGQiOiI4LjguOC44IiwicG9ydCI6NDQzLCJpZCI6InV1aWQifQ=="
+                },
+                {
+                  "id": "4",
+                  "name": "broken-vmess"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  },
+  {
+    "name": "mixed panel types survive parsing",
+    "input": {
+      "phase": "ready",
+      "message": "synthetic dual panel",
+      "instances": [
+        {
+          "id": "native:mihomo",
+          "name": "Mihomo fixture",
+          "kind": "native",
+          "panelType": "3m-ui",
+          "readable": true,
+          "inbounds": []
+        },
+        {
+          "id": "native:xray",
+          "name": "Xray fixture",
+          "kind": "native",
+          "panelType": "3x-ui",
+          "inbounds": []
+        }
+      ]
+    },
+    "expected": {
+      "phase": "ready",
+      "message": "synthetic dual panel",
+      "instances": [
+        {
+          "id": "native:mihomo",
+          "name": "Mihomo fixture",
+          "kind": "native",
+          "panelType": "3m-ui",
+          "readable": true,
+          "inbounds": []
+        },
+        {
+          "id": "native:xray",
+          "name": "Xray fixture",
+          "kind": "native",
+          "panelType": "3x-ui",
+          "inbounds": []
+        }
+      ]
+    }
   }
 ]

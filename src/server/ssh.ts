@@ -5,7 +5,7 @@ import type { ConnectionInput } from '../shared/types';
 import { AppError } from './errors';
 
 const { Client, utils } = ssh2;
-const MAX_OUTPUT = 128 * 1024;
+const MAX_OUTPUT = 4 * 1024 * 1024;
 
 export function validatePrivateKey(input: ConnectionInput): string | undefined {
   if (input.authMethod !== 'key') return;
@@ -43,7 +43,7 @@ export async function runSSH(input: ConnectionInput, script: string, timeoutMs =
     let fingerprint = '';
     let stdout = '';
     const decoder = new StringDecoder('utf8');
-    const timer = setTimeout(() => finish(new AppError('SSH_TIMEOUT', '服务器响应超时。已启动的安装任务会继续运行，可重新读取状态。', 504)), timeoutMs);
+    const timer = setTimeout(() => finish(new AppError('SSH_TIMEOUT', '服务器响应超时。安装会继续；配置操作可能已生效，请重新读取后确认。', 504)), timeoutMs);
     function finish(error?: Error) {
       if (settled) return;
       settled = true;

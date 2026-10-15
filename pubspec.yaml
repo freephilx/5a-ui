@@ -1,5 +1,5 @@
 name: five_a_ui
-description: Cross-platform 3x-ui deployment and server status manager.
+description: Cross-platform 3x-ui and 3m-ui deployment and management.
 publish_to: none
 version: 0.2.0+2
 environment:
@@ -16,6 +16,7 @@ dependencies:
   file_picker: ^10.3.10
   qr_flutter: ^4.1.0
   web: ^1.1.1
+  flutter_secure_storage: ^10.0.0
 dev_dependencies:
   flutter_test:
     sdk: flutter

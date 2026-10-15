@@ -68,6 +68,14 @@ exit 0
 
   fi
 fi
+previous_type=$(python3 -c 'import json,pathlib; p=pathlib.Path("/var/lib/5a-ui/request.json"); print(json.loads(p.read_text()).get("panelType","3x-ui") if p.exists() else "")')
+next_type=$(printf '%s' '@@CONFIG@@' | base64 -d | python3 -c 'import json,sys; print(json.load(sys.stdin).get("panelType","3x-ui"))')
+if [ -n "$previous_type" ] && [ "$previous_type" != "$next_type" ]; then
+  printf '%s\n' '5A_UI_RESULT={"error":{"code":"PANEL_TYPE_CONFLICT","message":"此服务器已有另一类型的部署记录，请选择原面板类型恢复安装。"}}'
+  exit 0
+fi
+printf '%s' '@@MIHOMO_JOB@@' | base64 -d >'/var/lib/5a-ui/job_3m.sh'
+printf '%s' '@@MIHOMO_MANAGER@@' | base64 -d >'/var/lib/5a-ui/manage_3m.py'
 printf '%s' '@@CONFIG@@' | base64 -d >'/var/lib/5a-ui/request.json'
 printf '%s' '@@JOB@@' | base64 -d >'/var/lib/5a-ui/job.sh'
 printf '%s' '@@MANAGER@@' | base64 -d >'/var/lib/5a-ui/manage.py'

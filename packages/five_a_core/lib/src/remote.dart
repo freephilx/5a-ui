@@ -14,11 +14,20 @@ String statusScript(String host) => _inspect(embedded.statusScript, host);
 String installScript(ConnectionInput input) {
   final config = jsonEncode({
     'host': input.host,
+    'panelType': input.panelType,
     'nodePort': input.nodePort,
     'realityServerName': input.realityServerName ?? '',
   });
   return _inspect(embedded.installTemplate, input.host)
       .replaceAll('@@CONFIG@@', base64Encode(utf8.encode(config)))
+      .replaceAll(
+        '@@MIHOMO_JOB@@',
+        base64Encode(utf8.encode(embedded.mihomoJobScript)),
+      )
+      .replaceAll(
+        '@@MIHOMO_MANAGER@@',
+        base64Encode(utf8.encode(embedded.mihomoManagerScript)),
+      )
       .replaceAll('@@JOB@@', base64Encode(utf8.encode(embedded.jobScript)))
       .replaceAll(
         '@@MANAGER@@',
@@ -117,6 +126,13 @@ ServerStatus parseStatus(Object? value) {
   if (value['instances'] is List) {
     result['instances'] = _instances(value['instances'] as List);
   }
+  if (value['management'] is Map<String, dynamic>) {
+    final management = value['management'] as Map<String, dynamic>;
+    result['management'] = {
+      for (final key in ['result', 'revision', 'session'])
+        if (management.containsKey(key)) key: management[key],
+    };
+  }
   return ServerStatus(result);
 }
 
@@ -200,7 +216,7 @@ List<Map<String, dynamic>> _instances(List values) {
     }
     final instance = _fields(
       item,
-      ['id', 'name', 'kind', 'message', 'panelVersion'],
+      ['id', 'name', 'kind', 'message', 'panelVersion', 'panelType'],
       ['running', 'readable', 'truncated'],
       [],
     );

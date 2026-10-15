@@ -1,16 +1,25 @@
 import 'dart:js_interop';
+import 'dart:convert';
+import 'dart:typed_data';
 
 import 'package:web/web.dart' as web;
 
 Future<bool> saveNode(String link) async {
+  return saveData(
+    Uint8List.fromList(utf8.encode('$link\n')),
+    '5a-ui-vless.txt',
+  );
+}
+
+Future<bool> saveData(Uint8List bytes, String filename) async {
   final blob = web.Blob(
-    ['$link\n'.toJS].toJS,
-    web.BlobPropertyBag(type: 'text/plain;charset=utf-8'),
+    [bytes.toJS].toJS,
+    web.BlobPropertyBag(type: 'application/octet-stream'),
   );
   final url = web.URL.createObjectURL(blob);
   final anchor = web.HTMLAnchorElement()
     ..href = url
-    ..download = '5a-ui-vless.txt';
+    ..download = filename;
   web.document.body!.append(anchor);
   anchor.click();
   anchor.remove();

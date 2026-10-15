@@ -1,0 +1,4391 @@
+[
+  {
+    "id": "3m.delete.cluster.{id}",
+    "panelType": "3m-ui",
+    "method": "DELETE",
+    "path": "/cluster/{id}",
+    "group": "3m-cluster",
+    "label": "Remove remote panel registration",
+    "write": true,
+    "since": "1.4.1",
+    "encoding": "application/json",
+    "parameters": [
+      {
+        "in": "path",
+        "name": "id",
+        "required": true,
+        "schema": {
+          "type": "integer"
+        }
+      }
+    ],
+    "body": {}
+  },
+  {
+    "id": "3m.delete.cluster.{id}.nodes.{nodeId}",
+    "panelType": "3m-ui",
+    "method": "DELETE",
+    "path": "/cluster/{id}/nodes/{nodeId}",
+    "group": "3m-cluster",
+    "label": "DELETE /cluster/{id}/nodes/{nodeId}",
+    "write": true,
+    "since": "1.4.1",
+    "encoding": "application/json",
+    "parameters": [
+      {
+        "in": "path",
+        "name": "id",
+        "required": true,
+        "schema": {
+          "type": "integer"
+        }
+      },
+      {
+        "in": "path",
+        "name": "nodeId",
+        "required": true,
+        "schema": {
+          "type": "integer"
+        }
+      }
+    ],
+    "body": {}
+  },
+  {
+    "id": "3m.delete.config.proxies.{index}",
+    "panelType": "3m-ui",
+    "method": "DELETE",
+    "path": "/config/proxies/{index}",
+    "group": "3m-config",
+    "label": "DELETE /config/proxies/{index}",
+    "write": true,
+    "since": "1.4.1",
+    "encoding": "application/json",
+    "parameters": [
+      {
+        "in": "path",
+        "name": "index",
+        "required": true,
+        "schema": {
+          "type": "integer"
+        }
+      }
+    ],
+    "body": {}
+  },
+  {
+    "id": "3m.delete.listeners.templates.{id}",
+    "panelType": "3m-ui",
+    "method": "DELETE",
+    "path": "/listeners/templates/{id}",
+    "group": "3m-listeners",
+    "label": "DELETE /listeners/templates/{id}",
+    "write": true,
+    "since": "1.4.1",
+    "encoding": "application/json",
+    "parameters": [
+      {
+        "in": "path",
+        "name": "id",
+        "required": true,
+        "schema": {
+          "type": "integer"
+        }
+      }
+    ],
+    "body": {}
+  },
+  {
+    "id": "3m.delete.listeners.{id}",
+    "panelType": "3m-ui",
+    "method": "DELETE",
+    "path": "/listeners/{id}",
+    "group": "3m-listeners",
+    "label": "Delete listener",
+    "write": true,
+    "since": "1.4.1",
+    "encoding": "application/json",
+    "parameters": [
+      {
+        "in": "path",
+        "name": "id",
+        "required": true,
+        "schema": {
+          "type": "integer"
+        }
+      }
+    ],
+    "body": {}
+  },
+  {
+    "id": "3m.delete.nodes.templates.{id}",
+    "panelType": "3m-ui",
+    "method": "DELETE",
+    "path": "/nodes/templates/{id}",
+    "group": "3m-nodes",
+    "label": "DELETE /nodes/templates/{id}",
+    "write": true,
+    "since": "1.4.1",
+    "encoding": "application/json",
+    "parameters": [
+      {
+        "in": "path",
+        "name": "id",
+        "required": true,
+        "schema": {
+          "type": "integer"
+        }
+      }
+    ],
+    "body": {}
+  },
+  {
+    "id": "3m.delete.nodes.{id}",
+    "panelType": "3m-ui",
+    "method": "DELETE",
+    "path": "/nodes/{id}",
+    "group": "3m-nodes",
+    "label": "Delete listener",
+    "write": true,
+    "since": "1.4.1",
+    "encoding": "application/json",
+    "parameters": [
+      {
+        "in": "path",
+        "name": "id",
+        "required": true,
+        "schema": {
+          "type": "integer"
+        }
+      }
+    ],
+    "body": {}
+  },
+  {
+    "id": "3m.delete.system.backups.{name}",
+    "panelType": "3m-ui",
+    "method": "DELETE",
+    "path": "/system/backups/{name}",
+    "group": "3m-system",
+    "label": "Delete one on-disk backup",
+    "write": true,
+    "since": "1.4.1",
+    "encoding": "application/json",
+    "parameters": [
+      {
+        "name": "name",
+        "in": "path",
+        "required": true,
+        "schema": {
+          "type": "string"
+        }
+      }
+    ],
+    "body": {}
+  },
+  {
+    "id": "3m.delete.system.warp",
+    "panelType": "3m-ui",
+    "method": "DELETE",
+    "path": "/system/warp",
+    "group": "3m-system",
+    "label": "Delete persisted WARP account",
+    "write": true,
+    "since": "1.4.1",
+    "encoding": "application/json",
+    "parameters": [],
+    "body": {}
+  },
+  {
+    "id": "3m.delete.users.{id}",
+    "panelType": "3m-ui",
+    "method": "DELETE",
+    "path": "/users/{id}",
+    "group": "3m-users",
+    "label": "Delete proxy user (soft-delete; unique name/username freed)",
+    "write": true,
+    "since": "1.4.1",
+    "encoding": "application/json",
+    "parameters": [
+      {
+        "in": "path",
+        "name": "id",
+        "required": true,
+        "schema": {
+          "type": "integer"
+        }
+      }
+    ],
+    "body": {}
+  },
+  {
+    "id": "3m.delete.users.{id}.telegram",
+    "panelType": "3m-ui",
+    "method": "DELETE",
+    "path": "/users/{id}/telegram",
+    "group": "3m-users",
+    "label": "DELETE /users/{id}/telegram",
+    "write": true,
+    "since": "1.4.1",
+    "encoding": "application/json",
+    "parameters": [
+      {
+        "in": "path",
+        "name": "id",
+        "required": true,
+        "schema": {
+          "type": "integer"
+        }
+      }
+    ],
+    "body": {}
+  },
+  {
+    "id": "3m.delete.{id}",
+    "panelType": "3m-ui",
+    "method": "DELETE",
+    "path": "/{id}",
+    "group": "3m-access-tokens",
+    "label": "DELETE /{id}",
+    "write": true,
+    "since": "1.4.1",
+    "encoding": "application/json",
+    "parameters": [
+      {
+        "in": "path",
+        "name": "id",
+        "required": true,
+        "schema": {
+          "type": "integer"
+        }
+      }
+    ],
+    "body": {}
+  },
+  {
+    "id": "3m.get.",
+    "panelType": "3m-ui",
+    "method": "GET",
+    "path": "",
+    "group": "3m-access-tokens",
+    "label": "GET ",
+    "write": false,
+    "since": "1.4.1",
+    "encoding": "application/json",
+    "parameters": [],
+    "body": {}
+  },
+  {
+    "id": "3m.get.auth.me",
+    "panelType": "3m-ui",
+    "method": "GET",
+    "path": "/auth/me",
+    "group": "3m-auth",
+    "label": "Current admin profile",
+    "write": false,
+    "since": "1.4.1",
+    "encoding": "application/json",
+    "parameters": [],
+    "body": {}
+  },
+  {
+    "id": "3m.get.auth.oauth.github",
+    "panelType": "3m-ui",
+    "method": "GET",
+    "path": "/auth/oauth/github",
+    "group": "3m-auth",
+    "label": "Public GitHub OAuth status (enabled + client_id)",
+    "write": false,
+    "since": "1.4.1",
+    "encoding": "application/json",
+    "parameters": [],
+    "body": {}
+  },
+  {
+    "id": "3m.get.auth.oauth.github.settings",
+    "panelType": "3m-ui",
+    "method": "GET",
+    "path": "/auth/oauth/github/settings",
+    "group": "3m-auth",
+    "label": "Get GitHub OAuth settings (admin)",
+    "write": false,
+    "since": "1.4.1",
+    "encoding": "application/json",
+    "parameters": [],
+    "body": {}
+  },
+  {
+    "id": "3m.get.capabilities",
+    "panelType": "3m-ui",
+    "method": "GET",
+    "path": "/capabilities",
+    "group": "3m-capabilities",
+    "label": "GET /capabilities",
+    "write": false,
+    "since": "1.4.1",
+    "encoding": "application/json",
+    "parameters": [],
+    "body": {}
+  },
+  {
+    "id": "3m.get.cluster",
+    "panelType": "3m-ui",
+    "method": "GET",
+    "path": "/cluster",
+    "group": "3m-cluster",
+    "label": "List remote 3m-ui panels",
+    "write": false,
+    "since": "1.4.1",
+    "encoding": "application/json",
+    "parameters": [],
+    "body": {}
+  },
+  {
+    "id": "3m.get.cluster.mirrored-nodes",
+    "panelType": "3m-ui",
+    "method": "GET",
+    "path": "/cluster/mirrored-nodes",
+    "group": "3m-cluster",
+    "label": "List synced remote node mirrors (for sub merge)",
+    "write": false,
+    "since": "1.4.1",
+    "encoding": "application/json",
+    "parameters": [
+      {
+        "in": "query",
+        "name": "remote_server_id",
+        "schema": {
+          "type": "integer"
+        }
+      }
+    ],
+    "body": {}
+  },
+  {
+    "id": "3m.get.cluster.{id}.dashboard",
+    "panelType": "3m-ui",
+    "method": "GET",
+    "path": "/cluster/{id}/dashboard",
+    "group": "3m-cluster",
+    "label": "Proxy remote dashboard",
+    "write": false,
+    "since": "1.4.1",
+    "encoding": "application/json",
+    "parameters": [
+      {
+        "in": "path",
+        "name": "id",
+        "required": true,
+        "schema": {
+          "type": "integer"
+        }
+      }
+    ],
+    "body": {}
+  },
+  {
+    "id": "3m.get.cluster.{id}.nodes",
+    "panelType": "3m-ui",
+    "method": "GET",
+    "path": "/cluster/{id}/nodes",
+    "group": "3m-cluster",
+    "label": "Proxy list nodes on remote panel",
+    "write": false,
+    "since": "1.4.1",
+    "encoding": "application/json",
+    "parameters": [
+      {
+        "in": "path",
+        "name": "id",
+        "required": true,
+        "schema": {
+          "type": "integer"
+        }
+      }
+    ],
+    "body": {}
+  },
+  {
+    "id": "3m.get.cluster.{id}.users",
+    "panelType": "3m-ui",
+    "method": "GET",
+    "path": "/cluster/{id}/users",
+    "group": "3m-cluster",
+    "label": "Proxy remote users list",
+    "write": false,
+    "since": "1.4.1",
+    "encoding": "application/json",
+    "parameters": [
+      {
+        "in": "path",
+        "name": "id",
+        "required": true,
+        "schema": {
+          "type": "integer"
+        }
+      }
+    ],
+    "body": {}
+  },
+  {
+    "id": "3m.get.config",
+    "panelType": "3m-ui",
+    "method": "GET",
+    "path": "/config",
+    "group": "3m-config",
+    "label": "Current generated / stored config view",
+    "write": false,
+    "since": "1.4.1",
+    "encoding": "application/json",
+    "parameters": [],
+    "body": {}
+  },
+  {
+    "id": "3m.get.config.download",
+    "panelType": "3m-ui",
+    "method": "GET",
+    "path": "/config/download",
+    "group": "3m-config",
+    "label": "GET /config/download",
+    "write": false,
+    "since": "1.4.1",
+    "encoding": "application/json",
+    "parameters": [],
+    "body": {}
+  },
+  {
+    "id": "3m.get.config.groups",
+    "panelType": "3m-ui",
+    "method": "GET",
+    "path": "/config/groups",
+    "group": "3m-config",
+    "label": "List client-subscription proxy-groups (visual-config)",
+    "write": false,
+    "since": "1.4.1",
+    "encoding": "application/json",
+    "parameters": [],
+    "body": {}
+  },
+  {
+    "id": "3m.get.config.proxies",
+    "panelType": "3m-ui",
+    "method": "GET",
+    "path": "/config/proxies",
+    "group": "3m-config",
+    "label": "GET /config/proxies",
+    "write": false,
+    "since": "1.4.1",
+    "encoding": "application/json",
+    "parameters": [],
+    "body": {}
+  },
+  {
+    "id": "3m.get.config.rule-providers.status",
+    "panelType": "3m-ui",
+    "method": "GET",
+    "path": "/config/rule-providers/status",
+    "group": "3m-config",
+    "label": "Live rule-provider status from Mihomo (GET /providers/rules)",
+    "write": false,
+    "since": "1.4.1",
+    "encoding": "application/json",
+    "parameters": [],
+    "body": {}
+  },
+  {
+    "id": "3m.get.config.rules",
+    "panelType": "3m-ui",
+    "method": "GET",
+    "path": "/config/rules",
+    "group": "3m-config",
+    "label": "List client-subscription routing rules (visual-config only)",
+    "write": false,
+    "since": "1.4.1",
+    "encoding": "application/json",
+    "parameters": [],
+    "body": {}
+  },
+  {
+    "id": "3m.get.config.server-routing",
+    "panelType": "3m-ui",
+    "method": "GET",
+    "path": "/config/server-routing",
+    "group": "3m-config",
+    "label": "Get server egress routing (serving Mihomo)",
+    "write": false,
+    "since": "1.4.1",
+    "encoding": "application/json",
+    "parameters": [],
+    "body": {}
+  },
+  {
+    "id": "3m.get.config.visual",
+    "panelType": "3m-ui",
+    "method": "GET",
+    "path": "/config/visual",
+    "group": "3m-config",
+    "label": "Visual config (mode, general, proxies, groups, rules)",
+    "write": false,
+    "since": "1.4.1",
+    "encoding": "application/json",
+    "parameters": [],
+    "body": {}
+  },
+  {
+    "id": "3m.get.dashboard",
+    "panelType": "3m-ui",
+    "method": "GET",
+    "path": "/dashboard",
+    "group": "3m-dashboard",
+    "label": "Dashboard snapshot (core, host, panel/core process, traffic)",
+    "write": false,
+    "since": "1.4.1",
+    "encoding": "application/json",
+    "parameters": [],
+    "body": {}
+  },
+  {
+    "id": "3m.get.listeners",
+    "panelType": "3m-ui",
+    "method": "GET",
+    "path": "/listeners",
+    "group": "3m-listeners",
+    "label": "List listeners (same as /nodes)",
+    "write": false,
+    "since": "1.4.1",
+    "encoding": "application/json",
+    "parameters": [
+      {
+        "name": "enabled",
+        "in": "query",
+        "schema": {
+          "type": "string"
+        }
+      },
+      {
+        "name": "q",
+        "in": "query",
+        "schema": {
+          "type": "string"
+        }
+      }
+    ],
+    "body": {}
+  },
+  {
+    "id": "3m.get.listeners.runtime-status",
+    "panelType": "3m-ui",
+    "method": "GET",
+    "path": "/listeners/runtime-status",
+    "group": "3m-listeners",
+    "label": "GET /listeners/runtime-status",
+    "write": false,
+    "since": "1.4.1",
+    "encoding": "application/json",
+    "parameters": [],
+    "body": {}
+  },
+  {
+    "id": "3m.get.listeners.templates",
+    "panelType": "3m-ui",
+    "method": "GET",
+    "path": "/listeners/templates",
+    "group": "3m-listeners",
+    "label": "GET /listeners/templates",
+    "write": false,
+    "since": "1.4.1",
+    "encoding": "application/json",
+    "parameters": [],
+    "body": {}
+  },
+  {
+    "id": "3m.get.listeners.templates.{id}",
+    "panelType": "3m-ui",
+    "method": "GET",
+    "path": "/listeners/templates/{id}",
+    "group": "3m-listeners",
+    "label": "GET /listeners/templates/{id}",
+    "write": false,
+    "since": "1.4.1",
+    "encoding": "application/json",
+    "parameters": [
+      {
+        "in": "path",
+        "name": "id",
+        "required": true,
+        "schema": {
+          "type": "integer"
+        }
+      }
+    ],
+    "body": {}
+  },
+  {
+    "id": "3m.get.listeners.{id}",
+    "panelType": "3m-ui",
+    "method": "GET",
+    "path": "/listeners/{id}",
+    "group": "3m-listeners",
+    "label": "Get listener",
+    "write": false,
+    "since": "1.4.1",
+    "encoding": "application/json",
+    "parameters": [
+      {
+        "in": "path",
+        "name": "id",
+        "required": true,
+        "schema": {
+          "type": "integer"
+        }
+      }
+    ],
+    "body": {}
+  },
+  {
+    "id": "3m.get.listeners.{id}.versions",
+    "panelType": "3m-ui",
+    "method": "GET",
+    "path": "/listeners/{id}/versions",
+    "group": "3m-listeners",
+    "label": "GET /listeners/{id}/versions",
+    "write": false,
+    "since": "1.4.1",
+    "encoding": "application/json",
+    "parameters": [
+      {
+        "in": "path",
+        "name": "id",
+        "required": true,
+        "schema": {
+          "type": "integer"
+        }
+      }
+    ],
+    "body": {}
+  },
+  {
+    "id": "3m.get.listeners.{id}.versions.{version}.diff",
+    "panelType": "3m-ui",
+    "method": "GET",
+    "path": "/listeners/{id}/versions/{version}/diff",
+    "group": "3m-listeners",
+    "label": "GET /listeners/{id}/versions/{version}/diff",
+    "write": false,
+    "since": "1.4.1",
+    "encoding": "application/json",
+    "parameters": [
+      {
+        "in": "path",
+        "name": "id",
+        "required": true,
+        "schema": {
+          "type": "integer"
+        }
+      },
+      {
+        "in": "path",
+        "name": "version",
+        "required": true,
+        "schema": {
+          "type": "integer"
+        }
+      }
+    ],
+    "body": {}
+  },
+  {
+    "id": "3m.get.mihomo.logs",
+    "panelType": "3m-ui",
+    "method": "GET",
+    "path": "/mihomo/logs",
+    "group": "3m-mihomo",
+    "label": "Recent Mihomo core logs",
+    "write": false,
+    "since": "1.4.1",
+    "encoding": "application/json",
+    "parameters": [],
+    "body": {}
+  },
+  {
+    "id": "3m.get.mihomo.releases",
+    "panelType": "3m-ui",
+    "method": "GET",
+    "path": "/mihomo/releases",
+    "group": "3m-mihomo",
+    "label": "GET /mihomo/releases",
+    "write": false,
+    "since": "1.4.1",
+    "encoding": "application/json",
+    "parameters": [],
+    "body": {}
+  },
+  {
+    "id": "3m.get.mihomo.status",
+    "panelType": "3m-ui",
+    "method": "GET",
+    "path": "/mihomo/status",
+    "group": "3m-mihomo",
+    "label": "Core process status",
+    "write": false,
+    "since": "1.4.1",
+    "encoding": "application/json",
+    "parameters": [],
+    "body": {}
+  },
+  {
+    "id": "3m.get.mihomo.update",
+    "panelType": "3m-ui",
+    "method": "GET",
+    "path": "/mihomo/update",
+    "group": "3m-mihomo",
+    "label": "GET /mihomo/update",
+    "write": false,
+    "since": "1.4.1",
+    "encoding": "application/json",
+    "parameters": [],
+    "body": {
+      "type": "object",
+      "properties": {
+        "version": {
+          "type": "string"
+        }
+      }
+    }
+  },
+  {
+    "id": "3m.get.nodes",
+    "panelType": "3m-ui",
+    "method": "GET",
+    "path": "/nodes",
+    "group": "3m-nodes",
+    "label": "List listeners (alias /listeners)",
+    "write": false,
+    "since": "1.4.1",
+    "encoding": "application/json",
+    "parameters": [
+      {
+        "name": "enabled",
+        "in": "query",
+        "schema": {
+          "type": "string"
+        }
+      },
+      {
+        "name": "q",
+        "in": "query",
+        "schema": {
+          "type": "string"
+        }
+      }
+    ],
+    "body": {}
+  },
+  {
+    "id": "3m.get.nodes.runtime-status",
+    "panelType": "3m-ui",
+    "method": "GET",
+    "path": "/nodes/runtime-status",
+    "group": "3m-nodes",
+    "label": "GET /nodes/runtime-status",
+    "write": false,
+    "since": "1.4.1",
+    "encoding": "application/json",
+    "parameters": [],
+    "body": {}
+  },
+  {
+    "id": "3m.get.nodes.templates",
+    "panelType": "3m-ui",
+    "method": "GET",
+    "path": "/nodes/templates",
+    "group": "3m-nodes",
+    "label": "GET /nodes/templates",
+    "write": false,
+    "since": "1.4.1",
+    "encoding": "application/json",
+    "parameters": [],
+    "body": {}
+  },
+  {
+    "id": "3m.get.nodes.templates.{id}",
+    "panelType": "3m-ui",
+    "method": "GET",
+    "path": "/nodes/templates/{id}",
+    "group": "3m-nodes",
+    "label": "GET /nodes/templates/{id}",
+    "write": false,
+    "since": "1.4.1",
+    "encoding": "application/json",
+    "parameters": [
+      {
+        "in": "path",
+        "name": "id",
+        "required": true,
+        "schema": {
+          "type": "integer"
+        }
+      }
+    ],
+    "body": {}
+  },
+  {
+    "id": "3m.get.nodes.{id}",
+    "panelType": "3m-ui",
+    "method": "GET",
+    "path": "/nodes/{id}",
+    "group": "3m-nodes",
+    "label": "Get listener",
+    "write": false,
+    "since": "1.4.1",
+    "encoding": "application/json",
+    "parameters": [
+      {
+        "in": "path",
+        "name": "id",
+        "required": true,
+        "schema": {
+          "type": "integer"
+        }
+      }
+    ],
+    "body": {}
+  },
+  {
+    "id": "3m.get.nodes.{id}.uri",
+    "panelType": "3m-ui",
+    "method": "GET",
+    "path": "/nodes/{id}/uri",
+    "group": "3m-nodes",
+    "label": "Export share URI / client_yaml",
+    "write": false,
+    "since": "1.4.1",
+    "encoding": "application/json",
+    "parameters": [
+      {
+        "in": "path",
+        "name": "id",
+        "required": true,
+        "schema": {
+          "type": "integer"
+        }
+      }
+    ],
+    "body": {}
+  },
+  {
+    "id": "3m.get.nodes.{id}.versions",
+    "panelType": "3m-ui",
+    "method": "GET",
+    "path": "/nodes/{id}/versions",
+    "group": "3m-nodes",
+    "label": "GET /nodes/{id}/versions",
+    "write": false,
+    "since": "1.4.1",
+    "encoding": "application/json",
+    "parameters": [
+      {
+        "in": "path",
+        "name": "id",
+        "required": true,
+        "schema": {
+          "type": "integer"
+        }
+      }
+    ],
+    "body": {}
+  },
+  {
+    "id": "3m.get.nodes.{id}.versions.{version}.diff",
+    "panelType": "3m-ui",
+    "method": "GET",
+    "path": "/nodes/{id}/versions/{version}/diff",
+    "group": "3m-nodes",
+    "label": "GET /nodes/{id}/versions/{version}/diff",
+    "write": false,
+    "since": "1.4.1",
+    "encoding": "application/json",
+    "parameters": [
+      {
+        "in": "path",
+        "name": "id",
+        "required": true,
+        "schema": {
+          "type": "integer"
+        }
+      },
+      {
+        "in": "path",
+        "name": "version",
+        "required": true,
+        "schema": {
+          "type": "integer"
+        }
+      }
+    ],
+    "body": {}
+  },
+  {
+    "id": "3m.get.panel-settings",
+    "panelType": "3m-ui",
+    "method": "GET",
+    "path": "/panel-settings",
+    "group": "3m-panel-settings",
+    "label": "GET /panel-settings",
+    "write": false,
+    "since": "1.4.1",
+    "encoding": "application/json",
+    "parameters": [],
+    "body": {}
+  },
+  {
+    "id": "3m.get.system.backup",
+    "panelType": "3m-ui",
+    "method": "GET",
+    "path": "/system/backup",
+    "group": "3m-system",
+    "label": "Download zip backup (SQLite + Mihomo config)",
+    "write": false,
+    "since": "1.4.1",
+    "encoding": "application/json",
+    "parameters": [],
+    "body": {}
+  },
+  {
+    "id": "3m.get.system.backups",
+    "panelType": "3m-ui",
+    "method": "GET",
+    "path": "/system/backups",
+    "group": "3m-system",
+    "label": "List on-disk install/update backups",
+    "write": false,
+    "since": "1.4.1",
+    "encoding": "application/json",
+    "parameters": [],
+    "body": {}
+  },
+  {
+    "id": "3m.get.system.panel-logs",
+    "panelType": "3m-ui",
+    "method": "GET",
+    "path": "/system/panel-logs",
+    "group": "3m-system",
+    "label": "Recent panel process logs",
+    "write": false,
+    "since": "1.4.1",
+    "encoding": "application/json",
+    "parameters": [],
+    "body": {}
+  },
+  {
+    "id": "3m.get.system.panel-server",
+    "panelType": "3m-ui",
+    "method": "GET",
+    "path": "/system/panel-server",
+    "group": "3m-system",
+    "label": "Panel listen port / public_url",
+    "write": false,
+    "since": "1.4.1",
+    "encoding": "application/json",
+    "parameters": [],
+    "body": {}
+  },
+  {
+    "id": "3m.get.system.ssl",
+    "panelType": "3m-ui",
+    "method": "GET",
+    "path": "/system/ssl",
+    "group": "3m-system",
+    "label": "Panel SSL settings",
+    "write": false,
+    "since": "1.4.1",
+    "encoding": "application/json",
+    "parameters": [],
+    "body": {}
+  },
+  {
+    "id": "3m.get.system.ssl.status",
+    "panelType": "3m-ui",
+    "method": "GET",
+    "path": "/system/ssl/status",
+    "group": "3m-system",
+    "label": "Panel SSL runtime status",
+    "write": false,
+    "since": "1.4.1",
+    "encoding": "application/json",
+    "parameters": [],
+    "body": {}
+  },
+  {
+    "id": "3m.get.system.status",
+    "panelType": "3m-ui",
+    "method": "GET",
+    "path": "/system/status",
+    "group": "3m-system",
+    "label": "Host metrics",
+    "write": false,
+    "since": "1.4.1",
+    "encoding": "application/json",
+    "parameters": [],
+    "body": {}
+  },
+  {
+    "id": "3m.get.system.subscription-page",
+    "panelType": "3m-ui",
+    "method": "GET",
+    "path": "/system/subscription-page",
+    "group": "3m-system",
+    "label": "GET /system/subscription-page",
+    "write": false,
+    "since": "1.4.1",
+    "encoding": "application/json",
+    "parameters": [],
+    "body": {}
+  },
+  {
+    "id": "3m.get.system.subscription-page.default-template",
+    "panelType": "3m-ui",
+    "method": "GET",
+    "path": "/system/subscription-page/default-template",
+    "group": "3m-system",
+    "label": "Download default subscription HTML template",
+    "write": false,
+    "since": "1.4.1",
+    "encoding": "application/json",
+    "parameters": [],
+    "body": {}
+  },
+  {
+    "id": "3m.get.system.update-info",
+    "panelType": "3m-ui",
+    "method": "GET",
+    "path": "/system/update-info",
+    "group": "3m-system",
+    "label": "Check for latest stable and pre-release versions on GitHub",
+    "write": false,
+    "since": "1.4.1",
+    "encoding": "application/json",
+    "parameters": [],
+    "body": {
+      "type": "object",
+      "properties": {
+        "tag_name": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        },
+        "html_url": {
+          "type": "string"
+        },
+        "body": {
+          "type": "string"
+        }
+      }
+    }
+  },
+  {
+    "id": "3m.get.system.warp",
+    "panelType": "3m-ui",
+    "method": "GET",
+    "path": "/system/warp",
+    "group": "3m-system",
+    "label": "WARP account status (no secrets)",
+    "write": false,
+    "since": "1.4.1",
+    "encoding": "application/json",
+    "parameters": [],
+    "body": {}
+  },
+  {
+    "id": "3m.get.telegram.bot-info",
+    "panelType": "3m-ui",
+    "method": "GET",
+    "path": "/telegram/bot-info",
+    "group": "3m-telegram",
+    "label": "GET /telegram/bot-info",
+    "write": false,
+    "since": "1.4.1",
+    "encoding": "application/json",
+    "parameters": [],
+    "body": {}
+  },
+  {
+    "id": "3m.get.telegram.settings",
+    "panelType": "3m-ui",
+    "method": "GET",
+    "path": "/telegram/settings",
+    "group": "3m-telegram",
+    "label": "GET /telegram/settings",
+    "write": false,
+    "since": "1.4.1",
+    "encoding": "application/json",
+    "parameters": [],
+    "body": {}
+  },
+  {
+    "id": "3m.get.traffic.connections",
+    "panelType": "3m-ui",
+    "method": "GET",
+    "path": "/traffic/connections",
+    "group": "3m-traffic",
+    "label": "Active connections",
+    "write": false,
+    "since": "1.4.1",
+    "encoding": "application/json",
+    "parameters": [],
+    "body": {}
+  },
+  {
+    "id": "3m.get.traffic.status",
+    "panelType": "3m-ui",
+    "method": "GET",
+    "path": "/traffic/status",
+    "group": "3m-traffic",
+    "label": "Global traffic snapshot",
+    "write": false,
+    "since": "1.4.1",
+    "encoding": "application/json",
+    "parameters": [],
+    "body": {}
+  },
+  {
+    "id": "3m.get.traffic.users",
+    "panelType": "3m-ui",
+    "method": "GET",
+    "path": "/traffic/users",
+    "group": "3m-traffic",
+    "label": "Per-user traffic",
+    "write": false,
+    "since": "1.4.1",
+    "encoding": "application/json",
+    "parameters": [],
+    "body": {}
+  },
+  {
+    "id": "3m.get.users",
+    "panelType": "3m-ui",
+    "method": "GET",
+    "path": "/users",
+    "group": "3m-users",
+    "label": "List proxy users",
+    "write": false,
+    "since": "1.4.1",
+    "encoding": "application/json",
+    "parameters": [
+      {
+        "in": "query",
+        "name": "q",
+        "schema": {
+          "type": "string"
+        },
+        "description": "Search username, remark, tags, or group"
+      },
+      {
+        "in": "query",
+        "name": "group",
+        "schema": {
+          "type": "string"
+        },
+        "description": "Exact group match"
+      },
+      {
+        "in": "query",
+        "name": "enabled",
+        "schema": {
+          "type": "string",
+          "enum": [
+            "true",
+            "false",
+            "1",
+            "0"
+          ]
+        }
+      },
+      {
+        "in": "query",
+        "name": "online",
+        "schema": {
+          "type": "string",
+          "enum": [
+            "true",
+            "false",
+            "1",
+            "0"
+          ]
+        }
+      },
+      {
+        "in": "query",
+        "name": "blocked",
+        "schema": {
+          "type": "string",
+          "enum": [
+            "true",
+            "false",
+            "1",
+            "0"
+          ]
+        }
+      }
+    ],
+    "body": {}
+  },
+  {
+    "id": "3m.get.users.by-telegram.{tgid}",
+    "panelType": "3m-ui",
+    "method": "GET",
+    "path": "/users/by-telegram/{tgid}",
+    "group": "3m-users",
+    "label": "GET /users/by-telegram/{tgid}",
+    "write": false,
+    "since": "1.4.1",
+    "encoding": "application/json",
+    "parameters": [
+      {
+        "in": "path",
+        "name": "tgid",
+        "required": true,
+        "schema": {
+          "type": "integer"
+        }
+      }
+    ],
+    "body": {}
+  },
+  {
+    "id": "3m.get.users.export-links",
+    "panelType": "3m-ui",
+    "method": "GET",
+    "path": "/users/export-links",
+    "group": "3m-users",
+    "label": "Export subscription URLs for all (or filtered) users",
+    "write": false,
+    "since": "1.4.1",
+    "encoding": "application/json",
+    "parameters": [
+      {
+        "in": "query",
+        "name": "q",
+        "schema": {
+          "type": "string"
+        }
+      },
+      {
+        "in": "query",
+        "name": "group",
+        "schema": {
+          "type": "string"
+        }
+      }
+    ],
+    "body": {}
+  },
+  {
+    "id": "3m.get.users.{id}",
+    "panelType": "3m-ui",
+    "method": "GET",
+    "path": "/users/{id}",
+    "group": "3m-users",
+    "label": "Get proxy user",
+    "write": false,
+    "since": "1.4.1",
+    "encoding": "application/json",
+    "parameters": [
+      {
+        "in": "path",
+        "name": "id",
+        "required": true,
+        "schema": {
+          "type": "integer"
+        }
+      }
+    ],
+    "body": {}
+  },
+  {
+    "id": "3m.get.users.{id}.listeners",
+    "panelType": "3m-ui",
+    "method": "GET",
+    "path": "/users/{id}/listeners",
+    "group": "3m-users",
+    "label": "GET /users/{id}/listeners",
+    "write": false,
+    "since": "1.4.1",
+    "encoding": "application/json",
+    "parameters": [
+      {
+        "in": "path",
+        "name": "id",
+        "required": true,
+        "schema": {
+          "type": "integer"
+        }
+      }
+    ],
+    "body": {}
+  },
+  {
+    "id": "3m.get.users.{id}.node-traffic",
+    "panelType": "3m-ui",
+    "method": "GET",
+    "path": "/users/{id}/node-traffic",
+    "group": "3m-users",
+    "label": "Per-node traffic for a user (raw + billed via multiplier)",
+    "write": false,
+    "since": "1.4.1",
+    "encoding": "application/json",
+    "parameters": [
+      {
+        "name": "id",
+        "in": "path",
+        "required": true,
+        "schema": {
+          "type": "integer"
+        }
+      }
+    ],
+    "body": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "protocol": {
+          "type": "string"
+        },
+        "type": {
+          "type": "string"
+        },
+        "port": {
+          "type": "string"
+        },
+        "bind_address": {
+          "type": "string"
+        },
+        "listen": {
+          "type": "string"
+        },
+        "tls": {
+          "type": "boolean"
+        },
+        "udp": {
+          "type": "boolean"
+        },
+        "enabled": {
+          "type": "boolean"
+        },
+        "proxy": {
+          "type": "string"
+        },
+        "rule": {
+          "type": "string"
+        },
+        "config": {
+          "type": "string"
+        },
+        "status": {
+          "type": "string"
+        },
+        "routing_mark": {
+          "type": "integer"
+        },
+        "public_host": {
+          "type": "string"
+        },
+        "public_port": {
+          "type": "string"
+        },
+        "access_sni": {
+          "type": "string"
+        },
+        "client_fingerprint": {
+          "type": "string"
+        },
+        "access_alpn": {
+          "type": "string"
+        },
+        "traffic_multiplier": {
+          "type": "number"
+        }
+      }
+    }
+  },
+  {
+    "id": "3m.get.users.{id}.nodes",
+    "panelType": "3m-ui",
+    "method": "GET",
+    "path": "/users/{id}/nodes",
+    "group": "3m-users",
+    "label": "List local listeners bound to user",
+    "write": false,
+    "since": "1.4.1",
+    "encoding": "application/json",
+    "parameters": [
+      {
+        "in": "path",
+        "name": "id",
+        "required": true,
+        "schema": {
+          "type": "integer"
+        }
+      }
+    ],
+    "body": {}
+  },
+  {
+    "id": "3m.get.users.{id}.remote-nodes",
+    "panelType": "3m-ui",
+    "method": "GET",
+    "path": "/users/{id}/remote-nodes",
+    "group": "3m-users",
+    "label": "List mirrored remote node IDs bound to user",
+    "write": false,
+    "since": "1.4.1",
+    "encoding": "application/json",
+    "parameters": [
+      {
+        "in": "path",
+        "name": "id",
+        "required": true,
+        "schema": {
+          "type": "integer"
+        }
+      }
+    ],
+    "body": {}
+  },
+  {
+    "id": "3m.get.users.{id}.subscription",
+    "panelType": "3m-ui",
+    "method": "GET",
+    "path": "/users/{id}/subscription",
+    "group": "3m-users",
+    "label": "Get user subscription token and URL",
+    "write": false,
+    "since": "1.4.1",
+    "encoding": "application/json",
+    "parameters": [
+      {
+        "in": "path",
+        "name": "id",
+        "required": true,
+        "schema": {
+          "type": "integer"
+        }
+      }
+    ],
+    "body": {}
+  },
+  {
+    "id": "3m.post.",
+    "panelType": "3m-ui",
+    "method": "POST",
+    "path": "",
+    "group": "3m-access-tokens",
+    "label": "POST ",
+    "write": true,
+    "since": "1.4.1",
+    "encoding": "application/json",
+    "parameters": [],
+    "body": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "listener_id": {
+          "type": "integer"
+        },
+        "expire_at": {
+          "type": "string",
+          "format": "date-time"
+        }
+      }
+    }
+  },
+  {
+    "id": "3m.post.auth.password",
+    "panelType": "3m-ui",
+    "method": "POST",
+    "path": "/auth/password",
+    "group": "3m-auth",
+    "label": "POST /auth/password",
+    "write": true,
+    "since": "1.4.1",
+    "encoding": "application/json",
+    "parameters": [],
+    "body": {
+      "type": "object",
+      "properties": {
+        "current_password": {
+          "type": "string"
+        },
+        "new_password": {
+          "type": "string"
+        }
+      }
+    }
+  },
+  {
+    "id": "3m.post.auth.totp.disable",
+    "panelType": "3m-ui",
+    "method": "POST",
+    "path": "/auth/totp/disable",
+    "group": "3m-auth",
+    "label": "POST /auth/totp/disable",
+    "write": true,
+    "since": "1.4.1",
+    "encoding": "application/json",
+    "parameters": [],
+    "body": {
+      "type": "object",
+      "properties": {
+        "password": {
+          "type": "string"
+        },
+        "code": {
+          "type": "string"
+        }
+      }
+    }
+  },
+  {
+    "id": "3m.post.auth.totp.enable",
+    "panelType": "3m-ui",
+    "method": "POST",
+    "path": "/auth/totp/enable",
+    "group": "3m-auth",
+    "label": "POST /auth/totp/enable",
+    "write": true,
+    "since": "1.4.1",
+    "encoding": "application/json",
+    "parameters": [],
+    "body": {
+      "type": "object",
+      "properties": {
+        "code": {
+          "type": "string"
+        }
+      }
+    }
+  },
+  {
+    "id": "3m.post.auth.totp.setup",
+    "panelType": "3m-ui",
+    "method": "POST",
+    "path": "/auth/totp/setup",
+    "group": "3m-auth",
+    "label": "POST /auth/totp/setup",
+    "write": true,
+    "since": "1.4.1",
+    "encoding": "application/json",
+    "parameters": [],
+    "body": {}
+  },
+  {
+    "id": "3m.post.cluster",
+    "panelType": "3m-ui",
+    "method": "POST",
+    "path": "/cluster",
+    "group": "3m-cluster",
+    "label": "Register remote panel",
+    "write": true,
+    "since": "1.4.1",
+    "encoding": "application/json",
+    "parameters": [],
+    "body": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "base_url": {
+          "type": "string"
+        },
+        "api_token": {
+          "type": "string"
+        },
+        "enabled": {
+          "type": "boolean"
+        },
+        "remark": {
+          "type": "string"
+        }
+      }
+    }
+  },
+  {
+    "id": "3m.post.cluster.health-all",
+    "panelType": "3m-ui",
+    "method": "POST",
+    "path": "/cluster/health-all",
+    "group": "3m-cluster",
+    "label": "Health-check all remotes",
+    "write": true,
+    "since": "1.4.1",
+    "encoding": "application/json",
+    "parameters": [],
+    "body": {}
+  },
+  {
+    "id": "3m.post.cluster.{id}.health",
+    "panelType": "3m-ui",
+    "method": "POST",
+    "path": "/cluster/{id}/health",
+    "group": "3m-cluster",
+    "label": "Health-check one remote",
+    "write": true,
+    "since": "1.4.1",
+    "encoding": "application/json",
+    "parameters": [
+      {
+        "in": "path",
+        "name": "id",
+        "required": true,
+        "schema": {
+          "type": "integer"
+        }
+      }
+    ],
+    "body": {}
+  },
+  {
+    "id": "3m.post.cluster.{id}.login",
+    "panelType": "3m-ui",
+    "method": "POST",
+    "path": "/cluster/{id}/login",
+    "group": "3m-cluster",
+    "label": "POST /cluster/{id}/login",
+    "write": true,
+    "since": "1.4.1",
+    "encoding": "application/json",
+    "parameters": [
+      {
+        "in": "path",
+        "name": "id",
+        "required": true,
+        "schema": {
+          "type": "integer"
+        }
+      }
+    ],
+    "body": {
+      "type": "object",
+      "properties": {
+        "username": {
+          "type": "string"
+        },
+        "password": {
+          "type": "string"
+        }
+      }
+    }
+  },
+  {
+    "id": "3m.post.cluster.{id}.mihomo.restart",
+    "panelType": "3m-ui",
+    "method": "POST",
+    "path": "/cluster/{id}/mihomo/restart",
+    "group": "3m-cluster",
+    "label": "Restart Mihomo on remote",
+    "write": true,
+    "since": "1.4.1",
+    "encoding": "application/json",
+    "parameters": [
+      {
+        "in": "path",
+        "name": "id",
+        "required": true,
+        "schema": {
+          "type": "integer"
+        }
+      }
+    ],
+    "body": {}
+  },
+  {
+    "id": "3m.post.cluster.{id}.mihomo.start",
+    "panelType": "3m-ui",
+    "method": "POST",
+    "path": "/cluster/{id}/mihomo/start",
+    "group": "3m-cluster",
+    "label": "POST /cluster/{id}/mihomo/start",
+    "write": true,
+    "since": "1.4.1",
+    "encoding": "application/json",
+    "parameters": [
+      {
+        "in": "path",
+        "name": "id",
+        "required": true,
+        "schema": {
+          "type": "integer"
+        }
+      }
+    ],
+    "body": {}
+  },
+  {
+    "id": "3m.post.cluster.{id}.mihomo.stop",
+    "panelType": "3m-ui",
+    "method": "POST",
+    "path": "/cluster/{id}/mihomo/stop",
+    "group": "3m-cluster",
+    "label": "POST /cluster/{id}/mihomo/stop",
+    "write": true,
+    "since": "1.4.1",
+    "encoding": "application/json",
+    "parameters": [
+      {
+        "in": "path",
+        "name": "id",
+        "required": true,
+        "schema": {
+          "type": "integer"
+        }
+      }
+    ],
+    "body": {}
+  },
+  {
+    "id": "3m.post.cluster.{id}.nodes",
+    "panelType": "3m-ui",
+    "method": "POST",
+    "path": "/cluster/{id}/nodes",
+    "group": "3m-cluster",
+    "label": "Proxy create node on remote",
+    "write": true,
+    "since": "1.4.1",
+    "encoding": "application/json",
+    "parameters": [
+      {
+        "in": "path",
+        "name": "id",
+        "required": true,
+        "schema": {
+          "type": "integer"
+        }
+      }
+    ],
+    "body": {}
+  },
+  {
+    "id": "3m.post.cluster.{id}.proxy",
+    "panelType": "3m-ui",
+    "method": "POST",
+    "path": "/cluster/{id}/proxy",
+    "group": "3m-cluster",
+    "label": "POST /cluster/{id}/proxy",
+    "write": true,
+    "since": "1.4.1",
+    "encoding": "application/json",
+    "parameters": [
+      {
+        "in": "path",
+        "name": "id",
+        "required": true,
+        "schema": {
+          "type": "integer"
+        }
+      }
+    ],
+    "body": {
+      "type": "object",
+      "properties": {
+        "method": {
+          "type": "string"
+        },
+        "path": {
+          "type": "string"
+        },
+        "body": {
+          "type": "string"
+        }
+      }
+    }
+  },
+  {
+    "id": "3m.post.cluster.{id}.push-node",
+    "panelType": "3m-ui",
+    "method": "POST",
+    "path": "/cluster/{id}/push-node",
+    "group": "3m-cluster",
+    "label": "POST /cluster/{id}/push-node",
+    "write": true,
+    "since": "1.4.1",
+    "encoding": "application/json",
+    "parameters": [
+      {
+        "in": "path",
+        "name": "id",
+        "required": true,
+        "schema": {
+          "type": "integer"
+        }
+      }
+    ],
+    "body": {
+      "type": "object",
+      "properties": {
+        "local_node_id": {
+          "type": "integer"
+        },
+        "dry_run": {
+          "type": "boolean"
+        },
+        "new_name": {
+          "type": "string"
+        },
+        "new_port": {
+          "type": "string"
+        }
+      }
+    }
+  },
+  {
+    "id": "3m.post.cluster.{id}.sync-nodes",
+    "panelType": "3m-ui",
+    "method": "POST",
+    "path": "/cluster/{id}/sync-nodes",
+    "group": "3m-cluster",
+    "label": "Pull remote nodes + URI/client_yaml into local mirrors",
+    "write": true,
+    "since": "1.4.1",
+    "encoding": "application/json",
+    "parameters": [
+      {
+        "in": "path",
+        "name": "id",
+        "required": true,
+        "schema": {
+          "type": "integer"
+        }
+      }
+    ],
+    "body": {}
+  },
+  {
+    "id": "3m.post.config.apply",
+    "panelType": "3m-ui",
+    "method": "POST",
+    "path": "/config/apply",
+    "group": "3m-config",
+    "label": "Apply config (with rollback on failure)",
+    "write": true,
+    "since": "1.4.1",
+    "encoding": "application/json",
+    "parameters": [],
+    "body": {
+      "type": "object",
+      "properties": {
+        "config": {
+          "type": "string"
+        }
+      }
+    }
+  },
+  {
+    "id": "3m.post.config.generate",
+    "panelType": "3m-ui",
+    "method": "POST",
+    "path": "/config/generate",
+    "group": "3m-config",
+    "label": "Generate Mihomo config from DB",
+    "write": true,
+    "since": "1.4.1",
+    "encoding": "application/json",
+    "parameters": [],
+    "body": {}
+  },
+  {
+    "id": "3m.post.config.preview",
+    "panelType": "3m-ui",
+    "method": "POST",
+    "path": "/config/preview",
+    "group": "3m-config",
+    "label": "Preview config without applying",
+    "write": true,
+    "since": "1.4.1",
+    "encoding": "application/json",
+    "parameters": [],
+    "body": {
+      "type": "object",
+      "properties": {
+        "config": {
+          "type": "string"
+        }
+      }
+    }
+  },
+  {
+    "id": "3m.post.config.proxies",
+    "panelType": "3m-ui",
+    "method": "POST",
+    "path": "/config/proxies",
+    "group": "3m-config",
+    "label": "POST /config/proxies",
+    "write": true,
+    "since": "1.4.1",
+    "encoding": "application/json",
+    "parameters": [],
+    "body": {}
+  },
+  {
+    "id": "3m.post.config.rollback",
+    "panelType": "3m-ui",
+    "method": "POST",
+    "path": "/config/rollback",
+    "group": "3m-config",
+    "label": "Rollback last config",
+    "write": true,
+    "since": "1.4.1",
+    "encoding": "application/json",
+    "parameters": [],
+    "body": {}
+  },
+  {
+    "id": "3m.post.config.validate",
+    "panelType": "3m-ui",
+    "method": "POST",
+    "path": "/config/validate",
+    "group": "3m-config",
+    "label": "Validate candidate config",
+    "write": true,
+    "since": "1.4.1",
+    "encoding": "application/json",
+    "parameters": [],
+    "body": {
+      "type": "object",
+      "properties": {
+        "config": {
+          "type": "string"
+        }
+      }
+    }
+  },
+  {
+    "id": "3m.post.config.visual",
+    "panelType": "3m-ui",
+    "method": "POST",
+    "path": "/config/visual",
+    "group": "3m-config",
+    "label": "Save visual config",
+    "write": true,
+    "since": "1.4.1",
+    "encoding": "application/json",
+    "parameters": [],
+    "body": {
+      "type": "object",
+      "properties": {
+        "mode": {
+          "type": "string"
+        },
+        "logLevel": {
+          "type": "string"
+        },
+        "allowLan": {
+          "type": "boolean"
+        },
+        "ipv6": {
+          "type": "boolean"
+        },
+        "inboundTfo": {
+          "type": "boolean",
+          "description": "Global inbound TCP Fast Open (Mihomo inbound-tfo); server only"
+        },
+        "inboundMptcp": {
+          "type": "boolean",
+          "description": "Server general inbound-mptcp only; never in client subscription YAML.\n"
+        },
+        "clientTfo": {
+          "type": "boolean",
+          "description": "When true, every client-subscription proxy gets Mihomo outbound `tfo: true`\n(wiki proxies#tfo). Independent of inboundTfo.\n"
+        },
+        "clientMptcp": {
+          "type": "boolean",
+          "description": "When true, every client-subscription proxy gets `mptcp: true`. Not inbound-mptcp.\n"
+        },
+        "proxies": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "name": {
+                "type": "string"
+              },
+              "type": {
+                "type": "string"
+              },
+              "server": {
+                "type": "string"
+              },
+              "port": {
+                "type": "string"
+              },
+              "password": {
+                "type": "string"
+              },
+              "uuid": {
+                "type": "string"
+              },
+              "tfo": {
+                "type": "boolean",
+                "description": "Per-proxy TCP Fast Open (TCP only); included in client subscriptions"
+              },
+              "mptcp": {
+                "type": "boolean",
+                "description": "Per-proxy Multipath TCP (TCP only); included in client subscriptions"
+              }
+            }
+          }
+        },
+        "proxyGroups": {
+          "type": "array",
+          "items": {
+            "type": "object"
+          }
+        },
+        "rules": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    }
+  },
+  {
+    "id": "3m.post.listeners",
+    "panelType": "3m-ui",
+    "method": "POST",
+    "path": "/listeners",
+    "group": "3m-listeners",
+    "label": "Create listener",
+    "write": true,
+    "since": "1.4.1",
+    "encoding": "application/json",
+    "parameters": [],
+    "body": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "protocol": {
+          "type": "string"
+        },
+        "type": {
+          "type": "string"
+        },
+        "port": {
+          "type": "string"
+        },
+        "bind_address": {
+          "type": "string"
+        },
+        "listen": {
+          "type": "string"
+        },
+        "tls": {
+          "type": "boolean"
+        },
+        "udp": {
+          "type": "boolean"
+        },
+        "enabled": {
+          "type": "boolean"
+        },
+        "proxy": {
+          "type": "string"
+        },
+        "rule": {
+          "type": "string"
+        },
+        "config": {
+          "type": "string"
+        },
+        "status": {
+          "type": "string"
+        },
+        "routing_mark": {
+          "type": "integer"
+        },
+        "public_host": {
+          "type": "string"
+        },
+        "public_port": {
+          "type": "string"
+        },
+        "access_sni": {
+          "type": "string"
+        },
+        "client_fingerprint": {
+          "type": "string"
+        },
+        "access_alpn": {
+          "type": "string"
+        },
+        "traffic_multiplier": {
+          "type": "number"
+        }
+      }
+    }
+  },
+  {
+    "id": "3m.post.listeners.batch",
+    "panelType": "3m-ui",
+    "method": "POST",
+    "path": "/listeners/batch",
+    "group": "3m-listeners",
+    "label": "POST /listeners/batch",
+    "write": true,
+    "since": "1.4.1",
+    "encoding": "application/json",
+    "parameters": [],
+    "body": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "protocol": {
+            "type": "string"
+          },
+          "type": {
+            "type": "string"
+          },
+          "port": {
+            "type": "string"
+          },
+          "bind_address": {
+            "type": "string"
+          },
+          "listen": {
+            "type": "string"
+          },
+          "tls": {
+            "type": "boolean"
+          },
+          "udp": {
+            "type": "boolean"
+          },
+          "enabled": {
+            "type": "boolean"
+          },
+          "proxy": {
+            "type": "string"
+          },
+          "rule": {
+            "type": "string"
+          },
+          "config": {
+            "type": "string"
+          },
+          "status": {
+            "type": "string"
+          },
+          "routing_mark": {
+            "type": "integer"
+          },
+          "public_host": {
+            "type": "string"
+          },
+          "public_port": {
+            "type": "string"
+          },
+          "access_sni": {
+            "type": "string"
+          },
+          "client_fingerprint": {
+            "type": "string"
+          },
+          "access_alpn": {
+            "type": "string"
+          },
+          "traffic_multiplier": {
+            "type": "number"
+          }
+        }
+      }
+    }
+  },
+  {
+    "id": "3m.post.listeners.batch.certificate",
+    "panelType": "3m-ui",
+    "method": "POST",
+    "path": "/listeners/batch/certificate",
+    "group": "3m-listeners",
+    "label": "POST /listeners/batch/certificate",
+    "write": true,
+    "since": "1.4.1",
+    "encoding": "application/json",
+    "parameters": [],
+    "body": {
+      "type": "object",
+      "properties": {
+        "ids": {
+          "type": "array",
+          "items": {
+            "type": "integer"
+          }
+        },
+        "certificate": {
+          "type": "string"
+        },
+        "private_key": {
+          "type": "string"
+        },
+        "cert_file": {
+          "type": "string"
+        },
+        "key_file": {
+          "type": "string"
+        },
+        "from_panel_ssl": {
+          "type": "boolean"
+        }
+      }
+    }
+  },
+  {
+    "id": "3m.post.listeners.batch.enabled",
+    "panelType": "3m-ui",
+    "method": "POST",
+    "path": "/listeners/batch/enabled",
+    "group": "3m-listeners",
+    "label": "POST /listeners/batch/enabled",
+    "write": true,
+    "since": "1.4.1",
+    "encoding": "application/json",
+    "parameters": [],
+    "body": {
+      "type": "object",
+      "properties": {
+        "ids": {
+          "type": "array",
+          "items": {
+            "type": "integer"
+          }
+        },
+        "enabled": {
+          "type": "boolean"
+        }
+      }
+    }
+  },
+  {
+    "id": "3m.post.listeners.generate",
+    "panelType": "3m-ui",
+    "method": "POST",
+    "path": "/listeners/generate",
+    "group": "3m-listeners",
+    "label": "POST /listeners/generate",
+    "write": true,
+    "since": "1.4.1",
+    "encoding": "application/json",
+    "parameters": [],
+    "body": {
+      "type": "object",
+      "properties": {
+        "kind": {
+          "type": "string"
+        },
+        "cipher": {
+          "type": "string"
+        }
+      }
+    }
+  },
+  {
+    "id": "3m.post.listeners.quick",
+    "panelType": "3m-ui",
+    "method": "POST",
+    "path": "/listeners/quick",
+    "group": "3m-listeners",
+    "label": "POST /listeners/quick",
+    "write": true,
+    "since": "1.4.1",
+    "encoding": "application/json",
+    "parameters": [],
+    "body": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "protocol": {
+          "type": "string"
+        }
+      }
+    }
+  },
+  {
+    "id": "3m.post.listeners.reality.scan",
+    "panelType": "3m-ui",
+    "method": "POST",
+    "path": "/listeners/reality/scan",
+    "group": "3m-listeners",
+    "label": "Find REALITY targets from this node's network",
+    "write": true,
+    "since": "1.4.1",
+    "encoding": "application/json",
+    "parameters": [],
+    "body": {}
+  },
+  {
+    "id": "3m.post.listeners.templates",
+    "panelType": "3m-ui",
+    "method": "POST",
+    "path": "/listeners/templates",
+    "group": "3m-listeners",
+    "label": "POST /listeners/templates",
+    "write": true,
+    "since": "1.4.1",
+    "encoding": "application/json",
+    "parameters": [],
+    "body": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "integer"
+        },
+        "name": {
+          "type": "string"
+        },
+        "protocol": {
+          "type": "string"
+        },
+        "config": {
+          "type": "string"
+        },
+        "created_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "updated_at": {
+          "type": "string",
+          "format": "date-time"
+        }
+      }
+    }
+  },
+  {
+    "id": "3m.post.listeners.templates.{id}.instantiate",
+    "panelType": "3m-ui",
+    "method": "POST",
+    "path": "/listeners/templates/{id}/instantiate",
+    "group": "3m-listeners",
+    "label": "POST /listeners/templates/{id}/instantiate",
+    "write": true,
+    "since": "1.4.1",
+    "encoding": "application/json",
+    "parameters": [
+      {
+        "in": "path",
+        "name": "id",
+        "required": true,
+        "schema": {
+          "type": "integer"
+        }
+      }
+    ],
+    "body": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "port": {
+          "type": "string"
+        }
+      }
+    }
+  },
+  {
+    "id": "3m.post.listeners.{id}.check",
+    "panelType": "3m-ui",
+    "method": "POST",
+    "path": "/listeners/{id}/check",
+    "group": "3m-listeners",
+    "label": "POST /listeners/{id}/check",
+    "write": true,
+    "since": "1.4.1",
+    "encoding": "application/json",
+    "parameters": [
+      {
+        "in": "path",
+        "name": "id",
+        "required": true,
+        "schema": {
+          "type": "integer"
+        }
+      }
+    ],
+    "body": {}
+  },
+  {
+    "id": "3m.post.listeners.{id}.clone",
+    "panelType": "3m-ui",
+    "method": "POST",
+    "path": "/listeners/{id}/clone",
+    "group": "3m-listeners",
+    "label": "POST /listeners/{id}/clone",
+    "write": true,
+    "since": "1.4.1",
+    "encoding": "application/json",
+    "parameters": [
+      {
+        "in": "path",
+        "name": "id",
+        "required": true,
+        "schema": {
+          "type": "integer"
+        }
+      }
+    ],
+    "body": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "port": {
+          "type": "string"
+        }
+      }
+    }
+  },
+  {
+    "id": "3m.post.listeners.{id}.reload",
+    "panelType": "3m-ui",
+    "method": "POST",
+    "path": "/listeners/{id}/reload",
+    "group": "3m-listeners",
+    "label": "POST /listeners/{id}/reload",
+    "write": true,
+    "since": "1.4.1",
+    "encoding": "application/json",
+    "parameters": [
+      {
+        "in": "path",
+        "name": "id",
+        "required": true,
+        "schema": {
+          "type": "integer"
+        }
+      }
+    ],
+    "body": {}
+  },
+  {
+    "id": "3m.post.listeners.{id}.versions.{version}.rollback",
+    "panelType": "3m-ui",
+    "method": "POST",
+    "path": "/listeners/{id}/versions/{version}/rollback",
+    "group": "3m-listeners",
+    "label": "POST /listeners/{id}/versions/{version}/rollback",
+    "write": true,
+    "since": "1.4.1",
+    "encoding": "application/json",
+    "parameters": [
+      {
+        "in": "path",
+        "name": "id",
+        "required": true,
+        "schema": {
+          "type": "integer"
+        }
+      },
+      {
+        "in": "path",
+        "name": "version",
+        "required": true,
+        "schema": {
+          "type": "integer"
+        }
+      }
+    ],
+    "body": {}
+  },
+  {
+    "id": "3m.post.mihomo.restart",
+    "panelType": "3m-ui",
+    "method": "POST",
+    "path": "/mihomo/restart",
+    "group": "3m-mihomo",
+    "label": "Restart core",
+    "write": true,
+    "since": "1.4.1",
+    "encoding": "application/json",
+    "parameters": [],
+    "body": {}
+  },
+  {
+    "id": "3m.post.mihomo.start",
+    "panelType": "3m-ui",
+    "method": "POST",
+    "path": "/mihomo/start",
+    "group": "3m-mihomo",
+    "label": "Start core",
+    "write": true,
+    "since": "1.4.1",
+    "encoding": "application/json",
+    "parameters": [],
+    "body": {}
+  },
+  {
+    "id": "3m.post.mihomo.stop",
+    "panelType": "3m-ui",
+    "method": "POST",
+    "path": "/mihomo/stop",
+    "group": "3m-mihomo",
+    "label": "Stop core",
+    "write": true,
+    "since": "1.4.1",
+    "encoding": "application/json",
+    "parameters": [],
+    "body": {}
+  },
+  {
+    "id": "3m.post.mihomo.update",
+    "panelType": "3m-ui",
+    "method": "POST",
+    "path": "/mihomo/update",
+    "group": "3m-mihomo",
+    "label": "POST /mihomo/update",
+    "write": true,
+    "since": "1.4.1",
+    "encoding": "application/json",
+    "parameters": [],
+    "body": {
+      "type": "object",
+      "properties": {
+        "version": {
+          "type": "string"
+        }
+      }
+    }
+  },
+  {
+    "id": "3m.post.mihomo.update.rollback",
+    "panelType": "3m-ui",
+    "method": "POST",
+    "path": "/mihomo/update/rollback",
+    "group": "3m-mihomo",
+    "label": "POST /mihomo/update/rollback",
+    "write": true,
+    "since": "1.4.1",
+    "encoding": "application/json",
+    "parameters": [],
+    "body": {}
+  },
+  {
+    "id": "3m.post.nodes",
+    "panelType": "3m-ui",
+    "method": "POST",
+    "path": "/nodes",
+    "group": "3m-nodes",
+    "label": "Create listener",
+    "write": true,
+    "since": "1.4.1",
+    "encoding": "application/json",
+    "parameters": [],
+    "body": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "protocol": {
+          "type": "string"
+        },
+        "type": {
+          "type": "string"
+        },
+        "port": {
+          "type": "string"
+        },
+        "bind_address": {
+          "type": "string"
+        },
+        "listen": {
+          "type": "string"
+        },
+        "tls": {
+          "type": "boolean"
+        },
+        "udp": {
+          "type": "boolean"
+        },
+        "enabled": {
+          "type": "boolean"
+        },
+        "proxy": {
+          "type": "string"
+        },
+        "rule": {
+          "type": "string"
+        },
+        "config": {
+          "type": "string"
+        },
+        "status": {
+          "type": "string"
+        },
+        "routing_mark": {
+          "type": "integer"
+        },
+        "public_host": {
+          "type": "string"
+        },
+        "public_port": {
+          "type": "string"
+        },
+        "access_sni": {
+          "type": "string"
+        },
+        "client_fingerprint": {
+          "type": "string"
+        },
+        "access_alpn": {
+          "type": "string"
+        },
+        "traffic_multiplier": {
+          "type": "number"
+        }
+      }
+    }
+  },
+  {
+    "id": "3m.post.nodes.batch",
+    "panelType": "3m-ui",
+    "method": "POST",
+    "path": "/nodes/batch",
+    "group": "3m-nodes",
+    "label": "POST /nodes/batch",
+    "write": true,
+    "since": "1.4.1",
+    "encoding": "application/json",
+    "parameters": [],
+    "body": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "protocol": {
+            "type": "string"
+          },
+          "type": {
+            "type": "string"
+          },
+          "port": {
+            "type": "string"
+          },
+          "bind_address": {
+            "type": "string"
+          },
+          "listen": {
+            "type": "string"
+          },
+          "tls": {
+            "type": "boolean"
+          },
+          "udp": {
+            "type": "boolean"
+          },
+          "enabled": {
+            "type": "boolean"
+          },
+          "proxy": {
+            "type": "string"
+          },
+          "rule": {
+            "type": "string"
+          },
+          "config": {
+            "type": "string"
+          },
+          "status": {
+            "type": "string"
+          },
+          "routing_mark": {
+            "type": "integer"
+          },
+          "public_host": {
+            "type": "string"
+          },
+          "public_port": {
+            "type": "string"
+          },
+          "access_sni": {
+            "type": "string"
+          },
+          "client_fingerprint": {
+            "type": "string"
+          },
+          "access_alpn": {
+            "type": "string"
+          },
+          "traffic_multiplier": {
+            "type": "number"
+          }
+        }
+      }
+    }
+  },
+  {
+    "id": "3m.post.nodes.batch.certificate",
+    "panelType": "3m-ui",
+    "method": "POST",
+    "path": "/nodes/batch/certificate",
+    "group": "3m-nodes",
+    "label": "Apply TLS certificate to multiple listeners",
+    "write": true,
+    "since": "1.4.1",
+    "encoding": "application/json",
+    "parameters": [],
+    "body": {
+      "type": "object",
+      "properties": {
+        "ids": {
+          "type": "array",
+          "items": {
+            "type": "integer"
+          }
+        },
+        "certificate": {
+          "type": "string"
+        },
+        "private_key": {
+          "type": "string"
+        },
+        "cert_file": {
+          "type": "string"
+        },
+        "key_file": {
+          "type": "string"
+        },
+        "from_panel_ssl": {
+          "type": "boolean"
+        }
+      }
+    }
+  },
+  {
+    "id": "3m.post.nodes.batch.enabled",
+    "panelType": "3m-ui",
+    "method": "POST",
+    "path": "/nodes/batch/enabled",
+    "group": "3m-nodes",
+    "label": "POST /nodes/batch/enabled",
+    "write": true,
+    "since": "1.4.1",
+    "encoding": "application/json",
+    "parameters": [],
+    "body": {
+      "type": "object",
+      "properties": {
+        "ids": {
+          "type": "array",
+          "items": {
+            "type": "integer"
+          }
+        },
+        "enabled": {
+          "type": "boolean"
+        }
+      }
+    }
+  },
+  {
+    "id": "3m.post.nodes.generate",
+    "panelType": "3m-ui",
+    "method": "POST",
+    "path": "/nodes/generate",
+    "group": "3m-nodes",
+    "label": "POST /nodes/generate",
+    "write": true,
+    "since": "1.4.1",
+    "encoding": "application/json",
+    "parameters": [],
+    "body": {
+      "type": "object",
+      "properties": {
+        "kind": {
+          "type": "string"
+        },
+        "cipher": {
+          "type": "string"
+        }
+      }
+    }
+  },
+  {
+    "id": "3m.post.nodes.quick",
+    "panelType": "3m-ui",
+    "method": "POST",
+    "path": "/nodes/quick",
+    "group": "3m-nodes",
+    "label": "POST /nodes/quick",
+    "write": true,
+    "since": "1.4.1",
+    "encoding": "application/json",
+    "parameters": [],
+    "body": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "protocol": {
+          "type": "string"
+        }
+      }
+    }
+  },
+  {
+    "id": "3m.post.nodes.reality.scan",
+    "panelType": "3m-ui",
+    "method": "POST",
+    "path": "/nodes/reality/scan",
+    "group": "3m-nodes",
+    "label": "Find REALITY targets from this node's network",
+    "write": true,
+    "since": "1.4.1",
+    "encoding": "application/json",
+    "parameters": [],
+    "body": {}
+  },
+  {
+    "id": "3m.post.nodes.templates",
+    "panelType": "3m-ui",
+    "method": "POST",
+    "path": "/nodes/templates",
+    "group": "3m-nodes",
+    "label": "POST /nodes/templates",
+    "write": true,
+    "since": "1.4.1",
+    "encoding": "application/json",
+    "parameters": [],
+    "body": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "integer"
+        },
+        "name": {
+          "type": "string"
+        },
+        "protocol": {
+          "type": "string"
+        },
+        "config": {
+          "type": "string"
+        },
+        "created_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "updated_at": {
+          "type": "string",
+          "format": "date-time"
+        }
+      }
+    }
+  },
+  {
+    "id": "3m.post.nodes.templates.{id}.instantiate",
+    "panelType": "3m-ui",
+    "method": "POST",
+    "path": "/nodes/templates/{id}/instantiate",
+    "group": "3m-nodes",
+    "label": "POST /nodes/templates/{id}/instantiate",
+    "write": true,
+    "since": "1.4.1",
+    "encoding": "application/json",
+    "parameters": [
+      {
+        "in": "path",
+        "name": "id",
+        "required": true,
+        "schema": {
+          "type": "integer"
+        }
+      }
+    ],
+    "body": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "port": {
+          "type": "string"
+        }
+      }
+    }
+  },
+  {
+    "id": "3m.post.nodes.{id}.check",
+    "panelType": "3m-ui",
+    "method": "POST",
+    "path": "/nodes/{id}/check",
+    "group": "3m-nodes",
+    "label": "POST /nodes/{id}/check",
+    "write": true,
+    "since": "1.4.1",
+    "encoding": "application/json",
+    "parameters": [
+      {
+        "in": "path",
+        "name": "id",
+        "required": true,
+        "schema": {
+          "type": "integer"
+        }
+      }
+    ],
+    "body": {}
+  },
+  {
+    "id": "3m.post.nodes.{id}.client-access",
+    "panelType": "3m-ui",
+    "method": "POST",
+    "path": "/nodes/{id}/client-access",
+    "group": "3m-nodes",
+    "label": "POST /nodes/{id}/client-access",
+    "write": true,
+    "since": "1.4.1",
+    "encoding": "application/json",
+    "parameters": [
+      {
+        "in": "path",
+        "name": "id",
+        "required": true,
+        "schema": {
+          "type": "integer"
+        }
+      }
+    ],
+    "body": {}
+  },
+  {
+    "id": "3m.post.nodes.{id}.clone",
+    "panelType": "3m-ui",
+    "method": "POST",
+    "path": "/nodes/{id}/clone",
+    "group": "3m-nodes",
+    "label": "POST /nodes/{id}/clone",
+    "write": true,
+    "since": "1.4.1",
+    "encoding": "application/json",
+    "parameters": [
+      {
+        "in": "path",
+        "name": "id",
+        "required": true,
+        "schema": {
+          "type": "integer"
+        }
+      }
+    ],
+    "body": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "port": {
+          "type": "string"
+        }
+      }
+    }
+  },
+  {
+    "id": "3m.post.nodes.{id}.connection-check",
+    "panelType": "3m-ui",
+    "method": "POST",
+    "path": "/nodes/{id}/connection-check",
+    "group": "3m-nodes",
+    "label": "POST /nodes/{id}/connection-check",
+    "write": true,
+    "since": "1.4.1",
+    "encoding": "application/json",
+    "parameters": [
+      {
+        "in": "path",
+        "name": "id",
+        "required": true,
+        "schema": {
+          "type": "integer"
+        }
+      }
+    ],
+    "body": {}
+  },
+  {
+    "id": "3m.post.nodes.{id}.reload",
+    "panelType": "3m-ui",
+    "method": "POST",
+    "path": "/nodes/{id}/reload",
+    "group": "3m-nodes",
+    "label": "POST /nodes/{id}/reload",
+    "write": true,
+    "since": "1.4.1",
+    "encoding": "application/json",
+    "parameters": [
+      {
+        "in": "path",
+        "name": "id",
+        "required": true,
+        "schema": {
+          "type": "integer"
+        }
+      }
+    ],
+    "body": {}
+  },
+  {
+    "id": "3m.post.nodes.{id}.versions.{version}.rollback",
+    "panelType": "3m-ui",
+    "method": "POST",
+    "path": "/nodes/{id}/versions/{version}/rollback",
+    "group": "3m-nodes",
+    "label": "POST /nodes/{id}/versions/{version}/rollback",
+    "write": true,
+    "since": "1.4.1",
+    "encoding": "application/json",
+    "parameters": [
+      {
+        "in": "path",
+        "name": "id",
+        "required": true,
+        "schema": {
+          "type": "integer"
+        }
+      },
+      {
+        "in": "path",
+        "name": "version",
+        "required": true,
+        "schema": {
+          "type": "integer"
+        }
+      }
+    ],
+    "body": {}
+  },
+  {
+    "id": "3m.post.system.backup.restore-db",
+    "panelType": "3m-ui",
+    "method": "POST",
+    "path": "/system/backup/restore-db",
+    "group": "3m-system",
+    "label": "Restore SQLite from multipart field `database`",
+    "write": true,
+    "since": "1.4.1",
+    "encoding": "multipart/form-data",
+    "parameters": [],
+    "body": {}
+  },
+  {
+    "id": "3m.post.system.backups.cleanup",
+    "panelType": "3m-ui",
+    "method": "POST",
+    "path": "/system/backups/cleanup",
+    "group": "3m-system",
+    "label": "Cleanup on-disk backups by keep count and/or age",
+    "write": true,
+    "since": "1.4.1",
+    "encoding": "application/json",
+    "parameters": [],
+    "body": {
+      "type": "object",
+      "properties": {
+        "keep": {
+          "type": "integer"
+        },
+        "older_than_days": {
+          "type": "integer"
+        }
+      }
+    }
+  },
+  {
+    "id": "3m.post.system.geofiles.update",
+    "panelType": "3m-ui",
+    "method": "POST",
+    "path": "/system/geofiles/update",
+    "group": "3m-system",
+    "label": "POST /system/geofiles/update",
+    "write": true,
+    "since": "1.4.1",
+    "encoding": "application/json",
+    "parameters": [],
+    "body": {}
+  },
+  {
+    "id": "3m.post.system.restart",
+    "panelType": "3m-ui",
+    "method": "POST",
+    "path": "/system/restart",
+    "group": "3m-system",
+    "label": "Restart the panel process (systemd Restart=always brings it back)",
+    "write": true,
+    "since": "1.4.1",
+    "encoding": "application/json",
+    "parameters": [],
+    "body": {}
+  },
+  {
+    "id": "3m.post.system.templates.acme",
+    "panelType": "3m-ui",
+    "method": "POST",
+    "path": "/system/templates/acme",
+    "group": "3m-system",
+    "label": "Generate ACME helper template",
+    "write": true,
+    "since": "1.4.1",
+    "encoding": "application/json",
+    "parameters": [],
+    "body": {
+      "type": "object",
+      "properties": {
+        "domain": {
+          "type": "string"
+        },
+        "email": {
+          "type": "string"
+        },
+        "webroot": {
+          "type": "string"
+        }
+      }
+    }
+  },
+  {
+    "id": "3m.post.system.templates.reverse-proxy",
+    "panelType": "3m-ui",
+    "method": "POST",
+    "path": "/system/templates/reverse-proxy",
+    "group": "3m-system",
+    "label": "Generate reverse-proxy snippet template",
+    "write": true,
+    "since": "1.4.1",
+    "encoding": "application/json",
+    "parameters": [],
+    "body": {
+      "type": "object",
+      "properties": {
+        "kind": {
+          "type": "string"
+        },
+        "domain": {
+          "type": "string"
+        },
+        "upstream": {
+          "type": "string"
+        }
+      }
+    }
+  },
+  {
+    "id": "3m.post.system.templates.warp",
+    "panelType": "3m-ui",
+    "method": "POST",
+    "path": "/system/templates/warp",
+    "group": "3m-system",
+    "label": "Build WireGuard YAML from operator-supplied keys (advanced)",
+    "write": true,
+    "since": "1.4.1",
+    "encoding": "application/json",
+    "parameters": [],
+    "body": {
+      "type": "object",
+      "properties": {
+        "private_key": {
+          "type": "string"
+        },
+        "address": {
+          "type": "string"
+        },
+        "ipv6": {
+          "type": "string"
+        },
+        "reserved": {
+          "type": "string"
+        }
+      }
+    }
+  },
+  {
+    "id": "3m.post.system.templates.warp.register",
+    "panelType": "3m-ui",
+    "method": "POST",
+    "path": "/system/templates/warp/register",
+    "group": "3m-system",
+    "label": "Register WARP (YAML + persist account by default)",
+    "write": true,
+    "since": "1.4.1",
+    "encoding": "application/json",
+    "parameters": [
+      {
+        "in": "query",
+        "name": "mode",
+        "schema": {
+          "type": "string",
+          "enum": [
+            "wireguard",
+            "masque",
+            "both"
+          ]
+        }
+      },
+      {
+        "in": "query",
+        "name": "nosave",
+        "schema": {
+          "type": "string",
+          "enum": [
+            "1"
+          ]
+        },
+        "description": "Skip persisting warp-account"
+      }
+    ],
+    "body": {}
+  },
+  {
+    "id": "3m.post.system.update",
+    "panelType": "3m-ui",
+    "method": "POST",
+    "path": "/system/update",
+    "group": "3m-system",
+    "label": "Trigger update.sh in the background to update the panel",
+    "write": true,
+    "since": "1.4.1",
+    "encoding": "application/json",
+    "parameters": [],
+    "body": {
+      "type": "object",
+      "properties": {
+        "channel": {
+          "type": "string"
+        }
+      }
+    }
+  },
+  {
+    "id": "3m.post.system.warp",
+    "panelType": "3m-ui",
+    "method": "POST",
+    "path": "/system/warp",
+    "group": "3m-system",
+    "label": "Register Cloudflare WARP and persist account",
+    "write": true,
+    "since": "1.4.1",
+    "encoding": "application/json",
+    "parameters": [
+      {
+        "in": "query",
+        "name": "mode",
+        "schema": {
+          "type": "string",
+          "enum": [
+            "wireguard",
+            "masque"
+          ]
+        }
+      }
+    ],
+    "body": {}
+  },
+  {
+    "id": "3m.post.telegram.set-my-commands",
+    "panelType": "3m-ui",
+    "method": "POST",
+    "path": "/telegram/set-my-commands",
+    "group": "3m-telegram",
+    "label": "POST /telegram/set-my-commands",
+    "write": true,
+    "since": "1.4.1",
+    "encoding": "application/json",
+    "parameters": [],
+    "body": {}
+  },
+  {
+    "id": "3m.post.telegram.test",
+    "panelType": "3m-ui",
+    "method": "POST",
+    "path": "/telegram/test",
+    "group": "3m-telegram",
+    "label": "POST /telegram/test",
+    "write": true,
+    "since": "1.4.1",
+    "encoding": "application/json",
+    "parameters": [],
+    "body": {}
+  },
+  {
+    "id": "3m.post.users",
+    "panelType": "3m-ui",
+    "method": "POST",
+    "path": "/users",
+    "group": "3m-users",
+    "label": "Create proxy user",
+    "write": true,
+    "since": "1.4.1",
+    "encoding": "application/json",
+    "parameters": [],
+    "body": {
+      "type": "object",
+      "properties": {
+        "username": {
+          "type": "string"
+        },
+        "password": {
+          "type": "string"
+        },
+        "uuid": {
+          "type": "string"
+        },
+        "traffic_limit": {
+          "type": "integer"
+        },
+        "ip_limit": {
+          "type": "integer"
+        },
+        "sub_pull_limit": {
+          "type": "integer"
+        },
+        "remark": {
+          "type": "string"
+        },
+        "group": {
+          "type": "string"
+        },
+        "tags": {
+          "type": "string"
+        },
+        "traffic_reset_days": {
+          "type": "integer"
+        },
+        "expire_renew_days": {
+          "type": "integer"
+        },
+        "start_on_first_use": {
+          "type": "boolean"
+        },
+        "expire_days_after_first": {
+          "type": "integer"
+        },
+        "external_links": {
+          "type": "string"
+        },
+        "expire_time": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "enabled": {
+          "type": "boolean"
+        },
+        "telegram_id": {
+          "type": "integer"
+        },
+        "telegram_name": {
+          "type": "string"
+        }
+      }
+    }
+  },
+  {
+    "id": "3m.post.users.batch",
+    "panelType": "3m-ui",
+    "method": "POST",
+    "path": "/users/batch",
+    "group": "3m-users",
+    "label": "Batch enable/disable/reset-traffic/delete/extend users",
+    "write": true,
+    "since": "1.4.1",
+    "encoding": "application/json",
+    "parameters": [],
+    "body": {
+      "type": "object",
+      "properties": {
+        "action": {
+          "type": "string"
+        },
+        "ids": {
+          "type": "array",
+          "items": {
+            "type": "integer"
+          }
+        },
+        "days": {
+          "type": "integer"
+        },
+        "traffic_gb": {
+          "type": "integer"
+        }
+      }
+    }
+  },
+  {
+    "id": "3m.post.users.del-depleted",
+    "panelType": "3m-ui",
+    "method": "POST",
+    "path": "/users/del-depleted",
+    "group": "3m-users",
+    "label": "Delete expired or over-quota users",
+    "write": true,
+    "since": "1.4.1",
+    "encoding": "application/json",
+    "parameters": [],
+    "body": {}
+  },
+  {
+    "id": "3m.post.users.quick",
+    "panelType": "3m-ui",
+    "method": "POST",
+    "path": "/users/quick",
+    "group": "3m-users",
+    "label": "POST /users/quick",
+    "write": true,
+    "since": "1.4.1",
+    "encoding": "application/json",
+    "parameters": [],
+    "body": {
+      "type": "object",
+      "properties": {
+        "username": {
+          "type": "string"
+        },
+        "bind_all_listeners": {
+          "type": "boolean"
+        },
+        "remark": {
+          "type": "string"
+        }
+      }
+    }
+  },
+  {
+    "id": "3m.post.users.{id}.listeners",
+    "panelType": "3m-ui",
+    "method": "POST",
+    "path": "/users/{id}/listeners",
+    "group": "3m-users",
+    "label": "POST /users/{id}/listeners",
+    "write": true,
+    "since": "1.4.1",
+    "encoding": "application/json",
+    "parameters": [
+      {
+        "in": "path",
+        "name": "id",
+        "required": true,
+        "schema": {
+          "type": "integer"
+        }
+      }
+    ],
+    "body": {
+      "type": "object",
+      "properties": {
+        "listener_ids": {
+          "type": "array",
+          "items": {
+            "type": "integer"
+          }
+        }
+      }
+    }
+  },
+  {
+    "id": "3m.post.users.{id}.nodes",
+    "panelType": "3m-ui",
+    "method": "POST",
+    "path": "/users/{id}/nodes",
+    "group": "3m-users",
+    "label": "Replace local node bindings",
+    "write": true,
+    "since": "1.4.1",
+    "encoding": "application/json",
+    "parameters": [
+      {
+        "in": "path",
+        "name": "id",
+        "required": true,
+        "schema": {
+          "type": "integer"
+        }
+      }
+    ],
+    "body": {
+      "type": "object",
+      "properties": {
+        "listener_ids": {
+          "type": "array",
+          "items": {
+            "type": "integer"
+          }
+        }
+      }
+    }
+  },
+  {
+    "id": "3m.post.users.{id}.remote-nodes",
+    "panelType": "3m-ui",
+    "method": "POST",
+    "path": "/users/{id}/remote-nodes",
+    "group": "3m-users",
+    "label": "Replace remote node mirror bindings (cross-machine sub merge)",
+    "write": true,
+    "since": "1.4.1",
+    "encoding": "application/json",
+    "parameters": [
+      {
+        "in": "path",
+        "name": "id",
+        "required": true,
+        "schema": {
+          "type": "integer"
+        }
+      }
+    ],
+    "body": {
+      "type": "object",
+      "properties": {
+        "mirror_ids": {
+          "type": "array",
+          "items": {
+            "type": "integer"
+          }
+        },
+        "remote_node_ids": {
+          "type": "array",
+          "items": {
+            "type": "integer"
+          }
+        }
+      }
+    }
+  },
+  {
+    "id": "3m.post.users.{id}.reset-traffic",
+    "panelType": "3m-ui",
+    "method": "POST",
+    "path": "/users/{id}/reset-traffic",
+    "group": "3m-users",
+    "label": "Reset traffic counters",
+    "write": true,
+    "since": "1.4.1",
+    "encoding": "application/json",
+    "parameters": [
+      {
+        "in": "path",
+        "name": "id",
+        "required": true,
+        "schema": {
+          "type": "integer"
+        }
+      }
+    ],
+    "body": {}
+  },
+  {
+    "id": "3m.post.users.{id}.subscription.rotate",
+    "panelType": "3m-ui",
+    "method": "POST",
+    "path": "/users/{id}/subscription/rotate",
+    "group": "3m-users",
+    "label": "Rotate subscription token",
+    "write": true,
+    "since": "1.4.1",
+    "encoding": "application/json",
+    "parameters": [
+      {
+        "in": "path",
+        "name": "id",
+        "required": true,
+        "schema": {
+          "type": "integer"
+        }
+      }
+    ],
+    "body": {}
+  },
+  {
+    "id": "3m.put.auth.oauth.github.settings",
+    "panelType": "3m-ui",
+    "method": "PUT",
+    "path": "/auth/oauth/github/settings",
+    "group": "3m-auth",
+    "label": "Save GitHub OAuth settings (admin)",
+    "write": true,
+    "since": "1.4.1",
+    "encoding": "application/json",
+    "parameters": [],
+    "body": {
+      "type": "object",
+      "properties": {
+        "enabled": {
+          "type": "boolean"
+        },
+        "client_id": {
+          "type": "string"
+        },
+        "client_secret": {
+          "type": "string"
+        },
+        "allowed_logins": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "GitHub usernames allowed to bind on first login"
+        }
+      }
+    }
+  },
+  {
+    "id": "3m.put.cluster.{id}",
+    "panelType": "3m-ui",
+    "method": "PUT",
+    "path": "/cluster/{id}",
+    "group": "3m-cluster",
+    "label": "Update remote panel",
+    "write": true,
+    "since": "1.4.1",
+    "encoding": "application/json",
+    "parameters": [
+      {
+        "in": "path",
+        "name": "id",
+        "required": true,
+        "schema": {
+          "type": "integer"
+        }
+      }
+    ],
+    "body": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "base_url": {
+          "type": "string"
+        },
+        "api_token": {
+          "type": "string"
+        },
+        "enabled": {
+          "type": "boolean"
+        },
+        "remark": {
+          "type": "string"
+        },
+        "keep_token": {
+          "type": "boolean"
+        }
+      }
+    }
+  },
+  {
+    "id": "3m.put.cluster.{id}.nodes.{nodeId}",
+    "panelType": "3m-ui",
+    "method": "PUT",
+    "path": "/cluster/{id}/nodes/{nodeId}",
+    "group": "3m-cluster",
+    "label": "PUT /cluster/{id}/nodes/{nodeId}",
+    "write": true,
+    "since": "1.4.1",
+    "encoding": "application/json",
+    "parameters": [
+      {
+        "in": "path",
+        "name": "id",
+        "required": true,
+        "schema": {
+          "type": "integer"
+        }
+      },
+      {
+        "in": "path",
+        "name": "nodeId",
+        "required": true,
+        "schema": {
+          "type": "integer"
+        }
+      }
+    ],
+    "body": {}
+  },
+  {
+    "id": "3m.put.config.groups",
+    "panelType": "3m-ui",
+    "method": "PUT",
+    "path": "/config/groups",
+    "group": "3m-config",
+    "label": "Replace client-subscription proxy-groups",
+    "write": true,
+    "since": "1.4.1",
+    "encoding": "application/json",
+    "parameters": [],
+    "body": {}
+  },
+  {
+    "id": "3m.put.config.proxies.{index}",
+    "panelType": "3m-ui",
+    "method": "PUT",
+    "path": "/config/proxies/{index}",
+    "group": "3m-config",
+    "label": "PUT /config/proxies/{index}",
+    "write": true,
+    "since": "1.4.1",
+    "encoding": "application/json",
+    "parameters": [
+      {
+        "in": "path",
+        "name": "index",
+        "required": true,
+        "schema": {
+          "type": "integer"
+        }
+      }
+    ],
+    "body": {}
+  },
+  {
+    "id": "3m.put.config.rule-providers.{name}.update",
+    "panelType": "3m-ui",
+    "method": "PUT",
+    "path": "/config/rule-providers/{name}/update",
+    "group": "3m-config",
+    "label": "Hot-update one rule-set (Mihomo PUT /providers/rules/{name})",
+    "write": true,
+    "since": "1.4.1",
+    "encoding": "application/json",
+    "parameters": [
+      {
+        "in": "path",
+        "name": "name",
+        "required": true,
+        "schema": {
+          "type": "string"
+        }
+      }
+    ],
+    "body": {}
+  },
+  {
+    "id": "3m.put.config.rules",
+    "panelType": "3m-ui",
+    "method": "PUT",
+    "path": "/config/rules",
+    "group": "3m-config",
+    "label": "Replace client-subscription routing rules",
+    "write": true,
+    "since": "1.4.1",
+    "encoding": "application/json",
+    "parameters": [],
+    "body": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    }
+  },
+  {
+    "id": "3m.put.config.server-routing",
+    "panelType": "3m-ui",
+    "method": "PUT",
+    "path": "/config/server-routing",
+    "group": "3m-config",
+    "label": "Save server egress routing",
+    "write": true,
+    "since": "1.4.1",
+    "encoding": "application/json",
+    "parameters": [],
+    "body": {
+      "type": "object",
+      "properties": {
+        "proxies": {
+          "type": "array",
+          "items": {
+            "type": "object"
+          }
+        },
+        "proxyGroups": {
+          "type": "array",
+          "items": {
+            "type": "object"
+          }
+        },
+        "rules": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "warpDomains": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    }
+  },
+  {
+    "id": "3m.put.listeners.{id}",
+    "panelType": "3m-ui",
+    "method": "PUT",
+    "path": "/listeners/{id}",
+    "group": "3m-listeners",
+    "label": "Update listener",
+    "write": true,
+    "since": "1.4.1",
+    "encoding": "application/json",
+    "parameters": [
+      {
+        "in": "path",
+        "name": "id",
+        "required": true,
+        "schema": {
+          "type": "integer"
+        }
+      }
+    ],
+    "body": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "protocol": {
+          "type": "string"
+        },
+        "type": {
+          "type": "string"
+        },
+        "port": {
+          "type": "string"
+        },
+        "bind_address": {
+          "type": "string"
+        },
+        "listen": {
+          "type": "string"
+        },
+        "tls": {
+          "type": "boolean"
+        },
+        "udp": {
+          "type": "boolean"
+        },
+        "enabled": {
+          "type": "boolean"
+        },
+        "proxy": {
+          "type": "string"
+        },
+        "rule": {
+          "type": "string"
+        },
+        "config": {
+          "type": "string"
+        },
+        "status": {
+          "type": "string"
+        },
+        "routing_mark": {
+          "type": "integer"
+        },
+        "public_host": {
+          "type": "string"
+        },
+        "public_port": {
+          "type": "string"
+        },
+        "access_sni": {
+          "type": "string"
+        },
+        "client_fingerprint": {
+          "type": "string"
+        },
+        "access_alpn": {
+          "type": "string"
+        },
+        "traffic_multiplier": {
+          "type": "number"
+        }
+      }
+    }
+  },
+  {
+    "id": "3m.put.nodes.{id}",
+    "panelType": "3m-ui",
+    "method": "PUT",
+    "path": "/nodes/{id}",
+    "group": "3m-nodes",
+    "label": "Update listener",
+    "write": true,
+    "since": "1.4.1",
+    "encoding": "application/json",
+    "parameters": [
+      {
+        "in": "path",
+        "name": "id",
+        "required": true,
+        "schema": {
+          "type": "integer"
+        }
+      }
+    ],
+    "body": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "protocol": {
+          "type": "string"
+        },
+        "type": {
+          "type": "string"
+        },
+        "port": {
+          "type": "string"
+        },
+        "bind_address": {
+          "type": "string"
+        },
+        "listen": {
+          "type": "string"
+        },
+        "tls": {
+          "type": "boolean"
+        },
+        "udp": {
+          "type": "boolean"
+        },
+        "enabled": {
+          "type": "boolean"
+        },
+        "proxy": {
+          "type": "string"
+        },
+        "rule": {
+          "type": "string"
+        },
+        "config": {
+          "type": "string"
+        },
+        "status": {
+          "type": "string"
+        },
+        "routing_mark": {
+          "type": "integer"
+        },
+        "public_host": {
+          "type": "string"
+        },
+        "public_port": {
+          "type": "string"
+        },
+        "access_sni": {
+          "type": "string"
+        },
+        "client_fingerprint": {
+          "type": "string"
+        },
+        "access_alpn": {
+          "type": "string"
+        },
+        "traffic_multiplier": {
+          "type": "number"
+        }
+      }
+    }
+  },
+  {
+    "id": "3m.put.panel-settings",
+    "panelType": "3m-ui",
+    "method": "PUT",
+    "path": "/panel-settings",
+    "group": "3m-panel-settings",
+    "label": "PUT /panel-settings",
+    "write": true,
+    "since": "1.4.1",
+    "encoding": "application/json",
+    "parameters": [],
+    "body": {
+      "type": "object",
+      "properties": {
+        "key": {
+          "type": "string"
+        },
+        "value": {
+          "type": "string"
+        }
+      }
+    }
+  },
+  {
+    "id": "3m.put.system.panel-server",
+    "panelType": "3m-ui",
+    "method": "PUT",
+    "path": "/system/panel-server",
+    "group": "3m-system",
+    "label": "Update panel server settings (may require restart)",
+    "write": true,
+    "since": "1.4.1",
+    "encoding": "application/json",
+    "parameters": [],
+    "body": {
+      "type": "object",
+      "properties": {
+        "port": {
+          "type": "integer"
+        },
+        "listen": {
+          "type": "string"
+        },
+        "public_url": {
+          "type": "string"
+        }
+      }
+    }
+  },
+  {
+    "id": "3m.put.system.ssl",
+    "panelType": "3m-ui",
+    "method": "PUT",
+    "path": "/system/ssl",
+    "group": "3m-system",
+    "label": "Update panel SSL (restart to apply)",
+    "write": true,
+    "since": "1.4.1",
+    "encoding": "application/json",
+    "parameters": [],
+    "body": {
+      "type": "object",
+      "properties": {
+        "enabled": {
+          "type": "boolean"
+        },
+        "domain": {
+          "type": "string"
+        },
+        "email": {
+          "type": "string"
+        },
+        "cache_dir": {
+          "type": "string"
+        },
+        "cert_file": {
+          "type": "string"
+        },
+        "key_file": {
+          "type": "string"
+        },
+        "listen_http": {
+          "type": "string"
+        },
+        "listen_tls": {
+          "type": "string"
+        },
+        "challenge": {
+          "type": "string"
+        },
+        "dns_provider": {
+          "type": "string"
+        },
+        "dns_token": {
+          "type": "string"
+        },
+        "dns_zone": {
+          "type": "string"
+        }
+      }
+    }
+  },
+  {
+    "id": "3m.put.system.subscription-page",
+    "panelType": "3m-ui",
+    "method": "PUT",
+    "path": "/system/subscription-page",
+    "group": "3m-system",
+    "label": "PUT /system/subscription-page",
+    "write": true,
+    "since": "1.4.1",
+    "encoding": "application/json",
+    "parameters": [],
+    "body": {
+      "type": "object",
+      "properties": {
+        "theme_dir": {
+          "type": "string"
+        },
+        "title": {
+          "type": "string"
+        },
+        "support_url": {
+          "type": "string"
+        },
+        "announce": {
+          "type": "string"
+        },
+        "web_page_url": {
+          "type": "string"
+        },
+        "update_hours": {
+          "type": "integer"
+        },
+        "encrypt": {
+          "type": "boolean"
+        }
+      }
+    }
+  },
+  {
+    "id": "3m.put.telegram.settings",
+    "panelType": "3m-ui",
+    "method": "PUT",
+    "path": "/telegram/settings",
+    "group": "3m-telegram",
+    "label": "PUT /telegram/settings",
+    "write": true,
+    "since": "1.4.1",
+    "encoding": "application/json",
+    "parameters": [],
+    "body": {
+      "type": "object",
+      "properties": {
+        "enabled": {
+          "type": "boolean"
+        },
+        "bot_token": {
+          "type": "string"
+        },
+        "chat_ids": {
+          "type": "string"
+        },
+        "notify_on_login": {
+          "type": "boolean"
+        },
+        "notify_on_block": {
+          "type": "boolean"
+        },
+        "notify_on_unblock": {
+          "type": "boolean"
+        },
+        "notify_on_expiry": {
+          "type": "boolean"
+        },
+        "notify_on_traffic": {
+          "type": "boolean"
+        },
+        "notify_daily_digest": {
+          "type": "boolean"
+        },
+        "notify_on_cpu": {
+          "type": "boolean"
+        },
+        "traffic_warn_pct": {
+          "type": "string"
+        },
+        "expiry_warn_hours": {
+          "type": "string"
+        },
+        "cpu_warn_pct": {
+          "type": "string"
+        },
+        "schedule": {
+          "type": "string"
+        },
+        "attach_backup": {
+          "type": "boolean"
+        },
+        "language": {
+          "type": "string"
+        },
+        "enabled_events": {
+          "type": "string"
+        },
+        "expiry_warn_days": {
+          "type": "string"
+        },
+        "traffic_warn_gb": {
+          "type": "string"
+        },
+        "proxy_url": {
+          "type": "string"
+        },
+        "api_server": {
+          "type": "string"
+        },
+        "keep_token": {
+          "type": "boolean"
+        }
+      }
+    }
+  },
+  {
+    "id": "3m.put.users.{id}",
+    "panelType": "3m-ui",
+    "method": "PUT",
+    "path": "/users/{id}",
+    "group": "3m-users",
+    "label": "Update proxy user",
+    "write": true,
+    "since": "1.4.1",
+    "encoding": "application/json",
+    "parameters": [
+      {
+        "in": "path",
+        "name": "id",
+        "required": true,
+        "schema": {
+          "type": "integer"
+        }
+      }
+    ],
+    "body": {
+      "type": "object",
+      "properties": {
+        "username": {
+          "type": "string"
+        },
+        "password": {
+          "type": "string"
+        },
+        "uuid": {
+          "type": "string"
+        },
+        "traffic_limit": {
+          "type": "integer"
+        },
+        "ip_limit": {
+          "type": "integer"
+        },
+        "sub_pull_limit": {
+          "type": "integer"
+        },
+        "remark": {
+          "type": "string"
+        },
+        "group": {
+          "type": "string"
+        },
+        "tags": {
+          "type": "string"
+        },
+        "traffic_reset_days": {
+          "type": "integer"
+        },
+        "expire_renew_days": {
+          "type": "integer"
+        },
+        "start_on_first_use": {
+          "type": "boolean"
+        },
+        "expire_days_after_first": {
+          "type": "integer"
+        },
+        "external_links": {
+          "type": "string"
+        },
+        "expire_time": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "enabled": {
+          "type": "boolean"
+        },
+        "telegram_id": {
+          "type": "integer"
+        },
+        "telegram_name": {
+          "type": "string"
+        }
+      }
+    }
+  },
+  {
+    "id": "3m.put.users.{id}.telegram",
+    "panelType": "3m-ui",
+    "method": "PUT",
+    "path": "/users/{id}/telegram",
+    "group": "3m-users",
+    "label": "PUT /users/{id}/telegram",
+    "write": true,
+    "since": "1.4.1",
+    "encoding": "application/json",
+    "parameters": [
+      {
+        "in": "path",
+        "name": "id",
+        "required": true,
+        "schema": {
+          "type": "integer"
+        }
+      }
+    ],
+    "body": {
+      "type": "object",
+      "properties": {
+        "telegram_id": {
+          "type": "integer"
+        },
+        "telegram_name": {
+          "type": "string"
+        }
+      }
+    }
+  },
+  {
+    "id": "3m.put.{id}",
+    "panelType": "3m-ui",
+    "method": "PUT",
+    "path": "/{id}",
+    "group": "3m-access-tokens",
+    "label": "PUT /{id}",
+    "write": true,
+    "since": "1.4.1",
+    "encoding": "application/json",
+    "parameters": [
+      {
+        "in": "path",
+        "name": "id",
+        "required": true,
+        "schema": {
+          "type": "integer"
+        }
+      }
+    ],
+    "body": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "enabled": {
+          "type": "boolean"
+        },
+        "expire_at": {
+          "type": "string",
+          "format": "date-time"
+        }
+      }
+    }
+  }
+]

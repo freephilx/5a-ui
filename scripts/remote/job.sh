@@ -13,7 +13,7 @@ stage=preparing
 failed() {
   case "$stage" in
     preparing) message='安装准备失败，请检查软件源和服务器网络。' ;;
-    installing) message='3x-ui 安装失败，请检查服务器能否访问 GitHub。' ;;
+    installing) message='面板安装失败，请检查服务器能否访问 GitHub。' ;;
     configuring) message='节点配置失败，可重新点击自建继续；详细原因在服务器安装日志中。' ;;
     *) message='节点检查失败，可重新读取状态或重试安装。' ;;
   esac
@@ -26,6 +26,11 @@ progress preparing '正在准备安装环境…'
 export DEBIAN_FRONTEND=noninteractive
 apt-get -o DPkg::Lock::Timeout=120 update
 apt-get -o DPkg::Lock::Timeout=120 install -y curl ca-certificates python3
+
+if [ "$(python3 -c 'import json; print(json.load(open("request.json")).get("panelType", "3x-ui"))')" = 3m-ui ]; then
+  . ./job_3m.sh
+  exit 0
+fi
 
 if [ ! -f panel.env ]; then
   python3 manage.py prepare

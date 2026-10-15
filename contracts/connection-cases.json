@@ -12,7 +12,8 @@
       "password": "test-only",
       "username": "root",
       "port": 22,
-      "nodePort": 443
+      "nodePort": 443,
+      "panelType": "3x-ui"
     }
   },
   {
@@ -28,7 +29,8 @@
       "password": "test-only",
       "username": "root",
       "port": 22,
-      "nodePort": 443
+      "nodePort": 443,
+      "panelType": "3x-ui"
     }
   },
   {
@@ -44,7 +46,8 @@
       "password": "test-only",
       "username": "root",
       "port": 22,
-      "nodePort": 443
+      "nodePort": 443,
+      "panelType": "3x-ui"
     }
   },
   {
@@ -258,5 +261,33 @@
       "password": ""
     },
     "error": "MISSING_PASSWORD"
+  },
+  {
+    "name": "Mihomo panel selection",
+    "input": {
+      "host": "8.8.8.8",
+      "authMethod": "password",
+      "password": "test-only",
+      "panelType": "3m-ui"
+    },
+    "expected": {
+      "host": "8.8.8.8",
+      "authMethod": "password",
+      "password": "test-only",
+      "username": "root",
+      "port": 22,
+      "nodePort": 443,
+      "panelType": "3m-ui"
+    }
+  },
+  {
+    "name": "reject unknown panel type",
+    "input": {
+      "host": "8.8.8.8",
+      "authMethod": "password",
+      "password": "test-only",
+      "panelType": "unknown"
+    },
+    "error": "INVALID_PANEL_TYPE"
   }
 ]

@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/foundation.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:five_a_core/five_a_core.dart';
 
@@ -6,6 +8,8 @@ import 'controller.dart';
 import 'services/gateway.dart';
 import 'theme.dart';
 import 'screens/home.dart';
+import 'saved_servers.dart';
+import 'services/profile_storage.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
@@ -13,24 +17,40 @@ void main() {
 }
 
 class FiveAApp extends StatefulWidget {
-  const FiveAApp({super.key, this.gateway});
+  const FiveAApp({super.key, this.gateway, this.profileStorage});
   final ServerGateway? gateway;
+  final ProfileStorage? profileStorage;
   @override
   State<FiveAApp> createState() => _FiveAAppState();
 }
 
 class _FiveAAppState extends State<FiveAApp> {
+  static const _windowChannel = MethodChannel('app.fivea/window');
   late final controller = ServerController(widget.gateway ?? createGateway());
+  late final savedServers = SavedServers(
+    widget.profileStorage ?? SecureProfileStorage(),
+  );
   ThemeMode mode = ThemeMode.system;
   @override
   void initState() {
     super.initState();
+    _updateWindowAppearance();
     controller.initialize();
+  }
+
+  Future<void> _updateWindowAppearance() async {
+    if (kIsWeb || defaultTargetPlatform != TargetPlatform.macOS) return;
+    try {
+      await _windowChannel.invokeMethod<void>('setAppearance', mode.name);
+    } on MissingPluginException {
+      // Widget tests do not create a native window.
+    }
   }
 
   @override
   void dispose() {
     controller.dispose();
+    savedServers.dispose();
     super.dispose();
   }
 
@@ -46,8 +66,12 @@ class _FiveAAppState extends State<FiveAApp> {
     themeMode: mode,
     home: HomeScreen(
       controller: controller,
+      savedServers: savedServers,
       themeMode: mode,
-      onThemeChanged: (value) => setState(() => mode = value),
+      onThemeChanged: (value) {
+        setState(() => mode = value);
+        _updateWindowAppearance();
+      },
     ),
   );
 }

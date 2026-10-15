@@ -1,11 +1,13 @@
 import { createConnection } from 'node:net';
 import { AppError } from './errors';
-import { readInput } from './validation';
+import { readInput, readJsonBody } from './validation';
 import { runSSH } from './ssh';
 import { installScript, parseRemoteResult, statusScript } from './remote';
 import { authorize, type CaptchaEnv } from './captcha';
 import { limitRequest, type RateEnv } from './rate-limit';
 import { securityHeaders } from './security';
+import { managementScript } from './management';
+import { createCfnewDeployer, parseCfnewInput, cfnewCaptchaIdentity } from './cfnew';
 
 export type AppEnv = CaptchaEnv & RateEnv;
 export type SSHRunner = typeof runSSH;
@@ -27,21 +29,28 @@ export async function probePort(host: string, port: number): Promise<boolean> {
   });
 }
 
-export function createApp(ssh: SSHRunner = runSSH, probe = probePort) {
+export function createApp(ssh: SSHRunner = runSSH, probe = probePort, cfnew = createCfnewDeployer()) {
   return async function handle(request: Request, env: AppEnv = {}, ip = 'unknown'): Promise<Response> {
     let response: Response;
     try {
       const url = new URL(request.url);
       if (url.pathname === '/api/health' && request.method === 'GET') return securityHeaders(Response.json({ ok: true }));
       if (url.pathname === '/api/config' && request.method === 'GET') return securityHeaders(Response.json({ turnstileSiteKey: env.TURNSTILE_SITE_KEY || null }));
-      const action = url.pathname === '/api/install' ? 'install' : url.pathname === '/api/status' ? 'status' : null;
+      const action = url.pathname === '/api/cfnew' ? 'cfnew' : url.pathname === '/api/install' ? 'install' : url.pathname === '/api/status' ? 'status' : url.pathname === '/api/manage' ? 'manage' : null;
       if (!action) throw new AppError('NOT_FOUND', '此接口不存在。', 404);
       if (request.method !== 'POST') throw new AppError('METHOD_NOT_ALLOWED', '此操作需要 POST 请求。', 405);
       if (request.headers.get('origin') !== url.origin || request.headers.get('sec-fetch-site') === 'cross-site') throw new AppError('CROSS_ORIGIN', '请在本网站页面中操作。', 403);
       await limitRequest(ip, action, env);
+      if (action === 'cfnew') {
+        const input = parseCfnewInput(await readJsonBody(request));
+        if (input.step === 'prepare') await limitRequest(ip, 'install', env);
+        const proofToken = await authorize(cfnewCaptchaIdentity(input), ip, env, url.hostname);
+        const result = await cfnew(input);
+        return securityHeaders(Response.json({ ...result, ...(proofToken ? { proofToken } : {}) }));
+      }
       const input = await readInput(request);
       const proofToken = await authorize(input, ip, env, url.hostname);
-      const result = await ssh(input, action === 'install' ? installScript(input) : statusScript(input.host));
+      const result = await ssh(input, action === 'install' ? installScript(input) : action === 'manage' ? managementScript(input.management, input.host) : statusScript(input.host));
       const status = parseRemoteResult(result.stdout);
       status.hostFingerprint = result.fingerprint;
       if (proofToken) status.proofToken = proofToken;

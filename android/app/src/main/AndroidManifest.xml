@@ -2,6 +2,7 @@
     <uses-permission android:name="android.permission.INTERNET"/>
     <application
         android:label="5a-ui"
+        android:allowBackup="false"
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher">
         <activity

@@ -2,6 +2,7 @@ import ipaddr from 'ipaddr.js';
 import type { ConnectionInput } from '../shared/types';
 import { AppError } from './errors';
 import networkRanges from '../../contracts/network-ranges.json';
+import { MAX_MANAGEMENT_BYTES, validateManagement } from './management';
 
 export const MAX_BODY_BYTES = 80 * 1024;
 
@@ -38,7 +39,10 @@ export function validateInput(value: unknown): ConnectionInput {
   const username = raw.username === undefined ? 'root' : text(raw.username, 32, '用户名').trim();
   if (!/^[a-z_][a-z0-9_-]{0,31}$/i.test(username)) throw new AppError('INVALID_USERNAME', '请输入有效的服务器用户名，例如 root、ubuntu 或 debian。');
   if (raw.authMethod !== 'password' && raw.authMethod !== 'key') throw new AppError('INVALID_AUTH', '请选择密码登录或私钥登录。');
-  const result: ConnectionInput = { host, username, port: port(raw.port, 22), authMethod: raw.authMethod, nodePort: port(raw.nodePort, 443) };
+  const panelType = raw.panelType ?? '3x-ui';
+  if (panelType !== '3x-ui' && panelType !== '3m-ui') throw new AppError('INVALID_PANEL_TYPE', '请选择 3x-ui 或 3m-ui。');
+  const result: ConnectionInput = { host, username, panelType, port: port(raw.port, 22), authMethod: raw.authMethod, nodePort: port(raw.nodePort, 443) };
+  if (raw.management != null) result.management = validateManagement(raw.management);
   if (result.port === result.nodePort) throw new AppError('PORT_CONFLICT', '节点端口需要与 SSH 端口不同。');
   if (result.authMethod === 'password') {
     result.password = text(raw.password, 4096, '密码');
@@ -61,9 +65,14 @@ export function validateInput(value: unknown): ConnectionInput {
 }
 
 export async function readInput(request: Request): Promise<ConnectionInput> {
+  return validateInput(await readJsonBody(request));
+}
+
+export async function readJsonBody(request: Request): Promise<unknown> {
+  const limit = new URL(request.url).pathname === '/api/manage' ? MAX_BODY_BYTES + MAX_MANAGEMENT_BYTES : MAX_BODY_BYTES;
   if (!request.headers.get('content-type')?.startsWith('application/json')) throw new AppError('CONTENT_TYPE', '请使用 JSON 格式提交连接信息。', 415);
   const length = Number(request.headers.get('content-length'));
-  if (length > MAX_BODY_BYTES) throw new AppError('BODY_TOO_LARGE', '连接信息过大，私钥文件最大支持 64 KB。', 413);
+  if (length > limit) throw new AppError('BODY_TOO_LARGE', '请求过大，私钥最大 64 KB，管理备份最大 2 MiB。', 413);
   const reader = request.body?.getReader();
   if (!reader) throw new AppError('INVALID_INPUT', '缺少连接信息。');
   const chunks: Uint8Array[] = [];
@@ -72,7 +81,7 @@ export async function readInput(request: Request): Promise<ConnectionInput> {
     const { done, value } = await reader.read();
     if (done) break;
     total += value.byteLength;
-    if (total > MAX_BODY_BYTES) { await reader.cancel(); throw new AppError('BODY_TOO_LARGE', '连接信息过大，私钥文件最大支持 64 KB。', 413); }
+    if (total > limit) { await reader.cancel(); throw new AppError('BODY_TOO_LARGE', '请求过大，私钥最大 64 KB，管理备份最大 2 MiB。', 413); }
     chunks.push(value);
   }
   const bytes = new Uint8Array(total);
@@ -80,5 +89,5 @@ export async function readInput(request: Request): Promise<ConnectionInput> {
   for (const chunk of chunks) { bytes.set(chunk, offset); offset += chunk.length; }
   let body: unknown;
   try { body = JSON.parse(new TextDecoder().decode(bytes)); } catch { throw new AppError('INVALID_JSON', '连接信息格式不正确。'); }
-  return validateInput(body);
+  return body;
 }

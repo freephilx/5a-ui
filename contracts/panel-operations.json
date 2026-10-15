@@ -1,0 +1,4269 @@
+[
+  {
+    "id": "get_panel_api_inbounds_list",
+    "method": "GET",
+    "path": "/inbounds/list",
+    "group": "inbounds",
+    "write": false,
+    "since": "3.6.0",
+    "encoding": "application/json",
+    "parameters": [],
+    "body": {}
+  },
+  {
+    "id": "get_panel_api_inbounds_list_slim",
+    "method": "GET",
+    "path": "/inbounds/list/slim",
+    "group": "inbounds",
+    "write": false,
+    "since": "3.6.0",
+    "encoding": "application/json",
+    "parameters": [],
+    "body": {}
+  },
+  {
+    "id": "get_panel_api_inbounds_options",
+    "method": "GET",
+    "path": "/inbounds/options",
+    "group": "inbounds",
+    "write": false,
+    "since": "3.6.0",
+    "encoding": "application/json",
+    "parameters": [],
+    "body": {}
+  },
+  {
+    "id": "get_panel_api_inbounds_allLinks",
+    "method": "GET",
+    "path": "/inbounds/allLinks",
+    "group": "inbounds",
+    "write": false,
+    "since": "3.6.0",
+    "encoding": "application/json",
+    "parameters": [],
+    "body": {}
+  },
+  {
+    "id": "get_panel_api_inbounds_get_id",
+    "method": "GET",
+    "path": "/inbounds/get/{id}",
+    "group": "inbounds",
+    "write": false,
+    "since": "3.6.0",
+    "encoding": "application/json",
+    "parameters": [
+      {
+        "name": "id",
+        "in": "path",
+        "required": true,
+        "schema": {
+          "type": "integer"
+        }
+      }
+    ],
+    "body": {}
+  },
+  {
+    "id": "post_panel_api_inbounds_add",
+    "method": "POST",
+    "path": "/inbounds/add",
+    "group": "inbounds",
+    "write": true,
+    "since": "3.6.0",
+    "encoding": "application/json",
+    "parameters": [],
+    "body": {
+      "type": "object"
+    }
+  },
+  {
+    "id": "post_panel_api_inbounds_del_id",
+    "method": "POST",
+    "path": "/inbounds/del/{id}",
+    "group": "inbounds",
+    "write": true,
+    "since": "3.6.0",
+    "encoding": "application/json",
+    "parameters": [
+      {
+        "name": "id",
+        "in": "path",
+        "required": true,
+        "schema": {
+          "type": "integer"
+        }
+      }
+    ],
+    "body": {}
+  },
+  {
+    "id": "post_panel_api_inbounds_bulkDel",
+    "method": "POST",
+    "path": "/inbounds/bulkDel",
+    "group": "inbounds",
+    "write": true,
+    "since": "3.6.0",
+    "encoding": "application/json",
+    "parameters": [],
+    "body": {
+      "type": "object",
+      "properties": {
+        "ids": {
+          "type": "array",
+          "items": {
+            "type": "integer"
+          }
+        }
+      }
+    }
+  },
+  {
+    "id": "post_panel_api_inbounds_update_id",
+    "method": "POST",
+    "path": "/inbounds/update/{id}",
+    "group": "inbounds",
+    "write": true,
+    "since": "3.6.0",
+    "encoding": "application/json",
+    "parameters": [
+      {
+        "name": "id",
+        "in": "path",
+        "required": true,
+        "schema": {
+          "type": "integer"
+        }
+      }
+    ],
+    "body": {
+      "type": "object"
+    }
+  },
+  {
+    "id": "post_panel_api_inbounds_setEnable_id",
+    "method": "POST",
+    "path": "/inbounds/setEnable/{id}",
+    "group": "inbounds",
+    "write": true,
+    "since": "3.6.0",
+    "encoding": "application/json",
+    "parameters": [
+      {
+        "name": "id",
+        "in": "path",
+        "required": true,
+        "schema": {
+          "type": "integer"
+        }
+      }
+    ],
+    "body": {
+      "type": "object",
+      "properties": {
+        "enable": {
+          "type": "boolean"
+        }
+      }
+    }
+  },
+  {
+    "id": "post_panel_api_inbounds_id_subSortIndex",
+    "method": "POST",
+    "path": "/inbounds/{id}/subSortIndex",
+    "group": "inbounds",
+    "write": true,
+    "since": "3.10.0",
+    "encoding": "application/json",
+    "parameters": [
+      {
+        "name": "id",
+        "in": "path",
+        "required": true,
+        "schema": {
+          "type": "integer"
+        }
+      }
+    ],
+    "body": {
+      "type": "object",
+      "properties": {
+        "subSortIndex": {
+          "type": "integer"
+        }
+      }
+    }
+  },
+  {
+    "id": "post_panel_api_inbounds_id_resetTraffic",
+    "method": "POST",
+    "path": "/inbounds/{id}/resetTraffic",
+    "group": "inbounds",
+    "write": true,
+    "since": "3.6.0",
+    "encoding": "application/json",
+    "parameters": [
+      {
+        "name": "id",
+        "in": "path",
+        "required": true,
+        "schema": {
+          "type": "integer"
+        }
+      }
+    ],
+    "body": {}
+  },
+  {
+    "id": "post_panel_api_inbounds_id_delAllClients",
+    "method": "POST",
+    "path": "/inbounds/{id}/delAllClients",
+    "group": "inbounds",
+    "write": true,
+    "since": "3.6.0",
+    "encoding": "application/json",
+    "parameters": [
+      {
+        "name": "id",
+        "in": "path",
+        "required": true,
+        "schema": {
+          "type": "integer"
+        }
+      }
+    ],
+    "body": {}
+  },
+  {
+    "id": "post_panel_api_inbounds_resetAllTraffics",
+    "method": "POST",
+    "path": "/inbounds/resetAllTraffics",
+    "group": "inbounds",
+    "write": true,
+    "since": "3.6.0",
+    "encoding": "application/json",
+    "parameters": [],
+    "body": {}
+  },
+  {
+    "id": "post_panel_api_inbounds_import",
+    "method": "POST",
+    "path": "/inbounds/import",
+    "group": "inbounds",
+    "write": true,
+    "since": "3.6.0",
+    "encoding": "application/x-www-form-urlencoded",
+    "parameters": [],
+    "body": {
+      "type": "object",
+      "properties": {
+        "data": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "data"
+      ]
+    }
+  },
+  {
+    "id": "post_panel_api_inbounds_pushClientTraffics",
+    "method": "POST",
+    "path": "/inbounds/pushClientTraffics",
+    "group": "inbounds",
+    "write": true,
+    "since": "3.6.0",
+    "encoding": "application/json",
+    "parameters": [],
+    "body": {
+      "type": "object",
+      "properties": {
+        "masterGuid": {
+          "type": "string"
+        },
+        "traffics": {
+          "type": "array",
+          "items": {
+            "type": "object"
+          }
+        }
+      },
+      "required": [
+        "masterGuid",
+        "traffics"
+      ]
+    }
+  },
+  {
+    "id": "get_panel_api_inbounds_id_fallbacks",
+    "method": "GET",
+    "path": "/inbounds/{id}/fallbacks",
+    "group": "inbounds",
+    "write": false,
+    "since": "3.6.0",
+    "encoding": "application/json",
+    "parameters": [
+      {
+        "name": "id",
+        "in": "path",
+        "required": true,
+        "schema": {
+          "type": "integer"
+        }
+      }
+    ],
+    "body": {}
+  },
+  {
+    "id": "post_panel_api_inbounds_id_fallbacks",
+    "method": "POST",
+    "path": "/inbounds/{id}/fallbacks",
+    "group": "inbounds",
+    "write": true,
+    "since": "3.6.0",
+    "encoding": "application/json",
+    "parameters": [
+      {
+        "name": "id",
+        "in": "path",
+        "required": true,
+        "schema": {
+          "type": "integer"
+        }
+      }
+    ],
+    "body": {
+      "type": "object",
+      "properties": {
+        "fallbacks": {
+          "type": "array",
+          "items": {
+            "type": "object"
+          }
+        }
+      },
+      "required": [
+        "fallbacks"
+      ]
+    }
+  },
+  {
+    "id": "get_panel_api_server_status",
+    "method": "GET",
+    "path": "/server/status",
+    "group": "server",
+    "write": false,
+    "since": "3.6.0",
+    "encoding": "application/json",
+    "parameters": [],
+    "body": {}
+  },
+  {
+    "id": "get_panel_api_server_fail2banStatus",
+    "method": "GET",
+    "path": "/server/fail2banStatus",
+    "group": "server",
+    "write": false,
+    "since": "3.6.0",
+    "encoding": "application/json",
+    "parameters": [],
+    "body": {}
+  },
+  {
+    "id": "get_panel_api_server_cpuHistory_bucket",
+    "method": "GET",
+    "path": "/server/cpuHistory/{bucket}",
+    "group": "server",
+    "write": false,
+    "since": "3.6.0",
+    "encoding": "application/json",
+    "parameters": [
+      {
+        "name": "bucket",
+        "in": "path",
+        "required": true,
+        "schema": {
+          "type": "integer"
+        }
+      }
+    ],
+    "body": {}
+  },
+  {
+    "id": "get_panel_api_server_history_metric_bucket",
+    "method": "GET",
+    "path": "/server/history/{metric}/{bucket}",
+    "group": "server",
+    "write": false,
+    "since": "3.6.0",
+    "encoding": "application/json",
+    "parameters": [
+      {
+        "name": "metric",
+        "in": "path",
+        "required": true,
+        "schema": {
+          "type": "string"
+        }
+      },
+      {
+        "name": "bucket",
+        "in": "path",
+        "required": true,
+        "schema": {
+          "type": "integer"
+        }
+      }
+    ],
+    "body": {}
+  },
+  {
+    "id": "get_panel_api_server_xrayMetricsState",
+    "method": "GET",
+    "path": "/server/xrayMetricsState",
+    "group": "server",
+    "write": false,
+    "since": "3.6.0",
+    "encoding": "application/json",
+    "parameters": [],
+    "body": {}
+  },
+  {
+    "id": "get_panel_api_server_xrayMetricsHistory_metric_bucket",
+    "method": "GET",
+    "path": "/server/xrayMetricsHistory/{metric}/{bucket}",
+    "group": "server",
+    "write": false,
+    "since": "3.6.0",
+    "encoding": "application/json",
+    "parameters": [
+      {
+        "name": "metric",
+        "in": "path",
+        "required": true,
+        "schema": {
+          "type": "string"
+        }
+      },
+      {
+        "name": "bucket",
+        "in": "path",
+        "required": true,
+        "schema": {
+          "type": "integer"
+        }
+      }
+    ],
+    "body": {}
+  },
+  {
+    "id": "get_panel_api_server_xrayObservatory",
+    "method": "GET",
+    "path": "/server/xrayObservatory",
+    "group": "server",
+    "write": false,
+    "since": "3.6.0",
+    "encoding": "application/json",
+    "parameters": [],
+    "body": {}
+  },
+  {
+    "id": "get_panel_api_server_xrayObservatoryHistory_tag_bucket",
+    "method": "GET",
+    "path": "/server/xrayObservatoryHistory/{tag}/{bucket}",
+    "group": "server",
+    "write": false,
+    "since": "3.6.0",
+    "encoding": "application/json",
+    "parameters": [
+      {
+        "name": "tag",
+        "in": "path",
+        "required": true,
+        "schema": {
+          "type": "string"
+        }
+      },
+      {
+        "name": "bucket",
+        "in": "path",
+        "required": true,
+        "schema": {
+          "type": "integer"
+        }
+      }
+    ],
+    "body": {}
+  },
+  {
+    "id": "get_panel_api_server_getXrayVersion",
+    "method": "GET",
+    "path": "/server/getXrayVersion",
+    "group": "server",
+    "write": false,
+    "since": "3.6.0",
+    "encoding": "application/json",
+    "parameters": [],
+    "body": {}
+  },
+  {
+    "id": "get_panel_api_server_getPanelUpdateInfo",
+    "method": "GET",
+    "path": "/server/getPanelUpdateInfo",
+    "group": "server",
+    "write": false,
+    "since": "3.6.0",
+    "encoding": "application/json",
+    "parameters": [],
+    "body": {}
+  },
+  {
+    "id": "get_panel_api_server_getUpdateStatus",
+    "method": "GET",
+    "path": "/server/getUpdateStatus",
+    "group": "server",
+    "write": false,
+    "since": "3.6.0",
+    "encoding": "application/json",
+    "parameters": [],
+    "body": {}
+  },
+  {
+    "id": "get_panel_api_server_getConfigJson",
+    "method": "GET",
+    "path": "/server/getConfigJson",
+    "group": "server",
+    "write": false,
+    "since": "3.6.0",
+    "encoding": "application/json",
+    "parameters": [],
+    "body": {}
+  },
+  {
+    "id": "get_panel_api_server_getDb",
+    "method": "GET",
+    "path": "/server/getDb",
+    "group": "server",
+    "write": false,
+    "since": "3.6.0",
+    "encoding": "application/json",
+    "parameters": [],
+    "body": {}
+  },
+  {
+    "id": "get_panel_api_server_getMigration",
+    "method": "GET",
+    "path": "/server/getMigration",
+    "group": "server",
+    "write": false,
+    "since": "3.6.0",
+    "encoding": "application/json",
+    "parameters": [],
+    "body": {}
+  },
+  {
+    "id": "get_panel_api_server_getNewUUID",
+    "method": "GET",
+    "path": "/server/getNewUUID",
+    "group": "server",
+    "write": false,
+    "since": "3.6.0",
+    "encoding": "application/json",
+    "parameters": [],
+    "body": {}
+  },
+  {
+    "id": "get_panel_api_server_getWebCertFiles",
+    "method": "GET",
+    "path": "/server/getWebCertFiles",
+    "group": "server",
+    "write": false,
+    "since": "3.6.0",
+    "encoding": "application/json",
+    "parameters": [],
+    "body": {}
+  },
+  {
+    "id": "get_panel_api_server_descendants",
+    "method": "GET",
+    "path": "/server/descendants",
+    "group": "server",
+    "write": false,
+    "since": "3.6.0",
+    "encoding": "application/json",
+    "parameters": [],
+    "body": {}
+  },
+  {
+    "id": "get_panel_api_server_getNewX25519Cert",
+    "method": "GET",
+    "path": "/server/getNewX25519Cert",
+    "group": "server",
+    "write": false,
+    "since": "3.6.0",
+    "encoding": "application/json",
+    "parameters": [],
+    "body": {}
+  },
+  {
+    "id": "get_panel_api_server_getNewmldsa65",
+    "method": "GET",
+    "path": "/server/getNewmldsa65",
+    "group": "server",
+    "write": false,
+    "since": "3.6.0",
+    "encoding": "application/json",
+    "parameters": [],
+    "body": {}
+  },
+  {
+    "id": "get_panel_api_server_getNewmlkem768",
+    "method": "GET",
+    "path": "/server/getNewmlkem768",
+    "group": "server",
+    "write": false,
+    "since": "3.6.0",
+    "encoding": "application/json",
+    "parameters": [],
+    "body": {}
+  },
+  {
+    "id": "get_panel_api_server_getNewVlessEnc",
+    "method": "GET",
+    "path": "/server/getNewVlessEnc",
+    "group": "server",
+    "write": false,
+    "since": "3.6.0",
+    "encoding": "application/json",
+    "parameters": [],
+    "body": {}
+  },
+  {
+    "id": "post_panel_api_server_stopXrayService",
+    "method": "POST",
+    "path": "/server/stopXrayService",
+    "group": "server",
+    "write": true,
+    "since": "3.6.0",
+    "encoding": "application/json",
+    "parameters": [],
+    "body": {}
+  },
+  {
+    "id": "post_panel_api_server_restartXrayService",
+    "method": "POST",
+    "path": "/server/restartXrayService",
+    "group": "server",
+    "write": true,
+    "since": "3.6.0",
+    "encoding": "application/json",
+    "parameters": [],
+    "body": {}
+  },
+  {
+    "id": "post_panel_api_server_installXray_version",
+    "method": "POST",
+    "path": "/server/installXray/{version}",
+    "group": "server",
+    "write": true,
+    "since": "3.6.0",
+    "encoding": "application/json",
+    "parameters": [
+      {
+        "name": "version",
+        "in": "path",
+        "required": true,
+        "schema": {
+          "type": "string"
+        }
+      }
+    ],
+    "body": {}
+  },
+  {
+    "id": "post_panel_api_server_updatePanel",
+    "method": "POST",
+    "path": "/server/updatePanel",
+    "group": "server",
+    "write": true,
+    "since": "3.6.0",
+    "encoding": "application/x-www-form-urlencoded",
+    "parameters": [],
+    "body": {
+      "type": "object",
+      "properties": {
+        "dev": {
+          "type": "boolean"
+        }
+      }
+    }
+  },
+  {
+    "id": "post_panel_api_server_setUpdateChannel",
+    "method": "POST",
+    "path": "/server/setUpdateChannel",
+    "group": "server",
+    "write": true,
+    "since": "3.6.0",
+    "encoding": "application/x-www-form-urlencoded",
+    "parameters": [],
+    "body": {
+      "type": "object",
+      "properties": {
+        "dev": {
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "dev"
+      ]
+    }
+  },
+  {
+    "id": "post_panel_api_server_updateGeofile",
+    "method": "POST",
+    "path": "/server/updateGeofile",
+    "group": "server",
+    "write": true,
+    "since": "3.6.0",
+    "encoding": "application/json",
+    "parameters": [],
+    "body": {}
+  },
+  {
+    "id": "post_panel_api_server_updateGeofile_fileName",
+    "method": "POST",
+    "path": "/server/updateGeofile/{fileName}",
+    "group": "server",
+    "write": true,
+    "since": "3.6.0",
+    "encoding": "application/json",
+    "parameters": [
+      {
+        "name": "fileName",
+        "in": "path",
+        "required": true,
+        "schema": {
+          "type": "string"
+        }
+      }
+    ],
+    "body": {}
+  },
+  {
+    "id": "post_panel_api_server_logs_count",
+    "method": "POST",
+    "path": "/server/logs/{count}",
+    "group": "server",
+    "write": false,
+    "since": "3.6.0",
+    "encoding": "application/x-www-form-urlencoded",
+    "parameters": [
+      {
+        "name": "count",
+        "in": "path",
+        "required": true,
+        "schema": {
+          "type": "integer"
+        }
+      }
+    ],
+    "body": {
+      "type": "object",
+      "properties": {
+        "level": {
+          "type": "string"
+        },
+        "syslog": {
+          "type": "boolean"
+        }
+      }
+    }
+  },
+  {
+    "id": "post_panel_api_server_xraylogs_count",
+    "method": "POST",
+    "path": "/server/xraylogs/{count}",
+    "group": "server",
+    "write": false,
+    "since": "3.6.0",
+    "encoding": "application/x-www-form-urlencoded",
+    "parameters": [
+      {
+        "name": "count",
+        "in": "path",
+        "required": true,
+        "schema": {
+          "type": "integer"
+        }
+      }
+    ],
+    "body": {
+      "type": "object",
+      "properties": {
+        "filter": {
+          "type": "string"
+        },
+        "showDirect": {
+          "type": "string"
+        },
+        "showBlocked": {
+          "type": "string"
+        },
+        "showProxy": {
+          "type": "string"
+        }
+      }
+    }
+  },
+  {
+    "id": "post_panel_api_server_amneziawglogs_count",
+    "method": "POST",
+    "path": "/server/amneziawglogs/{count}",
+    "group": "server",
+    "write": false,
+    "since": "3.10.0",
+    "encoding": "application/x-www-form-urlencoded",
+    "parameters": [
+      {
+        "name": "count",
+        "in": "path",
+        "required": true,
+        "schema": {
+          "type": "integer"
+        }
+      }
+    ],
+    "body": {
+      "type": "object",
+      "properties": {
+        "filter": {
+          "type": "string"
+        }
+      }
+    }
+  },
+  {
+    "id": "post_panel_api_server_importDB",
+    "method": "POST",
+    "path": "/server/importDB",
+    "group": "server",
+    "write": true,
+    "since": "3.6.0",
+    "encoding": "multipart/form-data",
+    "parameters": [],
+    "body": {
+      "type": "object",
+      "properties": {
+        "db": {
+          "type": "string",
+          "format": "binary"
+        },
+        "keepHostSettings": {
+          "type": "boolean",
+          "default": true
+        }
+      },
+      "required": [
+        "db"
+      ]
+    }
+  },
+  {
+    "id": "post_panel_api_server_getNewEchCert",
+    "method": "POST",
+    "path": "/server/getNewEchCert",
+    "group": "server",
+    "write": true,
+    "since": "3.6.0",
+    "encoding": "application/x-www-form-urlencoded",
+    "parameters": [],
+    "body": {
+      "type": "object",
+      "properties": {
+        "sni": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "sni"
+      ]
+    }
+  },
+  {
+    "id": "post_panel_api_server_getCertHash",
+    "method": "POST",
+    "path": "/server/getCertHash",
+    "group": "server",
+    "write": true,
+    "since": "3.6.0",
+    "encoding": "application/x-www-form-urlencoded",
+    "parameters": [],
+    "body": {
+      "anyOf": [
+        {
+          "type": "object",
+          "properties": {
+            "certFile": {
+              "type": "string",
+              "pattern": ".*\\S.*"
+            },
+            "certContent": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "certFile"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "certFile": {
+              "type": "string"
+            },
+            "certContent": {
+              "type": "string",
+              "pattern": ".*\\S.*"
+            }
+          },
+          "required": [
+            "certContent"
+          ]
+        }
+      ]
+    }
+  },
+  {
+    "id": "post_panel_api_server_getRemoteCertHash",
+    "method": "POST",
+    "path": "/server/getRemoteCertHash",
+    "group": "server",
+    "write": true,
+    "since": "3.6.0",
+    "encoding": "application/x-www-form-urlencoded",
+    "parameters": [],
+    "body": {
+      "type": "object",
+      "properties": {
+        "server": {
+          "type": "string"
+        },
+        "allowPrivate": {
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "server"
+      ]
+    }
+  },
+  {
+    "id": "post_panel_api_server_scanRealityTarget",
+    "method": "POST",
+    "path": "/server/scanRealityTarget",
+    "group": "server",
+    "write": true,
+    "since": "3.6.0",
+    "encoding": "application/x-www-form-urlencoded",
+    "parameters": [],
+    "body": {
+      "type": "object",
+      "properties": {
+        "target": {
+          "type": "string"
+        },
+        "sni": {
+          "type": "string"
+        },
+        "xver": {
+          "type": "integer"
+        },
+        "allowPrivate": {
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "target"
+      ]
+    }
+  },
+  {
+    "id": "post_panel_api_server_scanRealityTargets",
+    "method": "POST",
+    "path": "/server/scanRealityTargets",
+    "group": "server",
+    "write": true,
+    "since": "3.6.0",
+    "encoding": "application/x-www-form-urlencoded",
+    "parameters": [],
+    "body": {
+      "type": "object",
+      "properties": {
+        "targets": {
+          "type": "string"
+        }
+      }
+    }
+  },
+  {
+    "id": "get_panel_api_server_clientIps",
+    "method": "GET",
+    "path": "/server/clientIps",
+    "group": "server",
+    "write": false,
+    "since": "3.6.0",
+    "encoding": "application/json",
+    "parameters": [],
+    "body": {}
+  },
+  {
+    "id": "post_panel_api_server_clientIps",
+    "method": "POST",
+    "path": "/server/clientIps",
+    "group": "server",
+    "write": true,
+    "since": "3.6.0",
+    "encoding": "application/json",
+    "parameters": [],
+    "body": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "clientEmail": {
+            "type": "string"
+          },
+          "ips": {
+            "type": "array",
+            "nullable": true,
+            "items": {
+              "type": "object",
+              "properties": {
+                "ip": {
+                  "type": "string"
+                },
+                "timestamp": {
+                  "type": "integer"
+                }
+              },
+              "required": [
+                "ip",
+                "timestamp"
+              ]
+            }
+          }
+        },
+        "required": [
+          "clientEmail",
+          "ips"
+        ]
+      }
+    }
+  },
+  {
+    "id": "get_panel_api_clients_list",
+    "method": "GET",
+    "path": "/clients/list",
+    "group": "clients",
+    "write": false,
+    "since": "3.6.0",
+    "encoding": "application/json",
+    "parameters": [],
+    "body": {}
+  },
+  {
+    "id": "get_panel_api_clients_list_paged",
+    "method": "GET",
+    "path": "/clients/list/paged",
+    "group": "clients",
+    "write": false,
+    "since": "3.6.0",
+    "encoding": "application/json",
+    "parameters": [
+      {
+        "name": "page",
+        "in": "query",
+        "required": false,
+        "schema": {
+          "type": "integer",
+          "default": 1
+        }
+      },
+      {
+        "name": "pageSize",
+        "in": "query",
+        "required": false,
+        "schema": {
+          "type": "integer",
+          "default": 25
+        }
+      },
+      {
+        "name": "search",
+        "in": "query",
+        "required": false,
+        "schema": {
+          "type": "string"
+        }
+      },
+      {
+        "name": "filter",
+        "in": "query",
+        "required": false,
+        "schema": {
+          "type": "string"
+        }
+      },
+      {
+        "name": "protocol",
+        "in": "query",
+        "required": false,
+        "schema": {
+          "type": "string"
+        }
+      },
+      {
+        "name": "inbound",
+        "in": "query",
+        "required": false,
+        "schema": {
+          "type": "string"
+        }
+      },
+      {
+        "name": "sort",
+        "in": "query",
+        "required": false,
+        "schema": {
+          "type": "string",
+          "enum": [
+            "enable",
+            "email",
+            "inboundIds",
+            "traffic",
+            "remaining",
+            "expiryTime",
+            "createdAt",
+            "updatedAt",
+            "lastOnline"
+          ]
+        }
+      },
+      {
+        "name": "order",
+        "in": "query",
+        "required": false,
+        "schema": {
+          "type": "string",
+          "enum": [
+            "ascend",
+            "descend"
+          ]
+        }
+      },
+      {
+        "name": "expiryFrom",
+        "in": "query",
+        "required": false,
+        "schema": {
+          "type": "integer"
+        }
+      },
+      {
+        "name": "expiryTo",
+        "in": "query",
+        "required": false,
+        "schema": {
+          "type": "integer"
+        }
+      },
+      {
+        "name": "usageFrom",
+        "in": "query",
+        "required": false,
+        "schema": {
+          "type": "integer"
+        }
+      },
+      {
+        "name": "usageTo",
+        "in": "query",
+        "required": false,
+        "schema": {
+          "type": "integer"
+        }
+      },
+      {
+        "name": "autoRenew",
+        "in": "query",
+        "required": false,
+        "schema": {
+          "type": "string",
+          "enum": [
+            "on",
+            "off"
+          ]
+        }
+      },
+      {
+        "name": "hasTgId",
+        "in": "query",
+        "required": false,
+        "schema": {
+          "type": "string",
+          "enum": [
+            "yes",
+            "no"
+          ]
+        }
+      },
+      {
+        "name": "hasComment",
+        "in": "query",
+        "required": false,
+        "schema": {
+          "type": "string",
+          "enum": [
+            "yes",
+            "no"
+          ]
+        }
+      },
+      {
+        "name": "group",
+        "in": "query",
+        "required": false,
+        "schema": {
+          "type": "string"
+        }
+      }
+    ],
+    "body": {}
+  },
+  {
+    "id": "get_panel_api_clients_get_email",
+    "method": "GET",
+    "path": "/clients/get/{email}",
+    "group": "clients",
+    "write": false,
+    "since": "3.6.0",
+    "encoding": "application/json",
+    "parameters": [
+      {
+        "name": "email",
+        "in": "path",
+        "required": true,
+        "schema": {
+          "type": "string"
+        }
+      }
+    ],
+    "body": {}
+  },
+  {
+    "id": "get_panel_api_clients_get_tgId_tgId",
+    "method": "GET",
+    "path": "/clients/get/tgId/{tgId}",
+    "group": "clients",
+    "write": false,
+    "since": "3.6.0",
+    "encoding": "application/json",
+    "parameters": [
+      {
+        "name": "tgId",
+        "in": "path",
+        "required": true,
+        "schema": {
+          "type": "integer"
+        }
+      }
+    ],
+    "body": {}
+  },
+  {
+    "id": "post_panel_api_clients_add",
+    "method": "POST",
+    "path": "/clients/add",
+    "group": "clients",
+    "write": true,
+    "since": "3.6.0",
+    "encoding": "application/json",
+    "parameters": [],
+    "body": {
+      "type": "object",
+      "properties": {
+        "client": {
+          "type": "object"
+        },
+        "inboundIds": {
+          "type": "array",
+          "items": {
+            "type": "integer"
+          }
+        }
+      },
+      "required": [
+        "client",
+        "inboundIds"
+      ]
+    }
+  },
+  {
+    "id": "post_panel_api_clients_renewalPreview",
+    "method": "POST",
+    "path": "/clients/renewalPreview",
+    "group": "clients",
+    "write": true,
+    "since": "3.10.0",
+    "encoding": "application/json",
+    "parameters": [],
+    "body": {
+      "type": "object",
+      "properties": {
+        "expiryTime": {
+          "type": "integer"
+        },
+        "reset": {
+          "type": "integer"
+        },
+        "resetDay": {
+          "type": "integer"
+        },
+        "resetWeekday": {
+          "type": "integer"
+        },
+        "resetMax": {
+          "type": "integer"
+        },
+        "resetCount": {
+          "type": "integer"
+        }
+      },
+      "required": [
+        "expiryTime",
+        "reset",
+        "resetDay",
+        "resetWeekday",
+        "resetMax",
+        "resetCount"
+      ]
+    }
+  },
+  {
+    "id": "post_panel_api_clients_update_email",
+    "method": "POST",
+    "path": "/clients/update/{email}",
+    "group": "clients",
+    "write": true,
+    "since": "3.6.0",
+    "encoding": "application/json",
+    "parameters": [
+      {
+        "name": "email",
+        "in": "path",
+        "required": true,
+        "schema": {
+          "type": "string"
+        }
+      }
+    ],
+    "body": {
+      "type": "object"
+    }
+  },
+  {
+    "id": "post_panel_api_clients_del_email",
+    "method": "POST",
+    "path": "/clients/del/{email}",
+    "group": "clients",
+    "write": true,
+    "since": "3.6.0",
+    "encoding": "application/json",
+    "parameters": [
+      {
+        "name": "email",
+        "in": "path",
+        "required": true,
+        "schema": {
+          "type": "string"
+        }
+      },
+      {
+        "name": "keepTraffic",
+        "in": "query",
+        "required": true,
+        "schema": {
+          "type": "integer"
+        }
+      }
+    ],
+    "body": {}
+  },
+  {
+    "id": "post_panel_api_clients_email_attach",
+    "method": "POST",
+    "path": "/clients/{email}/attach",
+    "group": "clients",
+    "write": true,
+    "since": "3.6.0",
+    "encoding": "application/json",
+    "parameters": [
+      {
+        "name": "email",
+        "in": "path",
+        "required": true,
+        "schema": {
+          "type": "string"
+        }
+      }
+    ],
+    "body": {
+      "type": "object",
+      "properties": {
+        "inboundIds": {
+          "type": "array",
+          "items": {
+            "type": "integer"
+          }
+        }
+      },
+      "required": [
+        "inboundIds"
+      ]
+    }
+  },
+  {
+    "id": "post_panel_api_clients_email_detach",
+    "method": "POST",
+    "path": "/clients/{email}/detach",
+    "group": "clients",
+    "write": true,
+    "since": "3.6.0",
+    "encoding": "application/json",
+    "parameters": [
+      {
+        "name": "email",
+        "in": "path",
+        "required": true,
+        "schema": {
+          "type": "string"
+        }
+      }
+    ],
+    "body": {
+      "type": "object",
+      "properties": {
+        "inboundIds": {
+          "type": "array",
+          "items": {
+            "type": "integer"
+          }
+        }
+      },
+      "required": [
+        "inboundIds"
+      ]
+    }
+  },
+  {
+    "id": "post_panel_api_clients_email_externalLinks",
+    "method": "POST",
+    "path": "/clients/{email}/externalLinks",
+    "group": "clients",
+    "write": true,
+    "since": "3.6.0",
+    "encoding": "application/json",
+    "parameters": [
+      {
+        "name": "email",
+        "in": "path",
+        "required": true,
+        "schema": {
+          "type": "string"
+        }
+      }
+    ],
+    "body": {
+      "type": "object",
+      "properties": {
+        "externalLinks": {
+          "type": "array",
+          "items": {
+            "type": "object"
+          }
+        }
+      },
+      "required": [
+        "externalLinks"
+      ]
+    }
+  },
+  {
+    "id": "post_panel_api_clients_resetAllTraffics",
+    "method": "POST",
+    "path": "/clients/resetAllTraffics",
+    "group": "clients",
+    "write": true,
+    "since": "3.6.0",
+    "encoding": "application/json",
+    "parameters": [],
+    "body": {}
+  },
+  {
+    "id": "post_panel_api_clients_delDepleted",
+    "method": "POST",
+    "path": "/clients/delDepleted",
+    "group": "clients",
+    "write": true,
+    "since": "3.6.0",
+    "encoding": "application/json",
+    "parameters": [],
+    "body": {}
+  },
+  {
+    "id": "post_panel_api_clients_delOrphans",
+    "method": "POST",
+    "path": "/clients/delOrphans",
+    "group": "clients",
+    "write": true,
+    "since": "3.6.0",
+    "encoding": "application/json",
+    "parameters": [],
+    "body": {}
+  },
+  {
+    "id": "get_panel_api_clients_export",
+    "method": "GET",
+    "path": "/clients/export",
+    "group": "clients",
+    "write": false,
+    "since": "3.6.0",
+    "encoding": "application/json",
+    "parameters": [],
+    "body": {}
+  },
+  {
+    "id": "post_panel_api_clients_import",
+    "method": "POST",
+    "path": "/clients/import",
+    "group": "clients",
+    "write": true,
+    "since": "3.6.0",
+    "encoding": "application/json",
+    "parameters": [],
+    "body": {
+      "type": "object",
+      "properties": {
+        "data": {
+          "type": "string"
+        }
+      }
+    }
+  },
+  {
+    "id": "post_panel_api_clients_bulkAdjust",
+    "method": "POST",
+    "path": "/clients/bulkAdjust",
+    "group": "clients",
+    "write": true,
+    "since": "3.6.0",
+    "encoding": "application/json",
+    "parameters": [],
+    "body": {
+      "type": "object",
+      "properties": {
+        "emails": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "addDays": {
+          "type": "integer"
+        },
+        "addBytes": {
+          "type": "integer"
+        },
+        "flow": {
+          "type": "string"
+        },
+        "adTag": {
+          "type": "string"
+        }
+      }
+    }
+  },
+  {
+    "id": "post_panel_api_clients_bulkEnable",
+    "method": "POST",
+    "path": "/clients/bulkEnable",
+    "group": "clients",
+    "write": true,
+    "since": "3.6.0",
+    "encoding": "application/json",
+    "parameters": [],
+    "body": {
+      "type": "object",
+      "properties": {
+        "emails": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    }
+  },
+  {
+    "id": "post_panel_api_clients_bulkDisable",
+    "method": "POST",
+    "path": "/clients/bulkDisable",
+    "group": "clients",
+    "write": true,
+    "since": "3.6.0",
+    "encoding": "application/json",
+    "parameters": [],
+    "body": {
+      "type": "object",
+      "properties": {
+        "emails": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    }
+  },
+  {
+    "id": "post_panel_api_clients_bulkDel",
+    "method": "POST",
+    "path": "/clients/bulkDel",
+    "group": "clients",
+    "write": true,
+    "since": "3.6.0",
+    "encoding": "application/json",
+    "parameters": [],
+    "body": {
+      "type": "object",
+      "properties": {
+        "emails": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "keepTraffic": {
+          "type": "boolean"
+        }
+      }
+    }
+  },
+  {
+    "id": "post_panel_api_clients_bulkCreate",
+    "method": "POST",
+    "path": "/clients/bulkCreate",
+    "group": "clients",
+    "write": true,
+    "since": "3.6.0",
+    "encoding": "application/json",
+    "parameters": [],
+    "body": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "client": {
+            "type": "object",
+            "properties": {
+              "email": {
+                "type": "string"
+              },
+              "enable": {
+                "type": "boolean"
+              },
+              "totalGB": {
+                "type": "integer"
+              },
+              "expiryTime": {
+                "type": "integer"
+              }
+            }
+          },
+          "inboundIds": {
+            "type": "array",
+            "items": {
+              "type": "integer"
+            }
+          }
+        }
+      }
+    }
+  },
+  {
+    "id": "post_panel_api_clients_groups_bulkAdd",
+    "method": "POST",
+    "path": "/clients/groups/bulkAdd",
+    "group": "clients",
+    "write": true,
+    "since": "3.6.0",
+    "encoding": "application/json",
+    "parameters": [],
+    "body": {
+      "type": "object",
+      "properties": {
+        "emails": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "group": {
+          "type": "string"
+        }
+      }
+    }
+  },
+  {
+    "id": "post_panel_api_clients_groups_bulkRemove",
+    "method": "POST",
+    "path": "/clients/groups/bulkRemove",
+    "group": "clients",
+    "write": true,
+    "since": "3.6.0",
+    "encoding": "application/json",
+    "parameters": [],
+    "body": {
+      "type": "object",
+      "properties": {
+        "emails": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    }
+  },
+  {
+    "id": "post_panel_api_clients_bulkAttach",
+    "method": "POST",
+    "path": "/clients/bulkAttach",
+    "group": "clients",
+    "write": true,
+    "since": "3.6.0",
+    "encoding": "application/json",
+    "parameters": [],
+    "body": {
+      "type": "object",
+      "properties": {
+        "emails": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "inboundIds": {
+          "type": "array",
+          "items": {
+            "type": "integer"
+          }
+        }
+      },
+      "required": [
+        "emails",
+        "inboundIds"
+      ]
+    }
+  },
+  {
+    "id": "post_panel_api_clients_bulkDetach",
+    "method": "POST",
+    "path": "/clients/bulkDetach",
+    "group": "clients",
+    "write": true,
+    "since": "3.6.0",
+    "encoding": "application/json",
+    "parameters": [],
+    "body": {
+      "type": "object",
+      "properties": {
+        "emails": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "inboundIds": {
+          "type": "array",
+          "items": {
+            "type": "integer"
+          }
+        }
+      },
+      "required": [
+        "emails",
+        "inboundIds"
+      ]
+    }
+  },
+  {
+    "id": "post_panel_api_clients_bulkResetTraffic",
+    "method": "POST",
+    "path": "/clients/bulkResetTraffic",
+    "group": "clients",
+    "write": true,
+    "since": "3.6.0",
+    "encoding": "application/json",
+    "parameters": [],
+    "body": {
+      "type": "object",
+      "properties": {
+        "emails": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    }
+  },
+  {
+    "id": "get_panel_api_clients_groups",
+    "method": "GET",
+    "path": "/clients/groups",
+    "group": "clients",
+    "write": false,
+    "since": "3.6.0",
+    "encoding": "application/json",
+    "parameters": [],
+    "body": {}
+  },
+  {
+    "id": "get_panel_api_clients_groups_name_emails",
+    "method": "GET",
+    "path": "/clients/groups/{name}/emails",
+    "group": "clients",
+    "write": false,
+    "since": "3.6.0",
+    "encoding": "application/json",
+    "parameters": [
+      {
+        "name": "name",
+        "in": "path",
+        "required": true,
+        "schema": {
+          "type": "string"
+        }
+      }
+    ],
+    "body": {}
+  },
+  {
+    "id": "post_panel_api_clients_groups_create",
+    "method": "POST",
+    "path": "/clients/groups/create",
+    "group": "clients",
+    "write": true,
+    "since": "3.6.0",
+    "encoding": "application/json",
+    "parameters": [],
+    "body": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string"
+        }
+      }
+    }
+  },
+  {
+    "id": "post_panel_api_clients_groups_rename",
+    "method": "POST",
+    "path": "/clients/groups/rename",
+    "group": "clients",
+    "write": true,
+    "since": "3.6.0",
+    "encoding": "application/json",
+    "parameters": [],
+    "body": {
+      "type": "object",
+      "properties": {
+        "oldName": {
+          "type": "string"
+        },
+        "newName": {
+          "type": "string"
+        }
+      }
+    }
+  },
+  {
+    "id": "post_panel_api_clients_groups_delete",
+    "method": "POST",
+    "path": "/clients/groups/delete",
+    "group": "clients",
+    "write": true,
+    "since": "3.6.0",
+    "encoding": "application/json",
+    "parameters": [],
+    "body": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string"
+        }
+      }
+    }
+  },
+  {
+    "id": "post_panel_api_clients_groups_resetTraffic",
+    "method": "POST",
+    "path": "/clients/groups/resetTraffic",
+    "group": "clients",
+    "write": true,
+    "since": "3.6.0",
+    "encoding": "application/json",
+    "parameters": [],
+    "body": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string"
+        }
+      }
+    }
+  },
+  {
+    "id": "post_panel_api_clients_resetTraffic_email",
+    "method": "POST",
+    "path": "/clients/resetTraffic/{email}",
+    "group": "clients",
+    "write": true,
+    "since": "3.6.0",
+    "encoding": "application/json",
+    "parameters": [
+      {
+        "name": "email",
+        "in": "path",
+        "required": true,
+        "schema": {
+          "type": "string"
+        }
+      }
+    ],
+    "body": {}
+  },
+  {
+    "id": "post_panel_api_clients_updateTraffic_email",
+    "method": "POST",
+    "path": "/clients/updateTraffic/{email}",
+    "group": "clients",
+    "write": true,
+    "since": "3.6.0",
+    "encoding": "application/json",
+    "parameters": [
+      {
+        "name": "email",
+        "in": "path",
+        "required": true,
+        "schema": {
+          "type": "string"
+        }
+      }
+    ],
+    "body": {
+      "type": "object",
+      "properties": {
+        "upload": {
+          "type": "integer"
+        },
+        "download": {
+          "type": "integer"
+        }
+      }
+    }
+  },
+  {
+    "id": "post_panel_api_clients_ips_email",
+    "method": "POST",
+    "path": "/clients/ips/{email}",
+    "group": "clients",
+    "write": false,
+    "since": "3.6.0",
+    "encoding": "application/json",
+    "parameters": [
+      {
+        "name": "email",
+        "in": "path",
+        "required": true,
+        "schema": {
+          "type": "string"
+        }
+      }
+    ],
+    "body": {}
+  },
+  {
+    "id": "post_panel_api_clients_clearIps_email",
+    "method": "POST",
+    "path": "/clients/clearIps/{email}",
+    "group": "clients",
+    "write": true,
+    "since": "3.6.0",
+    "encoding": "application/json",
+    "parameters": [
+      {
+        "name": "email",
+        "in": "path",
+        "required": true,
+        "schema": {
+          "type": "string"
+        }
+      }
+    ],
+    "body": {}
+  },
+  {
+    "id": "post_panel_api_clients_hwids_email",
+    "method": "POST",
+    "path": "/clients/hwids/{email}",
+    "group": "clients",
+    "write": false,
+    "since": "3.10.0",
+    "encoding": "application/json",
+    "parameters": [
+      {
+        "name": "email",
+        "in": "path",
+        "required": true,
+        "schema": {
+          "type": "string"
+        }
+      }
+    ],
+    "body": {}
+  },
+  {
+    "id": "delete_panel_api_clients_hwids_email",
+    "method": "DELETE",
+    "path": "/clients/hwids/{email}",
+    "group": "clients",
+    "write": false,
+    "since": "3.10.0",
+    "encoding": "application/json",
+    "parameters": [
+      {
+        "name": "email",
+        "in": "path",
+        "required": true,
+        "schema": {
+          "type": "string"
+        }
+      }
+    ],
+    "body": {}
+  },
+  {
+    "id": "delete_panel_api_clients_hwids_email_id",
+    "method": "DELETE",
+    "path": "/clients/hwids/{email}/{id}",
+    "group": "clients",
+    "write": true,
+    "since": "3.10.0",
+    "encoding": "application/json",
+    "parameters": [
+      {
+        "name": "email",
+        "in": "path",
+        "required": true,
+        "schema": {
+          "type": "string"
+        }
+      },
+      {
+        "name": "id",
+        "in": "path",
+        "required": true,
+        "schema": {
+          "type": "integer"
+        }
+      }
+    ],
+    "body": {}
+  },
+  {
+    "id": "post_panel_api_clients_onlines",
+    "method": "POST",
+    "path": "/clients/onlines",
+    "group": "clients",
+    "write": false,
+    "since": "3.6.0",
+    "encoding": "application/json",
+    "parameters": [],
+    "body": {}
+  },
+  {
+    "id": "post_panel_api_clients_onlinesByGuid",
+    "method": "POST",
+    "path": "/clients/onlinesByGuid",
+    "group": "clients",
+    "write": false,
+    "since": "3.6.0",
+    "encoding": "application/json",
+    "parameters": [],
+    "body": {}
+  },
+  {
+    "id": "post_panel_api_clients_clientIpsByGuid",
+    "method": "POST",
+    "path": "/clients/clientIpsByGuid",
+    "group": "clients",
+    "write": false,
+    "since": "3.6.0",
+    "encoding": "application/json",
+    "parameters": [],
+    "body": {}
+  },
+  {
+    "id": "post_panel_api_clients_activeInbounds",
+    "method": "POST",
+    "path": "/clients/activeInbounds",
+    "group": "clients",
+    "write": false,
+    "since": "3.6.0",
+    "encoding": "application/json",
+    "parameters": [],
+    "body": {}
+  },
+  {
+    "id": "post_panel_api_clients_lastOnline",
+    "method": "POST",
+    "path": "/clients/lastOnline",
+    "group": "clients",
+    "write": false,
+    "since": "3.6.0",
+    "encoding": "application/json",
+    "parameters": [],
+    "body": {}
+  },
+  {
+    "id": "get_panel_api_clients_traffic_email",
+    "method": "GET",
+    "path": "/clients/traffic/{email}",
+    "group": "clients",
+    "write": false,
+    "since": "3.6.0",
+    "encoding": "application/json",
+    "parameters": [
+      {
+        "name": "email",
+        "in": "path",
+        "required": true,
+        "schema": {
+          "type": "string"
+        }
+      }
+    ],
+    "body": {}
+  },
+  {
+    "id": "get_panel_api_clients_subLinks_subId",
+    "method": "GET",
+    "path": "/clients/subLinks/{subId}",
+    "group": "clients",
+    "write": false,
+    "since": "3.6.0",
+    "encoding": "application/json",
+    "parameters": [
+      {
+        "name": "subId",
+        "in": "path",
+        "required": true,
+        "schema": {
+          "type": "string"
+        }
+      }
+    ],
+    "body": {}
+  },
+  {
+    "id": "post_panel_api_clients_happLink_id",
+    "method": "POST",
+    "path": "/clients/happLink/{id}",
+    "group": "clients",
+    "write": true,
+    "since": "3.10.0",
+    "encoding": "application/json",
+    "parameters": [
+      {
+        "name": "id",
+        "in": "path",
+        "required": true,
+        "schema": {
+          "type": "integer"
+        }
+      }
+    ],
+    "body": {}
+  },
+  {
+    "id": "get_panel_api_clients_links_email",
+    "method": "GET",
+    "path": "/clients/links/{email}",
+    "group": "clients",
+    "write": false,
+    "since": "3.6.0",
+    "encoding": "application/json",
+    "parameters": [
+      {
+        "name": "email",
+        "in": "path",
+        "required": true,
+        "schema": {
+          "type": "string"
+        }
+      }
+    ],
+    "body": {}
+  },
+  {
+    "id": "get_panel_api_nodes_list",
+    "method": "GET",
+    "path": "/nodes/list",
+    "group": "nodes",
+    "write": false,
+    "since": "3.6.0",
+    "encoding": "application/json",
+    "parameters": [],
+    "body": {}
+  },
+  {
+    "id": "post_panel_api_nodes_mtls_ca",
+    "method": "POST",
+    "path": "/nodes/mtls/ca",
+    "group": "nodes",
+    "write": true,
+    "since": "3.6.0",
+    "encoding": "application/json",
+    "parameters": [],
+    "body": {}
+  },
+  {
+    "id": "post_panel_api_nodes_mtls_trustCA",
+    "method": "POST",
+    "path": "/nodes/mtls/trustCA",
+    "group": "nodes",
+    "write": true,
+    "since": "3.6.0",
+    "encoding": "application/json",
+    "parameters": [],
+    "body": {
+      "type": "object",
+      "properties": {
+        "caCert": {
+          "type": "string"
+        }
+      }
+    }
+  },
+  {
+    "id": "post_panel_api_nodes_mtls_reloadClient",
+    "method": "POST",
+    "path": "/nodes/mtls/reloadClient",
+    "group": "nodes",
+    "write": true,
+    "since": "3.10.0",
+    "encoding": "application/json",
+    "parameters": [],
+    "body": {}
+  },
+  {
+    "id": "get_panel_api_nodes_get_id",
+    "method": "GET",
+    "path": "/nodes/get/{id}",
+    "group": "nodes",
+    "write": false,
+    "since": "3.6.0",
+    "encoding": "application/json",
+    "parameters": [
+      {
+        "name": "id",
+        "in": "path",
+        "required": true,
+        "schema": {
+          "type": "integer"
+        }
+      }
+    ],
+    "body": {}
+  },
+  {
+    "id": "get_panel_api_nodes_webCert_id",
+    "method": "GET",
+    "path": "/nodes/webCert/{id}",
+    "group": "nodes",
+    "write": false,
+    "since": "3.6.0",
+    "encoding": "application/json",
+    "parameters": [
+      {
+        "name": "id",
+        "in": "path",
+        "required": true,
+        "schema": {
+          "type": "integer"
+        }
+      }
+    ],
+    "body": {}
+  },
+  {
+    "id": "post_panel_api_nodes_add",
+    "method": "POST",
+    "path": "/nodes/add",
+    "group": "nodes",
+    "write": true,
+    "since": "3.6.0",
+    "encoding": "application/json",
+    "parameters": [],
+    "body": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "scheme": {
+          "type": "string",
+          "default": "https"
+        },
+        "address": {
+          "type": "string"
+        },
+        "port": {
+          "type": "integer",
+          "default": 443
+        },
+        "basePath": {
+          "type": "string"
+        },
+        "apiToken": {
+          "type": "string"
+        },
+        "enable": {
+          "type": "boolean"
+        },
+        "allowPrivateAddress": {
+          "type": "boolean"
+        },
+        "tlsVerifyMode": {
+          "type": "string",
+          "default": "verify"
+        },
+        "inboundSyncMode": {
+          "type": "string",
+          "default": "all"
+        },
+        "inboundTags": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    }
+  },
+  {
+    "id": "post_panel_api_nodes_update_id",
+    "method": "POST",
+    "path": "/nodes/update/{id}",
+    "group": "nodes",
+    "write": true,
+    "since": "3.6.0",
+    "encoding": "application/json",
+    "parameters": [
+      {
+        "name": "id",
+        "in": "path",
+        "required": true,
+        "schema": {
+          "type": "integer"
+        }
+      }
+    ],
+    "body": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "scheme": {
+          "type": "string",
+          "default": "https"
+        },
+        "address": {
+          "type": "string"
+        },
+        "port": {
+          "type": "integer",
+          "default": 443
+        },
+        "basePath": {
+          "type": "string"
+        },
+        "apiToken": {
+          "type": "string"
+        },
+        "enable": {
+          "type": "boolean"
+        },
+        "allowPrivateAddress": {
+          "type": "boolean"
+        },
+        "tlsVerifyMode": {
+          "type": "string",
+          "default": "verify"
+        },
+        "inboundSyncMode": {
+          "type": "string",
+          "default": "all"
+        },
+        "inboundTags": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    }
+  },
+  {
+    "id": "post_panel_api_nodes_del_id",
+    "method": "POST",
+    "path": "/nodes/del/{id}",
+    "group": "nodes",
+    "write": true,
+    "since": "3.6.0",
+    "encoding": "application/json",
+    "parameters": [
+      {
+        "name": "id",
+        "in": "path",
+        "required": true,
+        "schema": {
+          "type": "integer"
+        }
+      }
+    ],
+    "body": {}
+  },
+  {
+    "id": "post_panel_api_nodes_setEnable_id",
+    "method": "POST",
+    "path": "/nodes/setEnable/{id}",
+    "group": "nodes",
+    "write": true,
+    "since": "3.6.0",
+    "encoding": "application/json",
+    "parameters": [
+      {
+        "name": "id",
+        "in": "path",
+        "required": true,
+        "schema": {
+          "type": "integer"
+        }
+      }
+    ],
+    "body": {
+      "type": "object",
+      "properties": {
+        "enable": {
+          "type": "boolean"
+        }
+      }
+    }
+  },
+  {
+    "id": "post_panel_api_nodes_test",
+    "method": "POST",
+    "path": "/nodes/test",
+    "group": "nodes",
+    "write": true,
+    "since": "3.6.0",
+    "encoding": "application/json",
+    "parameters": [],
+    "body": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "scheme": {
+          "type": "string",
+          "default": "https"
+        },
+        "address": {
+          "type": "string"
+        },
+        "port": {
+          "type": "integer",
+          "default": 443
+        },
+        "basePath": {
+          "type": "string"
+        },
+        "apiToken": {
+          "type": "string"
+        },
+        "enable": {
+          "type": "boolean"
+        },
+        "allowPrivateAddress": {
+          "type": "boolean"
+        },
+        "tlsVerifyMode": {
+          "type": "string",
+          "default": "verify"
+        },
+        "inboundSyncMode": {
+          "type": "string",
+          "default": "all"
+        },
+        "inboundTags": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    }
+  },
+  {
+    "id": "post_panel_api_nodes_certFingerprint",
+    "method": "POST",
+    "path": "/nodes/certFingerprint",
+    "group": "nodes",
+    "write": true,
+    "since": "3.6.0",
+    "encoding": "application/json",
+    "parameters": [],
+    "body": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "scheme": {
+          "type": "string",
+          "default": "https"
+        },
+        "address": {
+          "type": "string"
+        },
+        "port": {
+          "type": "integer",
+          "default": 443
+        },
+        "basePath": {
+          "type": "string"
+        },
+        "apiToken": {
+          "type": "string"
+        },
+        "enable": {
+          "type": "boolean"
+        },
+        "allowPrivateAddress": {
+          "type": "boolean"
+        },
+        "tlsVerifyMode": {
+          "type": "string",
+          "default": "verify"
+        },
+        "inboundSyncMode": {
+          "type": "string",
+          "default": "all"
+        },
+        "inboundTags": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    }
+  },
+  {
+    "id": "post_panel_api_nodes_inbounds",
+    "method": "POST",
+    "path": "/nodes/inbounds",
+    "group": "nodes",
+    "write": true,
+    "since": "3.6.0",
+    "encoding": "application/json",
+    "parameters": [],
+    "body": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "scheme": {
+          "type": "string",
+          "default": "https"
+        },
+        "address": {
+          "type": "string"
+        },
+        "port": {
+          "type": "integer",
+          "default": 443
+        },
+        "basePath": {
+          "type": "string"
+        },
+        "apiToken": {
+          "type": "string"
+        },
+        "enable": {
+          "type": "boolean"
+        },
+        "allowPrivateAddress": {
+          "type": "boolean"
+        },
+        "tlsVerifyMode": {
+          "type": "string",
+          "default": "verify"
+        },
+        "inboundSyncMode": {
+          "type": "string",
+          "default": "all"
+        },
+        "inboundTags": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    }
+  },
+  {
+    "id": "post_panel_api_nodes_probe_id",
+    "method": "POST",
+    "path": "/nodes/probe/{id}",
+    "group": "nodes",
+    "write": true,
+    "since": "3.6.0",
+    "encoding": "application/json",
+    "parameters": [
+      {
+        "name": "id",
+        "in": "path",
+        "required": true,
+        "schema": {
+          "type": "integer"
+        }
+      }
+    ],
+    "body": {}
+  },
+  {
+    "id": "post_panel_api_nodes_updatePanel",
+    "method": "POST",
+    "path": "/nodes/updatePanel",
+    "group": "nodes",
+    "write": true,
+    "since": "3.6.0",
+    "encoding": "application/json",
+    "parameters": [],
+    "body": {
+      "type": "object",
+      "properties": {
+        "ids": {
+          "type": "array",
+          "items": {
+            "type": "integer"
+          }
+        },
+        "dev": {
+          "type": "boolean"
+        }
+      }
+    }
+  },
+  {
+    "id": "get_panel_api_nodes_history_id_metric_bucket",
+    "method": "GET",
+    "path": "/nodes/history/{id}/{metric}/{bucket}",
+    "group": "nodes",
+    "write": false,
+    "since": "3.6.0",
+    "encoding": "application/json",
+    "parameters": [
+      {
+        "name": "id",
+        "in": "path",
+        "required": true,
+        "schema": {
+          "type": "integer"
+        }
+      },
+      {
+        "name": "metric",
+        "in": "path",
+        "required": true,
+        "schema": {
+          "type": "string"
+        }
+      },
+      {
+        "name": "bucket",
+        "in": "path",
+        "required": true,
+        "schema": {
+          "type": "integer"
+        }
+      }
+    ],
+    "body": {}
+  },
+  {
+    "id": "get_panel_api_hosts_list",
+    "method": "GET",
+    "path": "/hosts/list",
+    "group": "hosts",
+    "write": false,
+    "since": "3.6.0",
+    "encoding": "application/json",
+    "parameters": [],
+    "body": {}
+  },
+  {
+    "id": "get_panel_api_hosts_get_groupId",
+    "method": "GET",
+    "path": "/hosts/get/{groupId}",
+    "group": "hosts",
+    "write": false,
+    "since": "3.6.0",
+    "encoding": "application/json",
+    "parameters": [
+      {
+        "name": "groupId",
+        "in": "path",
+        "required": true,
+        "schema": {
+          "type": "string"
+        }
+      }
+    ],
+    "body": {}
+  },
+  {
+    "id": "get_panel_api_hosts_byInbound_inboundId",
+    "method": "GET",
+    "path": "/hosts/byInbound/{inboundId}",
+    "group": "hosts",
+    "write": false,
+    "since": "3.6.0",
+    "encoding": "application/json",
+    "parameters": [
+      {
+        "name": "inboundId",
+        "in": "path",
+        "required": true,
+        "schema": {
+          "type": "integer"
+        }
+      }
+    ],
+    "body": {}
+  },
+  {
+    "id": "get_panel_api_hosts_tags",
+    "method": "GET",
+    "path": "/hosts/tags",
+    "group": "hosts",
+    "write": false,
+    "since": "3.6.0",
+    "encoding": "application/json",
+    "parameters": [],
+    "body": {}
+  },
+  {
+    "id": "post_panel_api_hosts_add",
+    "method": "POST",
+    "path": "/hosts/add",
+    "group": "hosts",
+    "write": true,
+    "since": "3.6.0",
+    "encoding": "application/json",
+    "parameters": [],
+    "body": {
+      "type": "object",
+      "properties": {
+        "inboundIds": {
+          "type": "array",
+          "items": {
+            "type": "integer"
+          }
+        },
+        "hosts": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "remark": {
+          "type": "string"
+        },
+        "isDisabled": {
+          "type": "boolean"
+        },
+        "port": {
+          "type": "integer"
+        },
+        "security": {
+          "type": "string",
+          "default": "same"
+        },
+        "sni": {
+          "type": "string"
+        },
+        "path": {
+          "type": "string"
+        },
+        "tags": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "alpn": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "fingerprint": {
+          "type": "string"
+        }
+      }
+    }
+  },
+  {
+    "id": "post_panel_api_hosts_update_groupId",
+    "method": "POST",
+    "path": "/hosts/update/{groupId}",
+    "group": "hosts",
+    "write": true,
+    "since": "3.6.0",
+    "encoding": "application/json",
+    "parameters": [
+      {
+        "name": "groupId",
+        "in": "path",
+        "required": true,
+        "schema": {
+          "type": "string"
+        }
+      }
+    ],
+    "body": {
+      "type": "object",
+      "properties": {
+        "inboundIds": {
+          "type": "array",
+          "items": {
+            "type": "integer"
+          }
+        },
+        "hosts": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "remark": {
+          "type": "string"
+        },
+        "isDisabled": {
+          "type": "boolean"
+        },
+        "port": {
+          "type": "integer"
+        },
+        "security": {
+          "type": "string",
+          "default": "same"
+        },
+        "sni": {
+          "type": "string"
+        },
+        "path": {
+          "type": "string"
+        },
+        "tags": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "alpn": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "fingerprint": {
+          "type": "string"
+        }
+      }
+    }
+  },
+  {
+    "id": "post_panel_api_hosts_del_groupId",
+    "method": "POST",
+    "path": "/hosts/del/{groupId}",
+    "group": "hosts",
+    "write": true,
+    "since": "3.6.0",
+    "encoding": "application/json",
+    "parameters": [
+      {
+        "name": "groupId",
+        "in": "path",
+        "required": true,
+        "schema": {
+          "type": "string"
+        }
+      }
+    ],
+    "body": {}
+  },
+  {
+    "id": "post_panel_api_hosts_setEnable_groupId",
+    "method": "POST",
+    "path": "/hosts/setEnable/{groupId}",
+    "group": "hosts",
+    "write": true,
+    "since": "3.6.0",
+    "encoding": "application/json",
+    "parameters": [
+      {
+        "name": "groupId",
+        "in": "path",
+        "required": true,
+        "schema": {
+          "type": "string"
+        }
+      }
+    ],
+    "body": {
+      "type": "object",
+      "properties": {
+        "enable": {
+          "type": "boolean"
+        }
+      }
+    }
+  },
+  {
+    "id": "post_panel_api_hosts_reorder",
+    "method": "POST",
+    "path": "/hosts/reorder",
+    "group": "hosts",
+    "write": true,
+    "since": "3.6.0",
+    "encoding": "application/json",
+    "parameters": [],
+    "body": {
+      "type": "object",
+      "properties": {
+        "ids": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    }
+  },
+  {
+    "id": "post_panel_api_hosts_bulk_add",
+    "method": "POST",
+    "path": "/hosts/bulk/add",
+    "group": "hosts",
+    "write": true,
+    "since": "3.6.0",
+    "encoding": "application/json",
+    "parameters": [],
+    "body": {
+      "type": "object",
+      "properties": {
+        "inboundIds": {
+          "type": "array",
+          "items": {
+            "type": "integer"
+          }
+        },
+        "hosts": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "remark": {
+          "type": "string"
+        },
+        "isDisabled": {
+          "type": "boolean"
+        },
+        "port": {
+          "type": "integer"
+        },
+        "security": {
+          "type": "string",
+          "default": "same"
+        },
+        "sni": {
+          "type": "string"
+        },
+        "path": {
+          "type": "string"
+        },
+        "tags": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "alpn": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "fingerprint": {
+          "type": "string"
+        }
+      }
+    }
+  },
+  {
+    "id": "post_panel_api_hosts_bulk_setEnable",
+    "method": "POST",
+    "path": "/hosts/bulk/setEnable",
+    "group": "hosts",
+    "write": true,
+    "since": "3.6.0",
+    "encoding": "application/json",
+    "parameters": [],
+    "body": {
+      "type": "object",
+      "properties": {
+        "ids": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "enable": {
+          "type": "boolean"
+        }
+      }
+    }
+  },
+  {
+    "id": "post_panel_api_hosts_bulk_del",
+    "method": "POST",
+    "path": "/hosts/bulk/del",
+    "group": "hosts",
+    "write": true,
+    "since": "3.6.0",
+    "encoding": "application/json",
+    "parameters": [],
+    "body": {
+      "type": "object",
+      "properties": {
+        "ids": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    }
+  },
+  {
+    "id": "post_panel_api_backuptotgbot",
+    "method": "POST",
+    "path": "/backuptotgbot",
+    "group": "backuptotgbot",
+    "write": true,
+    "since": "3.6.0",
+    "encoding": "application/json",
+    "parameters": [],
+    "body": {}
+  },
+  {
+    "id": "post_panel_api_setting_all",
+    "method": "POST",
+    "path": "/setting/all",
+    "group": "setting",
+    "write": false,
+    "since": "3.6.0",
+    "encoding": "application/json",
+    "parameters": [],
+    "body": {}
+  },
+  {
+    "id": "post_panel_api_setting_defaultSettings",
+    "method": "POST",
+    "path": "/setting/defaultSettings",
+    "group": "setting",
+    "write": false,
+    "since": "3.6.0",
+    "encoding": "application/json",
+    "parameters": [],
+    "body": {}
+  },
+  {
+    "id": "post_panel_api_setting_factoryDefaults",
+    "method": "POST",
+    "path": "/setting/factoryDefaults",
+    "group": "setting",
+    "write": false,
+    "since": "3.6.0",
+    "encoding": "application/json",
+    "parameters": [],
+    "body": {}
+  },
+  {
+    "id": "post_panel_api_setting_update",
+    "method": "POST",
+    "path": "/setting/update",
+    "group": "setting",
+    "write": true,
+    "since": "3.6.0",
+    "encoding": "application/json",
+    "parameters": [],
+    "body": {
+      "type": "object"
+    }
+  },
+  {
+    "id": "post_panel_api_setting_validateRegex",
+    "method": "POST",
+    "path": "/setting/validateRegex",
+    "group": "setting",
+    "write": true,
+    "since": "3.6.0",
+    "encoding": "application/json",
+    "parameters": [],
+    "body": {
+      "type": "object"
+    }
+  },
+  {
+    "id": "post_panel_api_setting_updateUser",
+    "method": "POST",
+    "path": "/setting/updateUser",
+    "group": "setting",
+    "write": true,
+    "since": "3.6.0",
+    "encoding": "application/json",
+    "parameters": [],
+    "body": {
+      "type": "object",
+      "properties": {
+        "oldUsername": {
+          "type": "string"
+        },
+        "oldPassword": {
+          "type": "string"
+        },
+        "newUsername": {
+          "type": "string"
+        },
+        "newPassword": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "oldUsername",
+        "oldPassword",
+        "newUsername",
+        "newPassword"
+      ]
+    }
+  },
+  {
+    "id": "post_panel_api_setting_restartPanel",
+    "method": "POST",
+    "path": "/setting/restartPanel",
+    "group": "setting",
+    "write": true,
+    "since": "3.6.0",
+    "encoding": "application/json",
+    "parameters": [],
+    "body": {}
+  },
+  {
+    "id": "post_panel_api_setting_testSmtp",
+    "method": "POST",
+    "path": "/setting/testSmtp",
+    "group": "setting",
+    "write": true,
+    "since": "3.6.0",
+    "encoding": "application/json",
+    "parameters": [],
+    "body": {}
+  },
+  {
+    "id": "post_panel_api_setting_testTgBot",
+    "method": "POST",
+    "path": "/setting/testTgBot",
+    "group": "setting",
+    "write": true,
+    "since": "3.6.0",
+    "encoding": "application/json",
+    "parameters": [],
+    "body": {}
+  },
+  {
+    "id": "post_panel_api_setting_testDiscord",
+    "method": "POST",
+    "path": "/setting/testDiscord",
+    "group": "setting",
+    "write": true,
+    "since": "3.10.0",
+    "encoding": "application/json",
+    "parameters": [],
+    "body": {}
+  },
+  {
+    "id": "get_panel_api_setting_getDefaultJsonConfig",
+    "method": "GET",
+    "path": "/setting/getDefaultJsonConfig",
+    "group": "setting",
+    "write": false,
+    "since": "3.6.0",
+    "encoding": "application/json",
+    "parameters": [],
+    "body": {}
+  },
+  {
+    "id": "get_panel_api_setting_apiTokens",
+    "method": "GET",
+    "path": "/setting/apiTokens",
+    "group": "setting",
+    "write": false,
+    "since": "3.6.0",
+    "encoding": "application/json",
+    "parameters": [],
+    "body": {}
+  },
+  {
+    "id": "post_panel_api_setting_apiTokens_create",
+    "method": "POST",
+    "path": "/setting/apiTokens/create",
+    "group": "setting",
+    "write": true,
+    "since": "3.6.0",
+    "encoding": "application/json",
+    "parameters": [],
+    "body": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "scope": {
+          "type": "string"
+        },
+        "expiresAt": {
+          "type": "integer"
+        }
+      },
+      "required": [
+        "name"
+      ]
+    },
+    "legacy": {
+      "body": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "name"
+        ]
+      }
+    }
+  },
+  {
+    "id": "post_panel_api_setting_apiTokens_delete_id",
+    "method": "POST",
+    "path": "/setting/apiTokens/delete/{id}",
+    "group": "setting",
+    "write": true,
+    "since": "3.6.0",
+    "encoding": "application/json",
+    "parameters": [
+      {
+        "name": "id",
+        "in": "path",
+        "required": true,
+        "schema": {
+          "type": "integer"
+        }
+      }
+    ],
+    "body": {
+      "type": "object",
+      "properties": {
+        "expectedScope": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "expectedScope"
+      ]
+    },
+    "legacy": {
+      "body": {}
+    }
+  },
+  {
+    "id": "post_panel_api_setting_apiTokens_setEnabled_id",
+    "method": "POST",
+    "path": "/setting/apiTokens/setEnabled/{id}",
+    "group": "setting",
+    "write": true,
+    "since": "3.6.0",
+    "encoding": "application/json",
+    "parameters": [
+      {
+        "name": "id",
+        "in": "path",
+        "required": true,
+        "schema": {
+          "type": "integer"
+        }
+      }
+    ],
+    "body": {
+      "type": "object",
+      "properties": {
+        "enabled": {
+          "type": "boolean"
+        },
+        "expectedScope": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "enabled",
+        "expectedScope"
+      ]
+    },
+    "legacy": {
+      "body": {
+        "type": "object",
+        "properties": {
+          "enabled": {
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "enabled"
+        ]
+      }
+    }
+  },
+  {
+    "id": "post_panel_api_xray",
+    "method": "POST",
+    "path": "/xray/",
+    "group": "xray",
+    "write": false,
+    "since": "3.6.0",
+    "encoding": "application/json",
+    "parameters": [],
+    "body": {}
+  },
+  {
+    "id": "get_panel_api_xray_getDefaultJsonConfig",
+    "method": "GET",
+    "path": "/xray/getDefaultJsonConfig",
+    "group": "xray",
+    "write": false,
+    "since": "3.6.0",
+    "encoding": "application/json",
+    "parameters": [],
+    "body": {}
+  },
+  {
+    "id": "get_panel_api_xray_getOutboundsTraffic",
+    "method": "GET",
+    "path": "/xray/getOutboundsTraffic",
+    "group": "xray",
+    "write": false,
+    "since": "3.6.0",
+    "encoding": "application/json",
+    "parameters": [],
+    "body": {}
+  },
+  {
+    "id": "get_panel_api_xray_getXrayResult",
+    "method": "GET",
+    "path": "/xray/getXrayResult",
+    "group": "xray",
+    "write": false,
+    "since": "3.6.0",
+    "encoding": "application/json",
+    "parameters": [],
+    "body": {}
+  },
+  {
+    "id": "post_panel_api_xray_update",
+    "method": "POST",
+    "path": "/xray/update",
+    "group": "xray",
+    "write": true,
+    "since": "3.6.0",
+    "encoding": "application/x-www-form-urlencoded",
+    "parameters": [],
+    "body": {
+      "type": "object",
+      "properties": {
+        "xraySetting": {
+          "type": "string"
+        },
+        "outboundTestUrl": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "xraySetting"
+      ]
+    }
+  },
+  {
+    "id": "post_panel_api_xray_warp_action",
+    "method": "POST",
+    "path": "/xray/warp/{action}",
+    "group": "xray",
+    "write": true,
+    "since": "3.6.0",
+    "encoding": "application/x-www-form-urlencoded",
+    "parameters": [
+      {
+        "name": "action",
+        "in": "path",
+        "required": true,
+        "schema": {
+          "type": "string"
+        }
+      }
+    ],
+    "body": {
+      "type": "object",
+      "properties": {
+        "privateKey": {
+          "type": "string"
+        },
+        "publicKey": {
+          "type": "string"
+        },
+        "license": {
+          "type": "string"
+        },
+        "interval": {
+          "type": "integer"
+        }
+      }
+    }
+  },
+  {
+    "id": "post_panel_api_xray_nord_action",
+    "method": "POST",
+    "path": "/xray/nord/{action}",
+    "group": "xray",
+    "write": true,
+    "since": "3.6.0",
+    "encoding": "application/x-www-form-urlencoded",
+    "parameters": [
+      {
+        "name": "action",
+        "in": "path",
+        "required": true,
+        "schema": {
+          "type": "string"
+        }
+      }
+    ],
+    "body": {
+      "type": "object",
+      "properties": {
+        "countryId": {
+          "type": "string"
+        },
+        "token": {
+          "type": "string"
+        },
+        "key": {
+          "type": "string"
+        }
+      }
+    }
+  },
+  {
+    "id": "post_panel_api_xray_pia_action",
+    "method": "POST",
+    "path": "/xray/pia/{action}",
+    "group": "xray",
+    "write": true,
+    "since": "3.10.0",
+    "encoding": "application/x-www-form-urlencoded",
+    "parameters": [
+      {
+        "name": "action",
+        "in": "path",
+        "required": true,
+        "schema": {
+          "type": "string"
+        }
+      }
+    ],
+    "body": {
+      "type": "object",
+      "properties": {
+        "username": {
+          "type": "string"
+        },
+        "password": {
+          "type": "string"
+        },
+        "countryCode": {
+          "type": "string"
+        },
+        "hostname": {
+          "type": "string"
+        }
+      }
+    }
+  },
+  {
+    "id": "post_panel_api_xray_resetOutboundsTraffic",
+    "method": "POST",
+    "path": "/xray/resetOutboundsTraffic",
+    "group": "xray",
+    "write": true,
+    "since": "3.6.0",
+    "encoding": "application/x-www-form-urlencoded",
+    "parameters": [],
+    "body": {
+      "type": "object",
+      "properties": {
+        "tag": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "tag"
+      ]
+    }
+  },
+  {
+    "id": "post_panel_api_xray_testOutbound",
+    "method": "POST",
+    "path": "/xray/testOutbound",
+    "group": "xray",
+    "write": true,
+    "since": "3.6.0",
+    "encoding": "application/x-www-form-urlencoded",
+    "parameters": [],
+    "body": {
+      "type": "object",
+      "properties": {
+        "outbound": {
+          "type": "string"
+        },
+        "allOutbounds": {
+          "type": "string"
+        },
+        "mode": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "outbound"
+      ]
+    }
+  },
+  {
+    "id": "post_panel_api_xray_testOutbounds",
+    "method": "POST",
+    "path": "/xray/testOutbounds",
+    "group": "xray",
+    "write": true,
+    "since": "3.6.0",
+    "encoding": "application/x-www-form-urlencoded",
+    "parameters": [],
+    "body": {
+      "type": "object",
+      "properties": {
+        "outbounds": {
+          "type": "string"
+        },
+        "allOutbounds": {
+          "type": "string"
+        },
+        "mode": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "outbounds"
+      ]
+    }
+  },
+  {
+    "id": "post_panel_api_xray_balancerStatus",
+    "method": "POST",
+    "path": "/xray/balancerStatus",
+    "group": "xray",
+    "write": false,
+    "since": "3.6.0",
+    "encoding": "application/x-www-form-urlencoded",
+    "parameters": [],
+    "body": {
+      "type": "object",
+      "properties": {
+        "tags": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "tags"
+      ]
+    }
+  },
+  {
+    "id": "post_panel_api_xray_balancerOverride",
+    "method": "POST",
+    "path": "/xray/balancerOverride",
+    "group": "xray",
+    "write": true,
+    "since": "3.6.0",
+    "encoding": "application/x-www-form-urlencoded",
+    "parameters": [],
+    "body": {
+      "type": "object",
+      "properties": {
+        "tag": {
+          "type": "string"
+        },
+        "target": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "tag"
+      ]
+    }
+  },
+  {
+    "id": "post_panel_api_xray_routeTest",
+    "method": "POST",
+    "path": "/xray/routeTest",
+    "group": "xray",
+    "write": true,
+    "since": "3.6.0",
+    "encoding": "application/x-www-form-urlencoded",
+    "parameters": [],
+    "body": {
+      "anyOf": [
+        {
+          "type": "object",
+          "properties": {
+            "domain": {
+              "type": "string",
+              "minLength": 1
+            },
+            "ip": {
+              "type": "string"
+            },
+            "port": {
+              "type": "integer"
+            },
+            "network": {
+              "type": "string"
+            },
+            "inboundTag": {
+              "type": "string"
+            },
+            "protocol": {
+              "type": "string"
+            },
+            "email": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "domain"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "domain": {
+              "type": "string"
+            },
+            "ip": {
+              "type": "string",
+              "minLength": 1
+            },
+            "port": {
+              "type": "integer"
+            },
+            "network": {
+              "type": "string"
+            },
+            "inboundTag": {
+              "type": "string"
+            },
+            "protocol": {
+              "type": "string"
+            },
+            "email": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "ip"
+          ]
+        }
+      ]
+    }
+  },
+  {
+    "id": "get_panel_api_xray_geodata_files",
+    "method": "GET",
+    "path": "/xray/geodata/files",
+    "group": "xray",
+    "write": false,
+    "since": "3.10.0",
+    "encoding": "application/json",
+    "parameters": [],
+    "body": {}
+  },
+  {
+    "id": "get_panel_api_xray_geodata_categories",
+    "method": "GET",
+    "path": "/xray/geodata/categories",
+    "group": "xray",
+    "write": false,
+    "since": "3.10.0",
+    "encoding": "application/json",
+    "parameters": [
+      {
+        "name": "file",
+        "in": "query",
+        "required": true,
+        "schema": {
+          "type": "string"
+        }
+      },
+      {
+        "name": "q",
+        "in": "query",
+        "required": false,
+        "schema": {
+          "type": "string"
+        }
+      },
+      {
+        "name": "offset",
+        "in": "query",
+        "required": false,
+        "schema": {
+          "type": "integer"
+        }
+      },
+      {
+        "name": "limit",
+        "in": "query",
+        "required": false,
+        "schema": {
+          "type": "integer"
+        }
+      }
+    ],
+    "body": {}
+  },
+  {
+    "id": "get_panel_api_xray_geodata_entries",
+    "method": "GET",
+    "path": "/xray/geodata/entries",
+    "group": "xray",
+    "write": false,
+    "since": "3.10.0",
+    "encoding": "application/json",
+    "parameters": [
+      {
+        "name": "file",
+        "in": "query",
+        "required": true,
+        "schema": {
+          "type": "string"
+        }
+      },
+      {
+        "name": "code",
+        "in": "query",
+        "required": true,
+        "schema": {
+          "type": "string"
+        }
+      },
+      {
+        "name": "q",
+        "in": "query",
+        "required": false,
+        "schema": {
+          "type": "string"
+        }
+      },
+      {
+        "name": "offset",
+        "in": "query",
+        "required": false,
+        "schema": {
+          "type": "integer"
+        }
+      },
+      {
+        "name": "limit",
+        "in": "query",
+        "required": false,
+        "schema": {
+          "type": "integer"
+        }
+      }
+    ],
+    "body": {}
+  },
+  {
+    "id": "post_panel_api_xray_geodata_validate",
+    "method": "POST",
+    "path": "/xray/geodata/validate",
+    "group": "xray",
+    "write": true,
+    "since": "3.10.0",
+    "encoding": "application/x-www-form-urlencoded",
+    "parameters": [],
+    "body": {
+      "type": "object",
+      "properties": {
+        "tokens": {
+          "type": "string"
+        },
+        "kind": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "tokens"
+      ]
+    }
+  },
+  {
+    "id": "get_panel_api_xray_outbound_subs",
+    "method": "GET",
+    "path": "/xray/outbound-subs",
+    "group": "xray",
+    "write": false,
+    "since": "3.6.0",
+    "encoding": "application/json",
+    "parameters": [],
+    "body": {}
+  },
+  {
+    "id": "post_panel_api_xray_outbound_subs",
+    "method": "POST",
+    "path": "/xray/outbound-subs",
+    "group": "xray",
+    "write": true,
+    "since": "3.6.0",
+    "encoding": "application/x-www-form-urlencoded",
+    "parameters": [],
+    "body": {
+      "type": "object",
+      "properties": {
+        "remark": {
+          "type": "string"
+        },
+        "url": {
+          "type": "string"
+        },
+        "tagPrefix": {
+          "type": "string"
+        },
+        "userAgent": {
+          "type": "string",
+          "default": "3x-ui-outbound-sub/1.0"
+        },
+        "updateInterval": {
+          "type": "integer",
+          "default": 600
+        },
+        "enabled": {
+          "type": "boolean",
+          "default": true
+        },
+        "allowPrivate": {
+          "type": "boolean",
+          "default": false
+        },
+        "allowInsecure": {
+          "type": "boolean",
+          "default": false
+        },
+        "prepend": {
+          "type": "boolean",
+          "default": false
+        }
+      },
+      "required": [
+        "url"
+      ]
+    }
+  },
+  {
+    "id": "post_panel_api_xray_outbound_subs_id",
+    "method": "POST",
+    "path": "/xray/outbound-subs/{id}",
+    "group": "xray",
+    "write": true,
+    "since": "3.6.0",
+    "encoding": "application/x-www-form-urlencoded",
+    "parameters": [
+      {
+        "name": "id",
+        "in": "path",
+        "required": true,
+        "schema": {
+          "type": "integer"
+        }
+      }
+    ],
+    "body": {
+      "type": "object",
+      "properties": {
+        "remark": {
+          "type": "string"
+        },
+        "url": {
+          "type": "string"
+        },
+        "tagPrefix": {
+          "type": "string"
+        },
+        "userAgent": {
+          "type": "string",
+          "default": "3x-ui-outbound-sub/1.0"
+        },
+        "updateInterval": {
+          "type": "integer",
+          "default": 600
+        },
+        "enabled": {
+          "type": "boolean",
+          "default": true
+        },
+        "allowPrivate": {
+          "type": "boolean",
+          "default": false
+        },
+        "allowInsecure": {
+          "type": "boolean",
+          "default": false
+        },
+        "prepend": {
+          "type": "boolean",
+          "default": false
+        }
+      },
+      "required": [
+        "url"
+      ]
+    }
+  },
+  {
+    "id": "delete_panel_api_xray_outbound_subs_id",
+    "method": "DELETE",
+    "path": "/xray/outbound-subs/{id}",
+    "group": "xray",
+    "write": true,
+    "since": "3.6.0",
+    "encoding": "application/json",
+    "parameters": [
+      {
+        "name": "id",
+        "in": "path",
+        "required": true,
+        "schema": {
+          "type": "integer"
+        }
+      }
+    ],
+    "body": {}
+  },
+  {
+    "id": "post_panel_api_xray_outbound_subs_id_del",
+    "method": "POST",
+    "path": "/xray/outbound-subs/{id}/del",
+    "group": "xray",
+    "write": true,
+    "since": "3.6.0",
+    "encoding": "application/json",
+    "parameters": [
+      {
+        "name": "id",
+        "in": "path",
+        "required": true,
+        "schema": {
+          "type": "integer"
+        }
+      }
+    ],
+    "body": {}
+  },
+  {
+    "id": "post_panel_api_xray_outbound_subs_id_refresh",
+    "method": "POST",
+    "path": "/xray/outbound-subs/{id}/refresh",
+    "group": "xray",
+    "write": true,
+    "since": "3.6.0",
+    "encoding": "application/json",
+    "parameters": [
+      {
+        "name": "id",
+        "in": "path",
+        "required": true,
+        "schema": {
+          "type": "integer"
+        }
+      }
+    ],
+    "body": {}
+  },
+  {
+    "id": "post_panel_api_xray_outbound_subs_id_move",
+    "method": "POST",
+    "path": "/xray/outbound-subs/{id}/move",
+    "group": "xray",
+    "write": true,
+    "since": "3.6.0",
+    "encoding": "application/x-www-form-urlencoded",
+    "parameters": [
+      {
+        "name": "id",
+        "in": "path",
+        "required": true,
+        "schema": {
+          "type": "integer"
+        }
+      }
+    ],
+    "body": {
+      "type": "object",
+      "properties": {
+        "dir": {
+          "type": "string"
+        }
+      }
+    }
+  },
+  {
+    "id": "post_panel_api_xray_outbound_subs_parse",
+    "method": "POST",
+    "path": "/xray/outbound-subs/parse",
+    "group": "xray",
+    "write": true,
+    "since": "3.6.0",
+    "encoding": "application/x-www-form-urlencoded",
+    "parameters": [],
+    "body": {
+      "type": "object",
+      "properties": {
+        "url": {
+          "type": "string"
+        },
+        "userAgent": {
+          "type": "string"
+        },
+        "allowPrivate": {
+          "type": "boolean"
+        },
+        "allowInsecure": {
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "url"
+      ]
+    }
+  },
+  {
+    "id": "get_panel_api_sub_balancers",
+    "method": "GET",
+    "path": "/sub-balancers",
+    "group": "sub-balancers",
+    "write": false,
+    "since": "3.10.0",
+    "encoding": "application/json",
+    "parameters": [],
+    "body": {}
+  },
+  {
+    "id": "post_panel_api_sub_balancers",
+    "method": "POST",
+    "path": "/sub-balancers",
+    "group": "sub-balancers",
+    "write": true,
+    "since": "3.10.0",
+    "encoding": "application/x-www-form-urlencoded",
+    "parameters": [],
+    "body": {
+      "type": "object",
+      "properties": {
+        "remark": {
+          "type": "string"
+        },
+        "strategy": {
+          "type": "string",
+          "default": "random"
+        },
+        "inboundIds": {
+          "type": "array",
+          "items": {
+            "type": "integer"
+          }
+        },
+        "memberWeights": {
+          "type": "object"
+        },
+        "sortOrder": {
+          "type": "integer",
+          "default": 1
+        },
+        "enabled": {
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "remark",
+        "inboundIds"
+      ]
+    }
+  },
+  {
+    "id": "post_panel_api_sub_balancers_id",
+    "method": "POST",
+    "path": "/sub-balancers/{id}",
+    "group": "sub-balancers",
+    "write": true,
+    "since": "3.10.0",
+    "encoding": "application/x-www-form-urlencoded",
+    "parameters": [
+      {
+        "name": "id",
+        "in": "path",
+        "required": true,
+        "schema": {
+          "type": "integer"
+        }
+      }
+    ],
+    "body": {
+      "type": "object",
+      "properties": {
+        "remark": {
+          "type": "string"
+        },
+        "strategy": {
+          "type": "string",
+          "default": "random"
+        },
+        "inboundIds": {
+          "type": "array",
+          "items": {
+            "type": "integer"
+          }
+        },
+        "memberWeights": {
+          "type": "object"
+        },
+        "sortOrder": {
+          "type": "integer",
+          "default": 1
+        },
+        "enabled": {
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "remark",
+        "inboundIds"
+      ]
+    }
+  },
+  {
+    "id": "delete_panel_api_sub_balancers_id",
+    "method": "DELETE",
+    "path": "/sub-balancers/{id}",
+    "group": "sub-balancers",
+    "write": true,
+    "since": "3.10.0",
+    "encoding": "application/json",
+    "parameters": [
+      {
+        "name": "id",
+        "in": "path",
+        "required": true,
+        "schema": {
+          "type": "integer"
+        }
+      }
+    ],
+    "body": {}
+  },
+  {
+    "id": "post_panel_api_sub_balancers_id_del",
+    "method": "POST",
+    "path": "/sub-balancers/{id}/del",
+    "group": "sub-balancers",
+    "write": true,
+    "since": "3.10.0",
+    "encoding": "application/json",
+    "parameters": [
+      {
+        "name": "id",
+        "in": "path",
+        "required": true,
+        "schema": {
+          "type": "integer"
+        }
+      }
+    ],
+    "body": {}
+  }
+]

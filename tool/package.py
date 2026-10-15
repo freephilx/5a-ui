@@ -235,7 +235,7 @@ def package(root, platform, arch, version, label, signing="test-signed"):
             control.write_text(f"Package: 5a-ui\nVersion: {version.replace('-', '~', 1)}\n"
                                f"Architecture: {deb_arch}\nMaintainer: 5a-ui contributors\n"
                                "Section: net\nPriority: optional\n"
-                               f"Depends: libc6 (>= {libc}), libgtk-3-0, libstdc++6, liblzma5\n"
+                               f"Depends: libc6 (>= {libc}), libgtk-3-0, libstdc++6, liblzma5, libsecret-1-0\n"
                                "Recommends: xdg-desktop-portal-gtk\n"
                                "Homepage: https://github.com/freephilx/5a-ui\n"
                                "Description: Flutter client for 3x-ui deployment and status\n", encoding="utf-8")
